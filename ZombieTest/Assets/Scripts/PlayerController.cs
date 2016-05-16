@@ -4,13 +4,13 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     public float WalkingSpeed;
-
-    public Rigidbody2D BulletPrefab;
-    public GameObject BulletSpawner;
     public float FireSpeed = 0.5f;
-    public float FireCoolDown;
-    public float BulletSpeed = 500;
+    public float FireCoolDown = 1;
 
+    public float BulletSpread = 0.25f;
+    public GameObject BulletPrefab;
+    public GameObject BulletSpawner;
+    
 
     private void Start ()
     {
@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private void Update ()
 	{
 	    Movement();
-	    LookAt();
+	    LookAtMouseCursor();
         Fire();
     }
 
@@ -32,14 +32,17 @@ public class PlayerController : MonoBehaviour
 
     private void SpawnBullet()
     {
-        var bPrefab = Instantiate(BulletPrefab, new Vector3(BulletSpawner.transform.position.x, BulletSpawner.transform.position.y, BulletSpawner.transform.position.z), Quaternion.identity) as Rigidbody2D;
-        if (bPrefab != null) bPrefab.GetComponent<Rigidbody2D>().AddForce(BulletSpawner.transform.right * BulletSpeed);
+        var rnd = Random.insideUnitCircle * BulletSpread;
+        var bs = BulletSpawner.transform.rotation;
+        var rotation = new Quaternion(bs.x + rnd.x, bs.y + rnd.y, bs.z, bs.w);
+
+        Instantiate(BulletPrefab, BulletSpawner.transform.position, rotation);
         FireCoolDown = Time.time + FireSpeed;
     }
-
-    private void LookAt()
+    
+    private void LookAtMouseCursor()
     {
-        Vector2 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var mouseScreenPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
         var direction = (mouseScreenPosition - (Vector2)transform.position).normalized;
         transform.right = direction;
     }
