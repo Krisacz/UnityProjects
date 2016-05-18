@@ -8,5 +8,11 @@ public class MoveBullet : MonoBehaviour
 	void Update ()
     {
 	    transform.Translate(Vector3.right * Time.deltaTime * MoveSpeed);
+        Destroy(gameObject, 1f);
 	}
+    
+    void OnTriggerEnter(Collider other)
+    {
+        Destroy(gameObject);
+    }
 }

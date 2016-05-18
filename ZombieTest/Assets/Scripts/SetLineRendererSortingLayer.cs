@@ -6,7 +6,7 @@ public class SetLineRendererSortingLayer : MonoBehaviour
     public string SortingLayerName;
     public int SortingOrder;
 
-    void Start ()
+    private void Start ()
 	{
 	    this.GetComponent<LineRenderer>().sortingLayerName = SortingLayerName;
         this.GetComponent<LineRenderer>().sortingOrder = SortingOrder;
