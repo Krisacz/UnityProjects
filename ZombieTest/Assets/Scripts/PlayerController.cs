@@ -62,12 +62,13 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Shoot()
-    {
+    {       
+        SpawnBullet();
+
+        /*
         var mousePosition = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
         var firePointPosition = new Vector2(BulletSpawner.position.x, BulletSpawner.position.y);
         var firePointTillMouseDistance = mousePosition - firePointPosition;
-        SpawnBullet2();
-        /*
         var hit = Physics2D.Raycast(firePointPosition, firePointTillMouseDistance, HitLayerMask);
         Debug.DrawLine(firePointPosition, firePointTillMouseDistance, Color.green);
 
@@ -77,17 +78,17 @@ public class PlayerController : MonoBehaviour
         }
         */
     }
-
-    private void SpawnBullet2()
-    {
-        Instantiate(BulletPrefab, BulletSpawner.position, BulletSpawner.rotation);
-    }
-
+    
     private void SpawnBullet()
     {
-        var rnd = Random.insideUnitCircle * BulletSpread;
-        var bs = BulletSpawner.transform.rotation;
-        var rotation = new Quaternion(bs.x + rnd.x, bs.y + rnd.y, bs.z, bs.w);
-        Instantiate(BulletPrefab, BulletSpawner.transform.position, rotation);
+        //var rnd = Random.insideUnitCircle * BulletSpread;
+        //var bs = BulletSpawner.transform.rotation;
+        //var rotation = new Quaternion(bs.x + rnd.x, bs.y + rnd.y, bs.z, bs.w);
+        //var rotation = BulletSpawner.rotation;
+        //var bullet = Instantiate(BulletPrefab, BulletSpawner.transform.position, rotation);
+        //(bullet.get as Rigidbody2D).velocity = transform.forward * 10;
+
+        var arrowInstance = Instantiate(BulletPrefab, BulletSpawner.position, BulletSpawner.rotation);
+        //arrowInstance.velocity = new Vector2(10, 0);
     }
 }
