@@ -1,0 +1,73 @@
+[
+	{
+		"ItemId": "IronOre",
+		"MaxStackSize": 1,
+		"ItemSize":
+		{
+			"Width": 1,
+			"Height": 1
+		},
+		"SpriteName": "iron_ore",
+		"PrefabName": "?????"
+	},
+	
+	{
+		"ItemId": "GoldOre",
+		"MaxStackSize": 1,
+		"ItemSize":
+		{
+			"Width": 1,
+			"Height": 1
+		},
+		"SpriteName": "gold_ore",
+		"PrefabName": "?????"
+	},
+	
+	{
+		"ItemId": "Printer3D",
+		"MaxStackSize": 1,
+		"ItemSize":
+		{
+			"Width": 1,
+			"Height": 1
+		},
+		"SpriteName": "printe_3d",
+		"PrefabName": "?????"				
+	},
+		
+	{
+		"ItemId": "Smeltery",
+		"MaxStackSize": 1,
+		"ItemSize":
+		{
+			"Width": 1,
+			"Height": 1
+		},
+		"SpriteName": "smeltery",
+		"PrefabName": "?????"			
+	},
+	
+	{
+		"ItemId": "Foundation",
+		"MaxStackSize": 1,
+		"ItemSize":
+		{
+			"Width": 1,
+			"Height": 1
+		},
+		"SpriteName": "foundation",
+		"PrefabName": "StructureNonBlocking"			
+	},
+	
+	{
+		"ItemId": "Wall",
+		"MaxStackSize": 1,
+		"ItemSize":
+		{
+			"Width": 1,
+			"Height": 1
+		},
+		"SpriteName": "wall",
+		"PrefabName": "StructureBlocking"				
+	}
+]
