@@ -6,6 +6,12 @@ namespace Assets.Scripts
     {
         private static bool _isEnabled = true;
 
+        public static void Info(string msg)
+        {
+            if (!_isEnabled) return;
+            LogMessage(LogType.Info, string.Empty, string.Empty, msg);
+        }
+
         public static void Info(string obj, string location, string msg)
         {
             if (!_isEnabled) return;

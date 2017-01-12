@@ -6,10 +6,15 @@ namespace Assets.Scripts
     {
         public InventoryController InventoryController;
 
+        void OnEnable()
+        {
+            ItemsDatabase.Init();
+
+        }
+
         //Before any Start - init any objects, refs etc
         void Awake()
         {
-            ItemsDatabase.Init();
         }
 
         void Start ()

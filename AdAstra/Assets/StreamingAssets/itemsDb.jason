@@ -8,7 +8,7 @@
 			"Height": 1
 		},
 		"SpriteName": "iron_ore",
-		"PrefabName": "?????"
+		"PrefabName": "Item"
 	},
 	
 	{
@@ -20,7 +20,7 @@
 			"Height": 1
 		},
 		"SpriteName": "gold_ore",
-		"PrefabName": "?????"
+		"PrefabName": "Item"
 	},
 	
 	{
@@ -32,7 +32,7 @@
 			"Height": 1
 		},
 		"SpriteName": "printe_3d",
-		"PrefabName": "?????"				
+		"PrefabName": "Item"				
 	},
 		
 	{
@@ -44,7 +44,7 @@
 			"Height": 1
 		},
 		"SpriteName": "smeltery",
-		"PrefabName": "?????"			
+		"PrefabName": "Item"			
 	},
 	
 	{
