@@ -20,7 +20,7 @@ namespace Assets.Scripts.Views
             _itemStack.Count = amount;
             _itemStack.Item = item;
             _itemGameObject = go;
-            _itemGameObject.transform.parent = this.transform.FindChild("ItemPanel");
+            _itemGameObject.transform.parent = this.transform.GetChild(0);
             _itemGameObject.transform.position = this.transform.position;
             var goImage = go.GetComponent<Image>();
             goImage.sprite = SpritesDatabase.Get(item.SpriteName);
@@ -30,9 +30,15 @@ namespace Assets.Scripts.Views
 
         public void UpdateItemStack(ItemStack itemStack, GameObject go)
         {
+            if (itemStack == null || go == null)
+            {
+                EmptyItemStackView();
+                return;
+            }
+
             _itemStack = itemStack;
             _itemGameObject = go;
-            _itemGameObject.transform.parent = this.transform.FindChild("ItemPanel");
+            _itemGameObject.transform.parent = this.transform.GetChild(0);
             _itemGameObject.transform.position = this.transform.position;
             var goImage = go.GetComponent<Image>();
             goImage.sprite = SpritesDatabase.Get(_itemStack.Item.SpriteName);
@@ -40,7 +46,7 @@ namespace Assets.Scripts.Views
             HasItem = true;
         }
 
-        public void EmptyItemStackView()
+        private void EmptyItemStackView()
         {
             _itemStack = null;
             _itemGameObject = null;

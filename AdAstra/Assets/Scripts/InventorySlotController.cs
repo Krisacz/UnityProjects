@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.Scripts;
+using Assets.Scripts.Models;
 using Assets.Scripts.Views;
 using UnityEngine.EventSystems;
 
@@ -8,16 +9,26 @@ public class InventorySlotController : MonoBehaviour, IPointerDownHandler, IDrag
 {
     private Vector2 _dragOffset;
     private Transform _originalParent;
-
+    private bool _droppedOnSlot;
+    
     public void OnPointerDown(PointerEventData eventData)
     {
         var itemStackView = this.GetComponent<ItemStackView>();
         if (!itemStackView.HasItem) return;
         var itemGameObject = itemStackView.GetItemGameObject();
-        _originalParent = this.transform.parent;
+
+        //Get original parent to be able to return to original position
+        _originalParent = itemGameObject.transform.parent;
+
+        //Set current parent to root so it is visible above all other slots/items etc
         itemGameObject.transform.SetParent(itemGameObject.transform.root);
+
+        //Set offset to the point where we are actually "touching" the item
         _dragOffset = itemGameObject.transform.position - (Vector3)eventData.position;
         itemGameObject.transform.position = eventData.position + _dragOffset;
+
+        //Assume that we will drop item not on the other slot
+        _droppedOnSlot = false; 
     }
     
     public void OnDrag(PointerEventData eventData)
@@ -28,37 +39,42 @@ public class InventorySlotController : MonoBehaviour, IPointerDownHandler, IDrag
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        //TODO dropping outside slots
-        Log.Info("##### OnEndDrag #####");
-        //this.transform.SetParent(_originalParent.transform);
-        //this.transform.position = _originalParent.transform.position;
-        //_originalParent = null;
+        if(_droppedOnSlot) return;
+
+        var itemStackView = eventData.pointerDrag.GetComponent<ItemStackView>();
+        var itemGameObject = itemStackView.GetItemGameObject();
+
+        //Set current parent to original parent from before drag
+        itemGameObject.transform.SetParent(_originalParent);
+        
+        //Reset position
+        itemGameObject.transform.position = _originalParent.position;
     }
 
     public void OnDrop(PointerEventData eventData)
     {
-        Log.Info("##### OnDrop #####");
-
         var localItemStackView = this.GetComponent<ItemStackView>();
         var draggedItemStackView = eventData.pointerDrag.GetComponent<ItemStackView>();
 
-        if (localItemStackView.HasItem)
-        {
-            var localItemStack = localItemStackView.GetItemStack();
-            var localGameObject = localItemStackView.GetItemGameObject();
-            var draggedItemStack = draggedItemStackView.GetItemStack();
-            var draggedGameObject = draggedItemStackView.GetItemGameObject();
+        //Get local item/go - can be null!
+        var localItemStack = localItemStackView.GetItemStack();
+        var localGameObject = localItemStackView.GetItemGameObject();
 
-            localItemStackView.UpdateItemStack(draggedItemStack, draggedGameObject);
-            draggedItemStackView.UpdateItemStack(localItemStack, localGameObject);
-        }
-        else
-        {
-            var draggedItemStack = draggedItemStackView.GetItemStack();
-            var draggedGameObject = draggedItemStackView.GetItemGameObject();
+        //Get dragged item/go
+        var draggedItemStack = draggedItemStackView.GetItemStack();
+        var draggedGameObject = draggedItemStackView.GetItemGameObject();
 
-            localItemStackView.UpdateItemStack(draggedItemStack, draggedGameObject);
-            draggedItemStackView.EmptyItemStackView();
-        }
+        //Set local slot to dragged item and dragged slot to local item (the one we dropped it on)
+        localItemStackView.UpdateItemStack(draggedItemStack, draggedGameObject);
+        draggedItemStackView.UpdateItemStack(localItemStack, localGameObject);
+
+        //Set that we actually droppped dragged item on top of anoter slot
+        var draggedInventorySlotController = eventData.pointerDrag.GetComponent<InventorySlotController>();
+        draggedInventorySlotController.DroppedOnSlot();
+    }
+
+    private void DroppedOnSlot()
+    {
+        _droppedOnSlot = true;
     }
 }
