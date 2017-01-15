@@ -24,7 +24,7 @@ namespace Assets.Scripts
             }
 
             //Debug log
-            foreach (var item in Database) Log.Info("ItemsDatabase", "Init", string.Format("Item Loaded: [{0}]", item.Key));
+            //foreach (var item in Database) Log.Info("ItemsDatabase", "Init", string.Format("Item Loaded: [{0}]", item.Key));
         }
 
         public static Item Get(ItemId itemId)
