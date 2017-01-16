@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.Models;
 using Assets.Scripts.Views;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
@@ -12,19 +10,21 @@ namespace Assets.Scripts
     {
         public GameObject[] Inventories;
 
+        #region ADD ITEM
+        //Returns number of NOT added items due to lack of space - 0 means that all requested items has been added
         public int AddItem(ItemId id, int count, int inventoryIndex = -1)
         {
             if (inventoryIndex <= -1)
             {
-                return AddToFirstAvailableInventory(id, count);
+                return AddItemToFirstAvailableInventory(id, count);
             }
             else
             {
-                return AddToSpecificInventory(id, count, inventoryIndex);
+                return AddItemToSpecificInventory(id, count, inventoryIndex);
             }
         }
 
-        private int AddToSpecificInventory(ItemId id, int count, int inventoryIndex)
+        private int AddItemToSpecificInventory(ItemId id, int count, int inventoryIndex)
         {
             var countToInsert = count;
             var inventory = Inventories[inventoryIndex];
@@ -51,41 +51,134 @@ namespace Assets.Scripts
                 }
             }
 
-            Log.Info("InventoryController", "AddToSpecificInventory",
+            Log.Info("InventoryController", "AddItemToSpecificInventory",
                 string.Format("Inventory [{0}] full - unable to insert {1} x{2}", inventoryIndex, id, countToInsert));
             return countToInsert;
         }
 
-        //Will return number of items NOT added due to lack of space - 0 means added all requested items
-        private int AddToFirstAvailableInventory(ItemId id, int count)
+        private int AddItemToFirstAvailableInventory(ItemId id, int count)
         {
             var countToInsert = count;
 
             for (var index = 0; index < Inventories.Length; index++)
             {
-                countToInsert = AddToSpecificInventory(id, countToInsert, index);
+                countToInsert = AddItemToSpecificInventory(id, countToInsert, index);
             }
 
             if (countToInsert == 0) return 0;
 
-            Log.Info("InventoryController", "AddToFirstAvailableInventory",
+            Log.Info("InventoryController", "AddItemToFirstAvailableInventory",
                 string.Format("Inventory(s) full - unable to insert {0} x{1}", id, countToInsert));
             return countToInsert;
         }
+        #endregion
 
-        public Dictionary<ItemId, int> CheckInventory(Dictionary<ItemId, int> items, int inventoryIndex)
+        #region CHECK INVENTORIES
+        public Dictionary<ItemId, int> Check(Dictionary<ItemId, int> items, int inventoryIndex = -1)
         {
-            //TODO loop through inventories (or one inventory specified) and "gather" required items and their count
-            //TODO Return anything what's missing
-            throw new NotImplementedException();
+            if (inventoryIndex <= -1)
+            {
+                return CheckAllInventories(items);
+            }
+            else
+            {
+                return CheckSpecificInventory(items, inventoryIndex);
+            }
         }
 
+        private Dictionary<ItemId, int> CheckAllInventories(Dictionary<ItemId, int> items)
+        {
+            var left = items;
+
+            for (var index = 0; index < Inventories.Length; index++)
+            {
+                left = CheckSpecificInventory(left, index);
+            }
+
+            if (left.Count == 0) return left;
+
+            var missingItemsStr = string.Empty;
+            foreach (var i in left) missingItemsStr += string.Format("{0} [{1}] ", i.Key, i.Value);
+            Log.Info("InventoryController", "CheckInventories", string.Format("Missing items: {0}", missingItemsStr));
+            return left;
+        }
+
+        private Dictionary<ItemId, int> CheckSpecificInventory(Dictionary<ItemId, int> items, int inventoryIndex)
+        {
+            var left = items;
+            var inventory = Inventories[inventoryIndex];
+            var allSlots = inventory.GetComponentsInChildren<ItemStackView>();
+            foreach (var isv in allSlots)
+            {
+                if (!isv.HasItem) continue;
+                var stack = isv.GetItemStack();
+                if (!left.ContainsKey(stack.Item.ItemId)) continue;
+                left[stack.Item.ItemId] -= stack.Count;
+                if (left[stack.Item.ItemId] <= 0) left.Remove(stack.Item.ItemId);
+            }
+
+            if (left.Count == 0) return left;
+
+            var missingItemsStr = string.Empty;
+            foreach (var i in left) missingItemsStr += string.Format("{0} [{1}] ", i.Key, i.Value);
+            Log.Info("InventoryController", "CheckSpecificInventory", string.Format("Missing items: {0}", missingItemsStr));
+            return left;
+        }
+        #endregion
+
+        #region REMOVE ITEM
         //Will return number of items NOT removed due to lack of items - 0 means all required items has been removed
-        //TODO You should not call remove before checking if that item and count exist in the inventory
-        //TODO unless there is a need of a partial removal (e.i. quest deliver could possibly be partial)
         public int RemoveItem(ItemId id, int count, int inventoryIndex = -1)
         {
-            throw new NotImplementedException();
+            if (inventoryIndex <= -1)
+            {
+                return RemoveItemFromAnyInventory(id, count);
+            }
+            else
+            {
+                return RemoveItemFromSpecificInventory(id, count, inventoryIndex);
+            }
         }
+
+        private int RemoveItemFromAnyInventory(ItemId id, int count)
+        {
+            var left = count;
+
+            for (var index = 0; index < Inventories.Length; index++)
+            {
+                if(left == 0) break;
+                left = RemoveItemFromSpecificInventory(id, left, index);
+            }
+
+            if (left == 0) return left;
+
+            Log.Info("InventoryController", "RemoveItemFromAnyInventory",
+                string.Format("Insufficient item(s) to remove: {0} x{1}", id, left));
+            return left;
+        }
+
+        private int RemoveItemFromSpecificInventory(ItemId id, int count, int inventoryIndex)
+        {
+            var left = count;
+            var inventory = Inventories[inventoryIndex];
+            var allSlots = inventory.GetComponentsInChildren<ItemStackView>();
+            foreach (var isv in allSlots)
+            {
+                if(left == 0) break;
+                if (!isv.HasItem) continue;
+                var stack = isv.GetItemStack();
+                if (stack.Item.ItemId != id) continue;
+                var amountToRemove = Math.Min(left, stack.Count);
+                left -= amountToRemove;
+                isv.UpdateStackCount(amountToRemove * -1);
+            }
+
+            if (left == 0) return left;
+            
+            Log.Info("InventoryController", "RemoveItemFromSpecificInventory",
+                string.Format("Insufficient item(s) to remove [Inventory={0}]: {1} x{2}", inventoryIndex, id, left));
+            return left;
+        }
+        #endregion
     }
 }

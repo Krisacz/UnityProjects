@@ -25,7 +25,7 @@ namespace Assets.Scripts.Views
             _itemGameObject.transform.position = this.transform.position;
             var goImage = go.GetComponent<Image>();
             goImage.sprite = SpritesDatabase.Get(item.SpriteName);
-            SetStackCount(_itemStack.Count);
+            SetStackCountText(_itemStack.Count);
 
             HasItem = true;
         }
@@ -36,7 +36,7 @@ namespace Assets.Scripts.Views
         {
             if (itemStack == null || go == null)
             {
-                EmptyItemStackView();
+                EmptyItemStackView(false);
                 return;
             }
 
@@ -46,7 +46,7 @@ namespace Assets.Scripts.Views
             _itemGameObject.transform.position = this.transform.position;
             var goImage = go.GetComponent<Image>();
             goImage.sprite = SpritesDatabase.Get(_itemStack.Item.SpriteName);
-            SetStackCount(_itemStack.Count);
+            SetStackCountText(_itemStack.Count);
 
             HasItem = true;
         }
@@ -55,24 +55,20 @@ namespace Assets.Scripts.Views
         public void UpdateStackCount(int count)
         {
             _itemStack.Count += count;
+
             if (_itemStack.Count < 0)
                 Log.Error("ItemStackView", "UpdateStackCount", "Can not change stack count below 0!");
-            if(_itemStack.Count == 0)
-                EmptyItemStackView();
 
-            //Update stack count text
-            SetStackCount(_itemStack.Count);
+            if (_itemStack.Count > 0)
+            {
+                SetStackCountText(_itemStack.Count);
+                return;
+            }
+
+            //If count == 0 delete item
+            EmptyItemStackView(true);
         }
-
-        public void DeleteExistingItem()
-        {
-            if (_itemStack == null || _itemGameObject == null) return;
-            _itemStack = null;
-            Destroy(_itemGameObject);
-            HasItem = false;
-            SetStackCount(-1);
-        }
-
+        
         public ItemStack GetItemStack()
         {
             return _itemStack;
@@ -83,15 +79,23 @@ namespace Assets.Scripts.Views
             return _itemGameObject;
         }
 
-        private void EmptyItemStackView()
+        public void EmptyItemStackView(bool deleteGameObject)
         {
+            if (deleteGameObject && _itemGameObject != null)
+            {
+                Destroy(_itemGameObject);
+            }
+            else
+            {
+                _itemGameObject = null;
+            }
+
             _itemStack = null;
-            _itemGameObject = null;
             HasItem = false;
-            SetStackCount(-1);
+            SetStackCountText(null);
         }
 
-        private void SetStackCount(int? count)
+        private void SetStackCountText(int? count)
         {
             var c = count.HasValue && count.Value > 0 ? count.Value.ToString() : string.Empty;
             if(_itemGameObject == null) return;

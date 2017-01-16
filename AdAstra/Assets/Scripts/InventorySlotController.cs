@@ -92,7 +92,7 @@ public class InventorySlotController : MonoBehaviour, IPointerDownHandler,
 
         if (_emptied)
         {
-            itemStackView.DeleteExistingItem();
+            itemStackView.EmptyItemStackView(true);
             return;
         }
 
