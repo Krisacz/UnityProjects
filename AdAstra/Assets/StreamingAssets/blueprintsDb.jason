@@ -1,0 +1,25 @@
+[
+	{
+		"BlueprintsGroup": "Ores",
+		"ResultItemId": "IronOre",
+		"ResultItemCount": 1,
+		"CraftingTime": 5.5,
+		"Requirements":
+		{
+			"GoldOre": 1,
+			"Foundation": 1
+		}
+	},
+	
+	{
+		"BlueprintsGroup": "Ores",
+		"ResultItemId": "GoldOre",
+		"ResultItemCount": 2,
+		"CraftingTime": 8.7,
+		"Requirements":
+		{
+			"IronOre": 2,
+			"Wall": 1
+		}
+	}
+]

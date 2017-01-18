@@ -1,10 +1,42 @@
-﻿using Assets.Scripts.Models;
+﻿using System.Net.Mime;
+using Assets.Scripts.Models;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
     public static class GameObjectFactory
     {
+        public static GameObject FromBlueprintGroup(BlueprintsGroup group)
+        {
+            var go = FromPrefab("BlueprintGroup");
+
+            go.GetComponent<Image>().sprite = SpritesDatabase.Get(group.ToString());
+            go.transform.FindChild("GroupNameText").GetComponent<Text>().text = group.ToString();
+
+            //Set name for debuging
+            var gameObjectName = string.Format("BlueprintGroup [{0}]", group);
+            go.name = gameObjectName;
+
+            //Return game object
+            return go;
+        }
+
+        public static GameObject FromItemBlueprint(Blueprint blueprint)
+        {
+            var go = FromPrefab("ItemBlueprint");
+
+            var spriteName = ItemsDatabase.Get(blueprint.ResultItemId).SpriteName;
+            go.GetComponent<Image>().sprite = SpritesDatabase.Get(spriteName);
+
+            //Set name for debuging
+            var gameObjectName = string.Format("ItemBlueprint [{0}]", blueprint.ResultItemId);
+            go.name = gameObjectName;
+
+            //Return game object
+            return go;
+        }
+
         public static GameObject FromItemId(ItemId itemId)
         {
             var item = ItemsDatabase.Get(itemId);

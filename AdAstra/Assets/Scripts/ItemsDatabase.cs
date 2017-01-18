@@ -36,27 +36,13 @@ namespace Assets.Scripts
 
         private static Item MapJsonObjectToItem(JsonData json)
         {
-            var itemId = AsEnum<ItemId>(json["ItemId"]);
-            var maxStackSize = AsInt(json["MaxStackSize"]);
-            var itemSize = new ItemSize(AsInt(json["ItemSize"]["Width"]), AsInt(json["ItemSize"]["Height"]));
-            var spriteName = AsString(json["SpriteName"]);
-            var prefabName = AsString(json["PrefabName"]);
+            var itemId = JsonHelper.AsEnum<ItemId>(json["ItemId"]);
+            var maxStackSize = JsonHelper.AsInt(json["MaxStackSize"]);
+            var itemSize = new ItemSize(JsonHelper.AsInt(json["ItemSize"]["Width"]),
+                JsonHelper.AsInt(json["ItemSize"]["Height"]));
+            var spriteName = JsonHelper.AsString(json["SpriteName"]);
+            var prefabName = JsonHelper.AsString(json["PrefabName"]);
             return new Item(itemId, itemSize, maxStackSize, spriteName, prefabName);
-        }
-
-        private static string AsString(IEnumerable data)
-        {
-            return data.ToString();
-        }
-
-        private static int AsInt(IEnumerable data)
-        {
-            return int.Parse(data.ToString());
-        }
-
-        private static T AsEnum<T>(IEnumerable data)
-        {
-            return (T) Enum.Parse(typeof (T), AsString(data));
         }
     }
 }

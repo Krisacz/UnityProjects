@@ -6,9 +6,11 @@ namespace Assets.Scripts
     {
         public float Speed;
         public GameObject InventoryUI;
+        public GameObject CraftingUI;
 
         private Rigidbody2D _rigidbody2D;
         private bool _inventoryVisible;
+        private bool _craftingVisible;
 
         void Start ()
         {
@@ -24,6 +26,7 @@ namespace Assets.Scripts
         void Update()
         {
             ToggleInventory();
+            ToggleCrafting();
         }
 
         private void LookAtMouse()
@@ -50,6 +53,14 @@ namespace Assets.Scripts
             _inventoryVisible = !_inventoryVisible;
             InventoryUI.SetActive(_inventoryVisible);
             Log.Info("PlayerControl", "ToggleInventory", string.Format("_inventoryVisible = {0}", _inventoryVisible));
+        }
+
+        private void ToggleCrafting()
+        {
+            if (!Input.GetKeyDown(KeyCode.C)) return;
+            _craftingVisible = !_craftingVisible;
+            CraftingUI.SetActive(_craftingVisible);
+            Log.Info("PlayerControl", "ToggleCrafting", string.Format("_craftingVisible = {0}", _craftingVisible));
         }
     }
 }

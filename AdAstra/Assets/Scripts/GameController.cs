@@ -7,6 +7,7 @@ namespace Assets.Scripts
         void OnEnable()
         {
             ItemsDatabase.Init();
+            BlueprintsDatabase.Init();
         }
 
         //Before any Start - init any objects, refs etc
