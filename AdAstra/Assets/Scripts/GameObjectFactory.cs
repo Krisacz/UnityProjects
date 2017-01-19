@@ -1,4 +1,6 @@
 ﻿using System.Net.Mime;
+using Assets.Scripts.Controllers;
+using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,33 +9,48 @@ namespace Assets.Scripts
 {
     public static class GameObjectFactory
     {
-        public static GameObject FromBlueprintGroup(BlueprintsGroup group)
+        public static void FromBlueprintGroup(BlueprintGroup group, Transform parent)
         {
             var go = FromPrefab("BlueprintGroup");
 
             go.GetComponent<Image>().sprite = SpritesDatabase.Get(group.ToString());
             go.transform.FindChild("GroupNameText").GetComponent<Text>().text = group.ToString();
+            go.GetComponent<BlueprintGroupController>().SetBlueprintGroup(group);
+            go.transform.SetParent(parent);
 
             //Set name for debuging
             var gameObjectName = string.Format("BlueprintGroup [{0}]", group);
             go.name = gameObjectName;
-
-            //Return game object
-            return go;
         }
 
-        public static GameObject FromItemBlueprint(Blueprint blueprint)
+        public static GameObject FromItemBlueprint(Blueprint blueprint, Transform parent)
         {
             var go = FromPrefab("ItemBlueprint");
 
             var spriteName = ItemsDatabase.Get(blueprint.ResultItemId).SpriteName;
             go.GetComponent<Image>().sprite = SpritesDatabase.Get(spriteName);
+            go.GetComponent<ItemBlueprintController>().SetBlueprint(blueprint);
+            go.transform.SetParent(parent);
 
             //Set name for debuging
             var gameObjectName = string.Format("ItemBlueprint [{0}]", blueprint.ResultItemId);
             go.name = gameObjectName;
 
-            //Return game object
+            return go;
+        }
+
+        public static GameObject FromBlueprintRequiredItem(ItemId itemId, int count, Transform parent)
+        {
+            var go = FromPrefab("RequiredItem");
+
+            var spriteName = ItemsDatabase.Get(itemId).SpriteName;
+            go.GetComponent<Image>().sprite = SpritesDatabase.Get(spriteName);
+            go.transform.SetParent(parent);
+
+            //Set name for debuging
+            var gameObjectName = string.Format("RequiredItem [{0}]x{1}", itemId, count);
+            go.name = gameObjectName;
+
             return go;
         }
 

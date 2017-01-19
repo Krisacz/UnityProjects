@@ -2,6 +2,8 @@ namespace Assets.Scripts.Models
 {
     public enum ItemId
     {
+        None,
+
         //===== ORE
         IronOre,
         GoldOre,

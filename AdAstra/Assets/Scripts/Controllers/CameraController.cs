@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Controllers
 {
-    public class CameraControl : MonoBehaviour
+    public class CameraController : MonoBehaviour
     {
         public GameObject FollowThis;
         public float ZoomSpeed = 1;

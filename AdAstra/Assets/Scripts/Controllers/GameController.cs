@@ -1,6 +1,7 @@
+using Assets.Scripts.Db;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Controllers
 {
     public class GameController : MonoBehaviour
     {

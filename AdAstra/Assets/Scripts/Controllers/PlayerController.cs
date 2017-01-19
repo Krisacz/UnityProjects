@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Controllers
 {
-    public class PlayerControl : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         public float Speed;
         public GameObject InventoryUI;
@@ -52,7 +52,7 @@ namespace Assets.Scripts
             if (!Input.GetKeyDown(KeyCode.E)) return;
             _inventoryVisible = !_inventoryVisible;
             InventoryUI.SetActive(_inventoryVisible);
-            Log.Info("PlayerControl", "ToggleInventory", string.Format("_inventoryVisible = {0}", _inventoryVisible));
+            Log.Info("PlayerController", "ToggleInventory", string.Format("_inventoryVisible = {0}", _inventoryVisible));
         }
 
         private void ToggleCrafting()
@@ -60,7 +60,7 @@ namespace Assets.Scripts
             if (!Input.GetKeyDown(KeyCode.C)) return;
             _craftingVisible = !_craftingVisible;
             CraftingUI.SetActive(_craftingVisible);
-            Log.Info("PlayerControl", "ToggleCrafting", string.Format("_craftingVisible = {0}", _craftingVisible));
+            Log.Info("PlayerController", "ToggleCrafting", string.Format("_craftingVisible = {0}", _craftingVisible));
         }
     }
 }

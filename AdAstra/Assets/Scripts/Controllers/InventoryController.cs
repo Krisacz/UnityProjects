@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using Assets.Scripts.Views;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Controllers
 {
     public class InventoryController : MonoBehaviour
     {
@@ -178,6 +179,45 @@ namespace Assets.Scripts
             Log.Info("InventoryController", "RemoveItemFromSpecificInventory",
                 string.Format("Insufficient item(s) to remove [Inventory={0}]: {1} x{2}", inventoryIndex, id, left));
             return left;
+        }
+        #endregion
+
+        #region CHECK INVENTORIES
+        public int GetCount(ItemId itemId, int inventoryIndex = -1)
+        {
+            if (inventoryIndex <= -1)
+            {
+                return GetFromAllInventories(itemId);
+            }
+            else
+            {
+                return GetFromSpecificInventory(itemId, 0, inventoryIndex);
+            }
+        }
+
+        private int GetFromAllInventories(ItemId itemId)
+        {
+            var total = 0;
+
+            for (var index = 0; index < Inventories.Length; index++)
+            {
+                total = GetFromSpecificInventory(itemId, total, index);
+            }
+            return total;
+        }
+
+        private int GetFromSpecificInventory(ItemId itemId, int current, int inventoryIndex)
+        {
+            var total = current;
+            var inventory = Inventories[inventoryIndex];
+            var allSlots = inventory.GetComponentsInChildren<ItemStackView>();
+            foreach (var isv in allSlots)
+            {
+                if (!isv.HasItem) continue;
+                var stack = isv.GetItemStack();
+                if (stack.Item.ItemId == itemId) total += stack.Count;
+            }
+            return total;
         }
         #endregion
     }

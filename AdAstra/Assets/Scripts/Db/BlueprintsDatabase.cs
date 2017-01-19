@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LitJson;
 using Assets.Scripts.Models;
+using LitJson;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Db
 {
     public static class BlueprintsDatabase
     {
         private static readonly Dictionary<ItemId, Blueprint> BlueprintsDb = new Dictionary<ItemId, Blueprint>();
-        private static readonly Dictionary<BlueprintsGroup, List<Blueprint>> BlueprintsGroupDb = new Dictionary<BlueprintsGroup, List<Blueprint>>();
+        private static readonly Dictionary<BlueprintGroup, List<Blueprint>> BlueprintsGroupDb = new Dictionary<BlueprintGroup, List<Blueprint>>();
         
         public static void Init()
         {
@@ -27,14 +26,14 @@ namespace Assets.Scripts
                 BlueprintsDb.Add(blueprint.ResultItemId, blueprint);
 
                 //Blueprints Groups DB
-                if (BlueprintsGroupDb.ContainsKey(blueprint.BlueprintsGroup))
+                if (BlueprintsGroupDb.ContainsKey(blueprint.BlueprintGroup))
                 {
-                    BlueprintsGroupDb[blueprint.BlueprintsGroup].Add(blueprint);
+                    BlueprintsGroupDb[blueprint.BlueprintGroup].Add(blueprint);
                 }
                 else
                 {
                     var list = new List<Blueprint>() {blueprint};
-                    BlueprintsGroupDb.Add(blueprint.BlueprintsGroup, list);
+                    BlueprintsGroupDb.Add(blueprint.BlueprintGroup, list);
                 }
             }
 
@@ -49,16 +48,18 @@ namespace Assets.Scripts
             return null;
         }
 
-        public static List<Blueprint> GetGroupBlueprints(BlueprintsGroup group)
+        public static List<Blueprint> GetGroupBlueprints(BlueprintGroup group)
         {
             if (BlueprintsGroupDb.ContainsKey(group)) return BlueprintsGroupDb[group];
-            Log.Error("BlueprintsDatabase", "GetGroupBlueprints", string.Format("BlueprintsGroup = {0} doesn't exist in blueprints databse.", group));
-            return null;
+            Log.Error("BlueprintsDatabase", "GetGroupBlueprints", string.Format("BlueprintGroup = {0} doesn't exist in blueprints databse.", group));
+            return new List<Blueprint>();
         }
 
         private static Blueprint MapJsonObjectToBlueprint(JsonData json)
         {
-            var group = JsonHelper.AsEnum<BlueprintsGroup>(json["BlueprintsGroup"]);
+            var group = JsonHelper.AsEnum<BlueprintGroup>(json["BlueprintGroup"]);
+            var title = JsonHelper.AsString(json["Title"]);
+            var description = JsonHelper.AsString(json["Description"]);
             var resultItemId = JsonHelper.AsEnum<ItemId>(json["ResultItemId"]);
             var resultItemCount = JsonHelper.AsInt(json["ResultItemCount"]);
             var craftingTime = JsonHelper.AsFloat(json["CraftingTime"]);
@@ -67,7 +68,8 @@ namespace Assets.Scripts
             if(requirements.Count > 8) Log.Warn("BlueprintsDatabase", "MapJsonObjectToBlueprint",
                 string.Format("ItemId = {0} requires {1} crafting components - will they fit on the screen??!?!?!",
                 resultItemId, requirements.Count));
-            return new Blueprint(group, resultItemId, resultItemCount, craftingTime, requirements);
+            return new Blueprint(group, title, description, resultItemId, 
+                resultItemCount, craftingTime, requirements);
         }
     }
 }

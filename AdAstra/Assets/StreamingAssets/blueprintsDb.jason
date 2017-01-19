@@ -1,6 +1,8 @@
 [
 	{
-		"BlueprintsGroup": "Ores",
+		"BlueprintGroup": "Ores",
+		"Title": "Iron Ore",
+		"Description": "One of the most common ores.",
 		"ResultItemId": "IronOre",
 		"ResultItemCount": 1,
 		"CraftingTime": 5.5,
@@ -12,7 +14,9 @@
 	},
 	
 	{
-		"BlueprintsGroup": "Ores",
+		"BlueprintGroup": "Ores",
+		"Title": "Gold Ore",
+		"Description": "Quite rare, amazing conductor!",
 		"ResultItemId": "GoldOre",
 		"ResultItemCount": 2,
 		"CraftingTime": 8.7,
@@ -20,6 +24,48 @@
 		{
 			"IronOre": 2,
 			"Wall": 1
+		}
+	},
+	
+	{
+		"BlueprintGroup": "Structures",		
+		"Title": "Wall",
+		"Description": "Basic wall - will resist most of small rocks.",
+		"ResultItemId": "Wall",
+		"ResultItemCount": 1,
+		"CraftingTime": 7.5,
+		"Requirements":
+		{
+			"IronOre": 2,
+			"GoldOre": 2
+		}
+	},
+	
+	{
+		"BlueprintGroup": "Structures",		
+		"Title": "Foundation",
+		"Description": "Base structur used to expand your ship.",
+		"ResultItemId": "Foundation",
+		"ResultItemCount": 1,
+		"CraftingTime": 9.5,
+		"Requirements":
+		{
+			"IronOre": 3,
+			"GoldOre": 3
+		}
+	},
+	
+	{
+		"BlueprintGroup": "Machines",			
+		"Title": "3D Printer",
+		"Description": "Fundamental machine - will help you craft many items.",
+		"ResultItemId": "Printer3D",
+		"ResultItemCount": 1,
+		"CraftingTime": 11.5,
+		"Requirements":
+		{
+			"IronOre": 5,
+			"GoldOre": 5
 		}
 	}
 ]

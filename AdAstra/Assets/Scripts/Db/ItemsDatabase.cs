@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using LitJson;
 using Assets.Scripts.Models;
+using LitJson;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Db
 {
     public static class ItemsDatabase
     {

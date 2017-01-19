@@ -1,7 +1,8 @@
 namespace Assets.Scripts.Models
 {
-    public enum BlueprintsGroup
+    public enum BlueprintGroup
     {
+        None,
         Ores,
         Machines,
         Structures,
