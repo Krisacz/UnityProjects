@@ -22,8 +22,7 @@
 		"CraftingTime": 8.7,
 		"Requirements":
 		{
-			"IronOre": 2,
-			"Wall": 1
+			"IronOre": 2			
 		}
 	},
 	

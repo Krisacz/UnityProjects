@@ -6,15 +6,20 @@ using UnityEngine.EventSystems;
 namespace Assets.Scripts.Controllers
 {
     public class InventorySlotController : MonoBehaviour, IPointerDownHandler,
-        IDragHandler, IEndDragHandler, IDropHandler
+        IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
     {
         private Vector2 _dragOffset;
         private Transform _originalParent;
         private bool _droppedOnSlot;
         private bool _emptied;
-    
+        public bool CanReceiveItem = true;
+        public bool CanTakeItemFrom = true;
+
+        #region ON POINTER DOWN
         public void OnPointerDown(PointerEventData eventData)
         {
+            if(!CanTakeItemFrom) return;
+
             var itemStackView = this.GetComponent<ItemStackView>();
             if (!itemStackView.HasItem) return;
             var itemGameObject = itemStackView.GetItemGameObject();
@@ -34,16 +39,24 @@ namespace Assets.Scripts.Controllers
 
             _emptied = false;
         }
-    
+        #endregion
+
+        #region ON DRAG
         public void OnDrag(PointerEventData eventData)
         {
+            if (!CanTakeItemFrom) return;
+
             var itemStackView = this.GetComponent<ItemStackView>();
             if (!itemStackView.HasItem) return;
             itemStackView.GetItemGameObject().transform.position = eventData.position + _dragOffset;
         }
+        #endregion
 
+        #region ON DROP
         public void OnDrop(PointerEventData eventData)
         {
+            if (!CanReceiveItem) return;
+
             var localItemStackView = this.GetComponent<ItemStackView>();
             var draggedItemStackView = eventData.pointerDrag.GetComponent<ItemStackView>();
 
@@ -74,7 +87,7 @@ namespace Assets.Scripts.Controllers
                         var localNewCount = localItemStack.Count - addToDragged;
                         localItemStack.Count = localNewCount;
 
-                        if(localNewCount == 0)
+                        if (localNewCount == 0)
                         {
                             draggedInventorySlotController.Emptied();
                         }
@@ -86,7 +99,9 @@ namespace Assets.Scripts.Controllers
             localItemStackView.UpdateItemStack(draggedItemStack, draggedGameObject);
             draggedItemStackView.UpdateItemStack(localItemStack, localGameObject);
         }
+        #endregion
 
+        #region ON END DRAG
         public void OnEndDrag(PointerEventData eventData)
         {
             var itemStackView = this.GetComponent<ItemStackView>();
@@ -104,11 +119,20 @@ namespace Assets.Scripts.Controllers
 
             //Set current parent to original parent from before drag
             itemGameObject.transform.SetParent(_originalParent);
-        
+
             //Reset position
             itemGameObject.transform.position = _originalParent.position;
         }
+        #endregion
 
+        #region ON POINTER CLICK
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            this.OnEndDrag(eventData);
+        }
+        #endregion
+
+        #region FLAGS
         private void DroppedOnSlot()
         {
             _droppedOnSlot = true;
@@ -118,5 +142,6 @@ namespace Assets.Scripts.Controllers
         {
             _emptied = true;
         }
+        #endregion
     }
 }

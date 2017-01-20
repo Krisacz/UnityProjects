@@ -220,5 +220,38 @@ namespace Assets.Scripts.Controllers
             return total;
         }
         #endregion
+
+        #region FREE SLOTS
+        public int FreeSlots(int inventoryIndex = -1)
+        {
+            if (inventoryIndex <= -1)
+            {
+                return FreeSlotsInAllInventories();
+            }
+            else
+            {
+                return FreeSlotsISpecificInventory(0, inventoryIndex);
+            }
+        }
+
+        private int FreeSlotsInAllInventories()
+        {
+            var total = 0;
+            for (var index = 0; index < Inventories.Length; index++)
+            {
+                total = FreeSlotsISpecificInventory(total, index);
+            }
+            return total;
+        }
+
+        private int FreeSlotsISpecificInventory(int current, int inventoryIndex)
+        {
+            var total = current;
+            var inventory = Inventories[inventoryIndex];
+            var allSlots = inventory.GetComponentsInChildren<ItemStackView>();
+            foreach (var isv in allSlots) if (!isv.HasItem) total++;
+            return total;
+        }
+        #endregion
     }
 }

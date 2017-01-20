@@ -7,32 +7,20 @@ namespace Assets.Scripts.Controllers
     {
         private float _target = 0.0f;
         private float _current = 0.0f;
-        private bool _craft = false;
-
-        public void Craft()
-        {
-            _craft = true;
-        }
-
-        // Update is called once per frame
-        void Update ()
-        {
-	        if(!_craft) return;
-
-            _current -= Time.deltaTime;
-            UpdateLabel();
-
-            if (_current >= 0.0f) return;
-            _current = _target;
-            _craft = false;
-            UpdateLabel();
-        }
 
         public void SetTimer(float seconds)
         {
             _target = seconds;
             _current = _target;
             UpdateLabel();
+        }
+
+        //If results in TRUE then crafting is completed 
+        public bool UpdateProgress(float deltaTime)
+        {
+            _current -= deltaTime;
+            UpdateLabel();
+            return (_current <= 0.0f);
         }
 
         private void UpdateLabel()

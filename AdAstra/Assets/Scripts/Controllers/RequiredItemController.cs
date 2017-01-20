@@ -32,5 +32,10 @@ namespace Assets.Scripts.Controllers
         {
             return _itemId;
         }
+
+        public int GetCount()
+        {
+            return _required;
+        }
     }
 }

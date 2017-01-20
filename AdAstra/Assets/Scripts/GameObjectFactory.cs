@@ -23,13 +23,16 @@ namespace Assets.Scripts
             go.name = gameObjectName;
         }
 
-        public static GameObject FromItemBlueprint(Blueprint blueprint, Transform parent)
+        public static GameObject FromItemBlueprint(Blueprint blueprint, Transform parent, bool canBeSelected = true)
         {
             var go = FromPrefab("ItemBlueprint");
 
             var spriteName = ItemsDatabase.Get(blueprint.ResultItemId).SpriteName;
             go.GetComponent<Image>().sprite = SpritesDatabase.Get(spriteName);
-            go.GetComponent<ItemBlueprintController>().SetBlueprint(blueprint);
+            var itemBlueprintController = go.GetComponent<ItemBlueprintController>();
+            itemBlueprintController.SetBlueprint(blueprint);
+            itemBlueprintController.CanBeSelected = canBeSelected;
+            go.GetComponent<Button>().enabled = canBeSelected;
             go.transform.SetParent(parent);
 
             //Set name for debuging

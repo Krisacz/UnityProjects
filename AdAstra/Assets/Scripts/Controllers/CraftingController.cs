@@ -13,17 +13,24 @@ namespace Assets.Scripts.Controllers
         public GameObject ItemBlueprintsPanel;
         public GameObject SelectedBlueprint;
         public GameObject InventoryController;
+        public GameObject CraftingCurrentPanel;
+        public GameObject CraftingQueuePanel;
 
         private Dictionary<BlueprintGroup, List<Blueprint>> _blueprints;
         private BlueprintGroup _selectedGroup = BlueprintGroup.None;
+        private List<GameObject> _selectedGroupBlueprints;
         private Blueprint _selectedBlueprint = null;
-        private readonly List<GameObject> _selectedGroupBlueprints = new List<GameObject>();
+        private List<GameObject> _selectedBlueprintRequirements;
+        private bool _craftingInProcess = false;
+        private Blueprint _blueprintInProcess = null;
 
         #region START
         void Start ()
         {
             _blueprints = new Dictionary<BlueprintGroup, List<Blueprint>>();
-            
+            _selectedGroupBlueprints = new List<GameObject>();
+            _selectedBlueprintRequirements = new List<GameObject>();
+
             //TODO Debug init with example blueprints
             //var toolsBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Tools);
             //foreach (var blueprint in toolsBlueprints) AddItemBlueprint(blueprint);
@@ -114,7 +121,7 @@ namespace Assets.Scripts.Controllers
             //Add blueprint group if doesn't exist already
             if (!_blueprints.ContainsKey(blueprint.BlueprintGroup))
                 AddBlueprintGroup(blueprint.BlueprintGroup);
-
+            
             //Add it to private dictionary
             _blueprints[blueprint.BlueprintGroup].Add(blueprint);
         }
@@ -146,8 +153,8 @@ namespace Assets.Scripts.Controllers
             for (var i = 0; i < children; ++i) Destroy(requirements.transform.GetChild(i).gameObject);
 
             //Crafting Time
-            var craftingTimer = SelectedBlueprint.transform.FindChild("CraftingTimer");
-            craftingTimer.GetComponent<CraftingTimerController>().SetTimer(0.0f);
+            var craftingTimer = SelectedBlueprint.transform.FindChild("CraftingTime");
+            craftingTimer.GetComponent<Text>().text = "Crafting Time: 0.0s";
             craftingTimer.gameObject.SetActive(false);
 
             //Craft button
@@ -166,9 +173,7 @@ namespace Assets.Scripts.Controllers
                 Log.Error("CraftingController", "UpdateSelectedBlueprintPanel", "Blueprint = null");
                 return;
             }
-
-            if (_selectedBlueprint == blueprint) return;
-
+            
             //Update current selection
             _selectedBlueprint = blueprint;
 
@@ -186,17 +191,20 @@ namespace Assets.Scripts.Controllers
             var requirements = SelectedBlueprint.transform.FindChild("Requirements");
             var children = requirements.transform.childCount;
             for (var i = 0; i < children; ++i) Destroy(requirements.transform.GetChild(i).gameObject);
+            _selectedBlueprintRequirements.Clear();
             foreach (var r in blueprint.Requirements)
             {
                 var go = GameObjectFactory.FromBlueprintRequiredItem(r.Key, 
                     r.Value, requirements.transform);
                 go.GetComponent<RequiredItemController>().SetRequirement(r.Key, r.Value);
+                _selectedBlueprintRequirements.Add(go);
             }
             requirements.gameObject.SetActive(true);
 
             //Crafting Time
-            var craftingTimer = SelectedBlueprint.transform.FindChild("CraftingTimer");
-            craftingTimer.GetComponent<CraftingTimerController>().SetTimer(blueprint.CraftingTime);
+            var craftingTimer = SelectedBlueprint.transform.FindChild("CraftingTime");
+            craftingTimer.GetComponent<Text>().text = 
+                string.Format("Crafting Time: {0}s", blueprint.CraftingTime.ToString("f1"));
             craftingTimer.gameObject.SetActive(true);
 
             //Craft button
@@ -210,20 +218,144 @@ namespace Assets.Scripts.Controllers
 
         public void UpdateSelectedBlueprintRequirements()
         {
+            //Can craft selected item?
+            var canCraft = true;
+
             //Inventory Controller
             var ic = InventoryController.GetComponent<InventoryController>();
-            
+
             //Requirements
-            var requirements = SelectedBlueprint.transform.FindChild("Requirements");
-            var children = requirements.transform.childCount;
-            for (var i = 0; i < children; ++i)
+            foreach (var requirementGo in _selectedBlueprintRequirements)
             {
-                var go = requirements.transform.GetChild(i).gameObject;
-                var ric = go.GetComponent<RequiredItemController>();
+                var ric = requirementGo.GetComponent<RequiredItemController>();
                 var itemId = ric.GetItemId();
+                var count = ric.GetCount();
                 var stock = ic.GetCount(itemId);
                 ric.UpdateStackCountText(stock);
+
+                //Set flag if we can not craft current item (if we are missing any item)
+                if (canCraft) canCraft = stock >= count;
             }
+
+            //Craft button
+            SetCraftButton(canCraft);
+        }
+
+        private void SetCraftButton(bool canCraft)
+        {
+            var craftButton = SelectedBlueprint.transform.FindChild("CraftButton");
+            craftButton.GetComponent<Button>().interactable = canCraft;
+            var text = craftButton.transform.FindChild("Text").GetComponent<Text>();
+            text.text = canCraft ? "Craft" : "Missing Items";
+            text.color = canCraft ? Color.black : Color.red;
+        }
+
+        #endregion
+
+        #region CRAFT BUTTON
+        public void Craft()
+        {
+            if (_craftingInProcess)
+            {
+                //TODO Apply limit for max queued items
+                var go = GameObjectFactory.FromItemBlueprint(_selectedBlueprint, 
+                    CraftingQueuePanel.transform, false);
+                go.transform.SetAsFirstSibling();
+            }
+            else
+            {
+                UpdateCurrentCraftingItem(true, _selectedBlueprint);
+            }
+
+            RemoveRequiredItems();
+            UpdateSelectedBlueprintRequirements();
+        }
+
+        private void RemoveRequiredItems()
+        {
+            foreach (var r in _selectedBlueprint.Requirements)
+            {
+                InventoryController.GetComponent<InventoryController>().RemoveItem(r.Key, r.Value);
+            }
+        }
+
+        #endregion
+
+        #region UPDATE CURRENT CRAFTING ITEM
+        private void UpdateCurrentCraftingItem(bool isCraftingStart, Blueprint blueprint)
+        {
+            //Set Crafting Item
+            var craftingItem = CraftingCurrentPanel.transform.FindChild("CraftingItem");
+            var image = craftingItem.GetComponent<Image>();
+            if (isCraftingStart)
+            {
+                var item = ItemsDatabase.Get(blueprint.ResultItemId);
+                var sprite = SpritesDatabase.Get(item.SpriteName);
+                image.sprite = sprite;
+                image.color = new Color32(0xFF, 0xFF, 0xFF, 0xFF);
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = new Color32(0xA0, 0xA0, 0xA0, 0xFF);
+            }
+
+            //Set Crafting timer
+            var craftingTimer = CraftingCurrentPanel.transform.FindChild("CraftingTimer");
+            var craftingTimerController = craftingTimer.GetComponent<CraftingTimerController>();
+            craftingTimerController.SetTimer(isCraftingStart ? blueprint.CraftingTime : 0.0f);
+
+            //Control process
+            _craftingInProcess = isCraftingStart;
+
+            //Set blueprint or output item
+            if (isCraftingStart)
+            {
+                _blueprintInProcess = blueprint;
+            }
+            else
+            {
+                var ic = CraftingCurrentPanel.GetComponent<InventoryController>();
+                ic.AddItem(_blueprintInProcess.ResultItemId, _blueprintInProcess.ResultItemCount);
+            }
+        }
+        #endregion
+
+        #region UPDATE
+        public void Update()
+        {
+            //TODO overkill fix me!!!!
+            //TODO Enqueue is checked every frame!!!
+
+            if (_craftingInProcess)
+            {
+                var c = CraftingCurrentPanel.transform.FindChild("CraftingTimer")
+                .GetComponent<CraftingTimerController>();
+                if (!c.UpdateProgress(Time.deltaTime)) return;
+                UpdateCurrentCraftingItem(false, null);
+                EnqueueNextBlueprint();
+            }
+            else
+            {
+                EnqueueNextBlueprint();
+            }
+        }
+        #endregion
+
+        #region ENQUEUE NEXT BLUEPRINT
+        private void EnqueueNextBlueprint()
+        {
+            //Check if our output is clear
+            if (CraftingCurrentPanel.GetComponent<InventoryController>().FreeSlots() == 0) return;
+
+            //Nothing to enqueue
+            if (CraftingQueuePanel.transform.childCount == 0) return;
+
+            //Get 1st child and set it as current crafting item
+            var go = CraftingQueuePanel.transform.GetChild(0).gameObject;
+            var blueprint = go.GetComponent<ItemBlueprintController>().GetBlueprint();
+            UpdateCurrentCraftingItem(true, blueprint);
+            Destroy(go);
         }
         #endregion
     }

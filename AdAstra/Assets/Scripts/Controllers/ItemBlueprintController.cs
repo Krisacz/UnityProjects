@@ -5,9 +5,10 @@ namespace Assets.Scripts.Controllers
 {
     public class ItemBlueprintController : MonoBehaviour
     {
+        public bool CanBeSelected = true;
         private Blueprint _blueprint;
 
-        public Blueprint GetBlueprintGroup()
+        public Blueprint GetBlueprint()
         {
             return _blueprint;
         }
@@ -19,6 +20,7 @@ namespace Assets.Scripts.Controllers
 
         public void OnSelected()
         {
+            if(!CanBeSelected) return;
             var cc = GetComponentInParent<CraftingController>();
             cc.OnBlueprintSelected(_blueprint);
         }
