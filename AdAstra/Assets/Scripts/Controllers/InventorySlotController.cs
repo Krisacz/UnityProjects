@@ -1,13 +1,17 @@
 ﻿using System;
+using Assets.Scripts.Db;
 using Assets.Scripts.Views;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Controllers
 {
-    public class InventorySlotController : MonoBehaviour, IPointerDownHandler,
+    public class InventorySlotController : Tooltip, IPointerDownHandler,
         IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
     {
+        //TODO Do caching of different objects here - like this.GetComponent<ItemStackView>();
+        //TODO Will improve perf 
+         
         private Vector2 _dragOffset;
         private Transform _originalParent;
         private bool _droppedOnSlot;
@@ -19,6 +23,7 @@ namespace Assets.Scripts.Controllers
         public void OnPointerDown(PointerEventData eventData)
         {
             if(!CanTakeItemFrom) return;
+            ShowTooltip = false;
 
             var itemStackView = this.GetComponent<ItemStackView>();
             if (!itemStackView.HasItem) return;
@@ -104,6 +109,7 @@ namespace Assets.Scripts.Controllers
         #region ON END DRAG
         public void OnEndDrag(PointerEventData eventData)
         {
+            ShowTooltip = true;
             var itemStackView = this.GetComponent<ItemStackView>();
             if (!itemStackView.HasItem) return;
 
@@ -141,6 +147,32 @@ namespace Assets.Scripts.Controllers
         private void Emptied()
         {
             _emptied = true;
+        }
+        #endregion
+
+        #region TOOLTIP
+        public override string GetTooltipTitle()
+        {
+            //TODO Item object doesnt have title and/or description?!?!
+            //TODO as a workaround i'm taking it from blueprint
+            var isv = this.GetComponent<ItemStackView>();
+            if (isv == null || !isv.HasItem) return null;
+            var i = isv.GetItemStack();
+            if (i == null) return null;
+            var title = BlueprintsDatabase.GetBlueprint(i.Item.ItemId).Title;
+            return title;
+        }
+
+        public override string GetTooltipDescription()
+        {
+            //TODO Item object doesnt have title and/or description?!?!
+            //TODO as a workaround i'm taking it from blueprint
+            var isv = this.GetComponent<ItemStackView>();
+            if (isv == null || !isv.HasItem) return null;
+            var i = isv.GetItemStack();
+            if (i == null) return null;
+            var description = BlueprintsDatabase.GetBlueprint(i.Item.ItemId).Description;
+            return description;
         }
         #endregion
     }

@@ -227,6 +227,10 @@ namespace Assets.Scripts.Controllers
 
         public void UpdateSelectedBlueprintRequirements()
         {
+            //Make sure we have anything selected
+            if(_selectedBlueprintRequirements == null 
+                || _selectedBlueprintRequirements.Count <= 0 ) return;
+
             //Can craft selected item?
             var canCraft = true;
 
@@ -279,8 +283,21 @@ namespace Assets.Scripts.Controllers
                 return;
             }
 
+            //If crafting is not in process and we HAVE space in queue but one space in output
+            if (!_craftingInProcess && CraftingQueuePanel.transform.childCount < MaxQueuedBlueprints
+                && _outputInventory.FreeSlots() == 0)
+            {
+                var go = GameObjectFactory.ItemBlueprint(_selectedBlueprint,
+                    CraftingQueuePanel.transform, false);
+                go.transform.SetAsFirstSibling();
+                RemoveRequiredItems();
+                UpdateSelectedBlueprintRequirements();
+                return;
+            }
+
             //If crafting is not in process and output inventory is occupied then we cancel
-            if(!_craftingInProcess && _outputInventory.FreeSlots() == 0) return;
+            if (!_craftingInProcess && CraftingQueuePanel.transform.childCount >= MaxQueuedBlueprints
+                && _outputInventory.FreeSlots() == 0) return;
 
             //If crafting is not in process and output inventory is free insert & start crafting
             if (!_craftingInProcess && _outputInventory.FreeSlots() > 0)
