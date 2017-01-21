@@ -25,6 +25,8 @@ namespace Assets.Scripts.Controllers
 
         private void SetCamera()
         {
+            if(FollowThis == null) return;
+
             //Follow player
             var followPosition = FollowThis.transform.position;
             transform.position = new Vector3(followPosition.x, followPosition.y, this.transform.position.z);

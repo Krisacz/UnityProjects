@@ -10,7 +10,6 @@ namespace Assets.Scripts.Controllers
         public GameObject CraftingController;
 
         [Header("===== INSERT ITEMS =====")]
-        [Space(50)]
         public int IronToInsert;
         public int GoldToInsert;
         public int InventoryToInsert = -1;

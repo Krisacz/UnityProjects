@@ -1,15 +1,16 @@
-﻿using System.Net.Mime;
-using Assets.Scripts.Controllers;
+﻿using Assets.Scripts.Controllers;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Assets.Scripts
 {
     public static class GameObjectFactory
     {
-        public static void FromBlueprintGroup(BlueprintGroup group, Transform parent)
+        #region BLUEPRINTS STUFF
+        public static void BlueprintGroup(BlueprintGroup group, Transform parent)
         {
             var go = FromPrefab("BlueprintGroup");
 
@@ -23,7 +24,7 @@ namespace Assets.Scripts
             go.name = gameObjectName;
         }
 
-        public static GameObject FromItemBlueprint(Blueprint blueprint, Transform parent, bool canBeSelected = true)
+        public static GameObject ItemBlueprint(Blueprint blueprint, Transform parent, bool canBeSelected = true)
         {
             var go = FromPrefab("ItemBlueprint");
 
@@ -42,7 +43,7 @@ namespace Assets.Scripts
             return go;
         }
 
-        public static GameObject FromBlueprintRequiredItem(ItemId itemId, int count, Transform parent)
+        public static GameObject BlueprintRequiredItem(ItemId itemId, int count, Transform parent)
         {
             var go = FromPrefab("RequiredItem");
 
@@ -56,13 +57,54 @@ namespace Assets.Scripts
 
             return go;
         }
+        #endregion
 
+        #region ITEM STUFF
         public static GameObject FromItemId(ItemId itemId)
         {
             var item = ItemsDatabase.Get(itemId);
             return FromItem(item);
         }
 
+        private static GameObject FromItem(Item item)
+        {
+            var go = FromPrefab(item.PrefabName);
+
+            //Set name for debuging
+            var gameObjectName = string.Format("Item ID[{0}]", item.ItemId);
+            go.name = gameObjectName;
+
+            //Return game object
+            return go;
+        }
+        #endregion
+
+        #region ESCAPE POD
+        public static void EscapePod()
+        {
+            var go = FromPrefab("EscapePod");
+
+            //Set name for debuging
+            var gameObjectName = "Escape Pod";
+            go.name = gameObjectName;
+        }
+        #endregion
+
+        #region PLAYER 
+        public static GameObject Player(int x, int y)
+        {
+            var go = FromPrefab("Player");
+            go.transform.position = new Vector3(x, y, go.transform.position.z);
+
+            //Set name for debuging
+            var gameObjectName = "Player";
+            go.name = gameObjectName;
+
+            return go;
+        }
+        #endregion
+
+        #region HELP METHODS
         public static GameObject FromPrefab(string prefabName)
         {
             //Get prefab
@@ -85,17 +127,6 @@ namespace Assets.Scripts
             //Return game object
             return go;
         }
-
-        private static GameObject FromItem(Item item)
-        {
-            var go = FromPrefab(item.PrefabName);
-
-            //Set name for debuging
-            var gameObjectName = string.Format("Item ID[{0}]", item.ItemId);
-            go.name = gameObjectName;
-
-            //Return game object
-            return go;
-        }
+        #endregion
     }
 }

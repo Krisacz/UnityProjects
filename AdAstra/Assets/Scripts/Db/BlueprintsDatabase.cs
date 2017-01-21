@@ -10,6 +10,7 @@ namespace Assets.Scripts.Db
 {
     public static class BlueprintsDatabase
     {
+        //TODO Consider using list instead of dic to support multiple recipies for one item
         private static readonly Dictionary<ItemId, Blueprint> BlueprintsDb = new Dictionary<ItemId, Blueprint>();
         private static readonly Dictionary<BlueprintGroup, List<Blueprint>> BlueprintsGroupDb = new Dictionary<BlueprintGroup, List<Blueprint>>();
         
