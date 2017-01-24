@@ -16,7 +16,7 @@ namespace Assets.Scripts.Views
         public void SetNewItemStack(ItemId itemId, int count)
         {
             var item = ItemsDatabase.Get(itemId);
-            var go = GameObjectFactory.FromItemId(itemId);
+            var go = GameObjectFactory.FromItem(item);
 
             _itemStack = new ItemStack();
             _itemStack.Count = count;

@@ -188,7 +188,10 @@ namespace Assets.Scripts.Controllers
 
             //Clear Title
             var title = SelectedBlueprint.transform.FindChild("Title");
-            title.GetComponent<Text>().text = blueprint.Title;
+            var c = blueprint.ResultItemCount;
+            title.GetComponent<Text>().text = 
+                string.Format("{0} {1}", blueprint.Title,
+                c > 1 ? string.Format("(x{0})", c) : string.Empty);
             title.gameObject.SetActive(true);
 
             //Clear Description

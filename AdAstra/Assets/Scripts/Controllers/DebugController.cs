@@ -33,9 +33,26 @@ namespace Assets.Scripts.Controllers
         // Update is called once per frame
         void Update()
         {
+            BuildModeToggle();
             AddItemsControl();
             ItemsToCheck();
             ItemsToRemove();
+        }
+
+        private void BuildModeToggle()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                var bc = GameObject.Find("BuildController").GetComponent<BuildController>();
+                if (bc.IsOn())
+                {
+                    bc.BuildModeOff();
+                }
+                else
+                {
+                    bc.BuildModeOn();
+                }
+            }
         }
 
         private void AddItemsControl()

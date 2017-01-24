@@ -12,8 +12,9 @@ namespace Assets.Scripts.Controllers
         {
             ItemsDatabase.Init();
             BlueprintsDatabase.Init();
-            GameObjectFactory.EscapePod();
-            var player = GameObjectFactory.Player(2,2);
+            var ep = GameObjectFactory.EscapePod();
+            GameObject.Find("BuildController").GetComponent<BuildController>().EscapePod = ep;
+            var player = GameObjectFactory.Player(15,15);
             player.GetComponent<PlayerController>().InventoryUI = PlayerInventory;
             player.GetComponent<PlayerController>().CraftingUI = PlayerCrafting;
             Camera.main.GetComponent<CameraController>().FollowThis = player;

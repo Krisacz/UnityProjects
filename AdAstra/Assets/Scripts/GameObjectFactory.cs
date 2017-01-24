@@ -60,13 +60,7 @@ namespace Assets.Scripts
         #endregion
 
         #region ITEM STUFF
-        public static GameObject FromItemId(ItemId itemId)
-        {
-            var item = ItemsDatabase.Get(itemId);
-            return FromItem(item);
-        }
-
-        private static GameObject FromItem(Item item)
+        public static GameObject FromItem(Item item)
         {
             var go = FromPrefab(item.PrefabName);
 
@@ -80,13 +74,15 @@ namespace Assets.Scripts
         #endregion
 
         #region ESCAPE POD
-        public static void EscapePod()
+        public static GameObject EscapePod()
         {
             var go = FromPrefab("EscapePod");
 
             //Set name for debuging
             var gameObjectName = "Escape Pod";
             go.name = gameObjectName;
+
+            return go;
         }
         #endregion
 
@@ -100,6 +96,26 @@ namespace Assets.Scripts
             var gameObjectName = "Player";
             go.name = gameObjectName;
 
+            return go;
+        }
+        #endregion
+
+        #region STRUCTURE
+        public static GameObject StructureSlot(int x, int y, Transform parent)
+        {
+            var go = FromPrefab("StructureSlot");
+            go.name = string.Format("StructureSlot X[{0}]-Y[{1}]", x, y);
+            go.transform.position = new Vector3(x, y);
+            go.transform.parent = parent;
+            return go;
+        }
+
+        public static GameObject StructureItem(Item item, Transform transform)
+        {
+            var go = FromItem(item);
+            go.transform.position = transform.position;
+            go.transform.parent = transform;
+            go.GetComponent<SpriteRenderer>().sprite = SpritesDatabase.Get(item.SpriteName);
             return go;
         }
         #endregion
