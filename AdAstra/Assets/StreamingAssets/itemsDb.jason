@@ -1,73 +1,54 @@
 [
 	{
 		"ItemId": "IronOre",
+		"Title": "Iron Ore",
+		"Description": "One of the most common ores.",
 		"MaxStackSize": 5,
-		"ItemSize":
-		{
-			"Width": 1,
-			"Height": 1
-		},
 		"SpriteName": "iron_ore",
-		"PrefabName": "Item"
+		
+		"IsStructure": false,
+		"StructureSize": { "Width": 1, "Height": 1 },		
+		"StructureBlocking": false,
+		"StructureElevation": "None"
 	},
 	
 	{
 		"ItemId": "GoldOre",
+		"Title": "Gold Ore",
+		"Description": "Quite rare, amazing conductor!",
 		"MaxStackSize": 3,
-		"ItemSize":
-		{
-			"Width": 1,
-			"Height": 1
-		},
 		"SpriteName": "gold_ore",
-		"PrefabName": "Item"
-	},
-	
-	{
-		"ItemId": "Printer3D",
-		"MaxStackSize": 1,
-		"ItemSize":
-		{
-			"Width": 1,
-			"Height": 1
-		},
-		"SpriteName": "printer3d",
-		"PrefabName": "Item"				
+		
+
+		"IsStructure": false,
+		"StructureSize": { "Width": 1, "Height": 1 },		
+		"StructureBlocking": false,
+		"StructureElevation": "None"
 	},
 		
 	{
-		"ItemId": "Smeltery",
-		"MaxStackSize": 1,
-		"ItemSize":
-		{
-			"Width": 1,
-			"Height": 1
-		},
-		"SpriteName": "smeltery",
-		"PrefabName": "Item"			
-	},
-	
-	{
 		"ItemId": "Foundation",
-		"MaxStackSize": 1,
-		"ItemSize":
-		{
-			"Width": 1,
-			"Height": 1
-		},
+		"Title": "Foundation",
+		"Description": "Base structure used to expand your ship.",
+		"MaxStackSize": 2,
 		"SpriteName": "foundation",
-		"PrefabName": "StructureNonBlocking"			
+		
+		"IsStructure": true,
+		"StructureSize": { "Width": 1, "Height": 1 },		
+		"StructureBlocking": false,
+		"StructureElevation": "Ground"		
 	},
 	
 	{
 		"ItemId": "Wall",
-		"MaxStackSize": 1,
-		"ItemSize":
-		{
-			"Width": 1,
-			"Height": 1
-		},
+		"Title": "Wall",
+		"Description": "Basic wall - will resist most of small rocks.",
+		"MaxStackSize": 2,
 		"SpriteName": "wall",
-		"PrefabName": "StructureBlocking"				
+		
+		"IsStructure": true,
+		"StructureSize": { "Width": 1, "Height": 1 },		
+		"StructureBlocking": true,
+		"StructureElevation": "OnGround"		
 	}
 ]

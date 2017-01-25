@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Controllers;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
+using Assets.Scripts.Views;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -60,9 +61,9 @@ namespace Assets.Scripts
         #endregion
 
         #region ITEM STUFF
-        public static GameObject FromItem(Item item)
+        public static GameObject Item(Item item)
         {
-            var go = FromPrefab(item.PrefabName);
+            var go = FromPrefab("Item");
 
             //Set name for debuging
             var gameObjectName = string.Format("Item ID[{0}]", item.ItemId);
@@ -107,12 +108,18 @@ namespace Assets.Scripts
             go.name = string.Format("StructureSlot X[{0}]-Y[{1}]", x, y);
             go.transform.position = new Vector3(x, y);
             go.transform.parent = parent;
+            go.GetComponent<StructureSlotView>().SetGridPosition(x, y);
             return go;
         }
 
-        public static GameObject StructureItem(Item item, Transform transform)
+        public static GameObject StructureItem(Item item, bool blocking, Transform transform)
         {
-            var go = FromItem(item);
+            var go = FromPrefab(blocking ? "StructureBlocking" : "StructureNonBlocking");
+
+            //Set name for debuging
+            var gameObjectName = string.Format("Structure ID[{0}]", item.ItemId);
+            go.name = gameObjectName;
+
             go.transform.position = transform.position;
             go.transform.parent = transform;
             go.GetComponent<SpriteRenderer>().sprite = SpritesDatabase.Get(item.SpriteName);
@@ -121,7 +128,7 @@ namespace Assets.Scripts
         #endregion
 
         #region HELP METHODS
-        public static GameObject FromPrefab(string prefabName)
+        private static GameObject FromPrefab(string prefabName)
         {
             //Get prefab
             var prefabPath = string.Format("{0}/{1}", "Prefabs", prefabName);

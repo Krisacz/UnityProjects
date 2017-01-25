@@ -41,22 +41,14 @@ namespace Assets.Scripts.Controllers
             _outputInventory = CraftingCurrentPanel.GetComponent<InventoryController>();
 
             //TODO Debug init with example blueprints
-            //var toolsBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Tools);
-            //foreach (var blueprint in toolsBlueprints) AddItemBlueprint(blueprint);
+            var oreBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Ores);
+            foreach (var blueprint in oreBlueprints) AddItemBlueprint(blueprint);
 
             var structuresBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Structures);
             foreach (var blueprint in structuresBlueprints) AddItemBlueprint(blueprint);
 
-            var machinesBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Machines);
-            foreach (var blueprint in machinesBlueprints) AddItemBlueprint(blueprint);
-
-            var oreBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Ores);
-            foreach (var blueprint in oreBlueprints) AddItemBlueprint(blueprint);
-
             UpdateBlueprintGroupsViews();
-
             ClearSelectedBlueprintPanel();
-            
         }
         #endregion
 
@@ -186,17 +178,20 @@ namespace Assets.Scripts.Controllers
             //Update current selection
             _selectedBlueprint = blueprint;
 
+            //Get result item for few properties
+            var resultItem = ItemsDatabase.Get(blueprint.ResultItemId);
+
             //Clear Title
             var title = SelectedBlueprint.transform.FindChild("Title");
             var c = blueprint.ResultItemCount;
             title.GetComponent<Text>().text = 
-                string.Format("{0} {1}", blueprint.Title,
+                string.Format("{0} {1}", resultItem.Title,
                 c > 1 ? string.Format("(x{0})", c) : string.Empty);
             title.gameObject.SetActive(true);
 
             //Clear Description
             var description = SelectedBlueprint.transform.FindChild("Description");
-            description.GetComponent<Text>().text = blueprint.Description;
+            description.GetComponent<Text>().text = resultItem.Description;
             description.gameObject.SetActive(true);
 
             //Requirements

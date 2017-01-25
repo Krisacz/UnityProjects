@@ -59,18 +59,17 @@ namespace Assets.Scripts.Db
         private static Blueprint MapJsonObjectToBlueprint(JsonData json)
         {
             var group = JsonHelper.AsEnum<BlueprintGroup>(json["BlueprintGroup"]);
-            var title = JsonHelper.AsString(json["Title"]);
-            var description = JsonHelper.AsString(json["Description"]);
             var resultItemId = JsonHelper.AsEnum<ItemId>(json["ResultItemId"]);
             var resultItemCount = JsonHelper.AsInt(json["ResultItemCount"]);
             var craftingTime = JsonHelper.AsFloat(json["CraftingTime"]);
             var dic = JsonHelper.AsDictionary<string, int>(json["Requirements"].ToJson());
             var requirements = dic.ToDictionary(d => (ItemId) Enum.Parse(typeof (ItemId), d.Key), d => d.Value);
+
             if(requirements.Count > 8) Log.Warn("BlueprintsDatabase", "MapJsonObjectToBlueprint",
                 string.Format("ItemId = {0} requires {1} crafting components - will they fit on the screen??!?!?!",
                 resultItemId, requirements.Count));
-            return new Blueprint(group, title, description, resultItemId, 
-                resultItemCount, craftingTime, requirements);
+
+            return new Blueprint(group, resultItemId, resultItemCount, craftingTime, requirements);
         }
     }
 }

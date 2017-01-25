@@ -43,14 +43,13 @@ namespace Assets.Scripts.Controllers
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                var bc = GameObject.Find("BuildController").GetComponent<BuildController>();
-                if (bc.IsOn())
+                if (BuildController.IsOn())
                 {
-                    bc.BuildModeOff();
+                    BuildController.BuildModeOff();
                 }
                 else
                 {
-                    bc.BuildModeOn();
+                    BuildController.BuildModeOn();
                 }
             }
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Scripts.Controllers;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using UnityEngine;
@@ -6,11 +7,15 @@ using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Views
 {
-    public class StructureSlotView : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+    public class StructureSlotView : MonoBehaviour, 
+        IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
         private readonly Dictionary<StructureElevation, Item> _items = new Dictionary<StructureElevation, Item>();
         private readonly Dictionary<StructureElevation, GameObject> _gameObjects = new Dictionary<StructureElevation, GameObject>();
-        
+
+        private int _x = -1;
+        private int _y = -1;
+
         //Returns TRUE is succesfully added, false if it already has a structure on this elevation
         public bool AddStructure(StructureElevation elevation, ItemId itemId)
         {
@@ -23,7 +28,7 @@ namespace Assets.Scripts.Views
             }
 
             var item = ItemsDatabase.Get(itemId);
-            var go = GameObjectFactory.StructureItem(item, this.transform);
+            var go = GameObjectFactory.StructureItem(item, item.StructureBlocking, this.transform);
 
             if (_items.ContainsKey(elevation))
             {
@@ -39,25 +44,52 @@ namespace Assets.Scripts.Views
             return true;
         }
 
-        private Color _currentColor = new Color32(0xFF, 0xFF, 0xFF, 0x00);
-
+        public bool IsEmpty(StructureElevation structureElevation = StructureElevation.None)
+        {
+            if(structureElevation == StructureElevation.None) return _gameObjects.Count == 0;
+            if (!_gameObjects.ContainsKey(structureElevation)) return true;
+            return _gameObjects[structureElevation] == null;
+        }
+        
         public void OnPointerEnter(PointerEventData eventData)
         {
+            //Check if we are in building mode
+            if(!BuildController.IsOn()) return;
+
             var spriteRenderer = this.GetComponent<SpriteRenderer>();
-            _currentColor = spriteRenderer.color;
-            spriteRenderer.color = new Color32(0x00, 0x00, 0xFF, 0x50);
-            //TODO Notify builder
+            var isv = ItemSelectionController.GetSelectedSlot();
+            var sprite = isv.HasItem
+                ? SpritesDatabase.Get(isv.GetItemStack().Item.SpriteName)
+                : SpritesDatabase.Get("square");
+            spriteRenderer.sprite = sprite;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
+            //Check if we are in building mode
+            if (!BuildController.IsOn()) return;
+
             var spriteRenderer = this.GetComponent<SpriteRenderer>();
-            spriteRenderer.color = _currentColor;
+            var sprite = SpritesDatabase.Get("square");
+            spriteRenderer.sprite = sprite;
         }
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            Log.Info("pew!");
+            //Check if we are in building mode
+            if (!BuildController.IsOn()) return;
+
+            var canBuild = BuildController.CanBuildInStructureSlot(_x, _y);
+
+            if (canBuild ==  1) Log.Info("CAN BUILD HERE.");
+            if (canBuild == -1) Log.Info("CAN NOT BUILD HERE!");
+            if (canBuild ==  0) Log.Info("CAN NOT BUILD HERE!");
+        }
+
+        public void SetGridPosition(int x, int y)
+        {
+            _x = x;
+            _y = y;
         }
     }
 }

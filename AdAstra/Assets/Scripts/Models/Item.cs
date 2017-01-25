@@ -6,18 +6,32 @@ namespace Assets.Scripts.Models
     public class Item
     {
         public ItemId ItemId { get; private set; }
-        public ItemSize ItemSize { get; private set; }
+        public string Title { get; private set; }
+        public string Description { get; private set; }
         public int MaxStackSize { get; private set; }
         public string SpriteName { get; private set; }
-        public string PrefabName { get; private set; }
-        
-        public Item(ItemId itemId, ItemSize itemSize, int maxStackSize, string spriteName, string prefabName)
+
+        //If item is a structure:
+        public bool IsStructure { get; private set;}
+        public StructureSize StructureSize { get; private set; }
+        public bool StructureBlocking { get; private set; }
+        public StructureElevation StructureElevation { get; private set; }
+
+        public Item(ItemId itemId, string title, string description, 
+            int maxStackSize, string spriteName,
+            bool isStructure, StructureSize structureSize, 
+            bool structureBlocking, StructureElevation structureElevation)
         {
             ItemId = itemId;
+            Title = title;
+            Description = description;
             MaxStackSize = maxStackSize;
             SpriteName = spriteName;
-            PrefabName = prefabName;
-            ItemSize = itemSize;
+
+            IsStructure = isStructure;
+            StructureSize = structureSize;
+            StructureBlocking = structureBlocking;
+            StructureElevation = structureElevation;
         }
     }
 }

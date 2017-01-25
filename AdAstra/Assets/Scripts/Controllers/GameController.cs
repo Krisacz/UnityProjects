@@ -13,7 +13,7 @@ namespace Assets.Scripts.Controllers
             ItemsDatabase.Init();
             BlueprintsDatabase.Init();
             var ep = GameObjectFactory.EscapePod();
-            GameObject.Find("BuildController").GetComponent<BuildController>().EscapePod = ep;
+            BuildController.EscapePod = ep;
             var player = GameObjectFactory.Player(15,15);
             player.GetComponent<PlayerController>().InventoryUI = PlayerInventory;
             player.GetComponent<PlayerController>().CraftingUI = PlayerCrafting;

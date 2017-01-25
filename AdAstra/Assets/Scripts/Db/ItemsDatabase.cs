@@ -35,12 +35,19 @@ namespace Assets.Scripts.Db
         private static Item MapJsonObjectToItem(JsonData json)
         {
             var itemId = JsonHelper.AsEnum<ItemId>(json["ItemId"]);
+            var title = JsonHelper.AsString(json["Title"]);
+            var description = JsonHelper.AsString(json["Description"]);
             var maxStackSize = JsonHelper.AsInt(json["MaxStackSize"]);
-            var itemSize = new ItemSize(JsonHelper.AsInt(json["ItemSize"]["Width"]),
-                JsonHelper.AsInt(json["ItemSize"]["Height"]));
             var spriteName = JsonHelper.AsString(json["SpriteName"]);
-            var prefabName = JsonHelper.AsString(json["PrefabName"]);
-            return new Item(itemId, itemSize, maxStackSize, spriteName, prefabName);
+
+            var isStructure = JsonHelper.AsBool(json["IsStructure"]);
+            var structureSize = new StructureSize(JsonHelper.AsInt(json["StructureSize"]["Width"]),
+                JsonHelper.AsInt(json["StructureSize"]["Height"]));
+            var structureBlocking = JsonHelper.AsBool(json["StructureBlocking"]);
+            var structureElevation = JsonHelper.AsEnum<StructureElevation>(json["StructureElevation"]);
+            
+            return new Item(itemId, title, description, maxStackSize, spriteName,
+                isStructure, structureSize, structureBlocking, structureElevation);
         }
     }
 }

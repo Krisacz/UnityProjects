@@ -59,7 +59,13 @@ namespace Assets.Scripts.Views
             var structureSlotView = structureSlotGo.GetComponent<StructureSlotView>();
             return structureSlotView.AddStructure(elevation, itemId);
         }
-        
+
+        public StructureSlotView GetStructureSlotView(int x, int y)
+        {
+            if (x < 0 || x > Columns - 1 || y < 0 || y > Rows - 1) return null;
+            return StructureSlots[x, y].GetComponent<StructureSlotView>();
+        }
+
         // Update is called once per frame
         void Update()
         {

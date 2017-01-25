@@ -16,7 +16,7 @@ namespace Assets.Scripts.Views
         public void SetNewItemStack(ItemId itemId, int count)
         {
             var item = ItemsDatabase.Get(itemId);
-            var go = GameObjectFactory.FromItem(item);
+            var go = GameObjectFactory.Item(item);
 
             _itemStack = new ItemStack();
             _itemStack.Count = count;
@@ -25,7 +25,8 @@ namespace Assets.Scripts.Views
             _itemGameObject.transform.SetParent(this.transform.FindChild("ItemPanel"));
             _itemGameObject.transform.position = this.transform.position;
             var goImage = go.GetComponent<Image>();
-            goImage.sprite = SpritesDatabase.Get(item.SpriteName);
+            var sprite = SpritesDatabase.Get(item.SpriteName);
+            goImage.sprite = sprite;
             SetStackCountText(_itemStack.Count);
 
             HasItem = true;

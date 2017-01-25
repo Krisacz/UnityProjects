@@ -30,6 +30,11 @@ namespace Assets.Scripts
             return double.Parse(data.ToString());
         }
 
+        public static bool AsBool(IEnumerable data)
+        {
+            return bool.Parse(data.ToString());
+        }
+
         public static T AsEnum<T>(IEnumerable data)
         {
             return (T)Enum.Parse(typeof(T), AsString(data));

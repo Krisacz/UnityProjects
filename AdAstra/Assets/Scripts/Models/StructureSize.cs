@@ -1,11 +1,11 @@
 ﻿namespace Assets.Scripts.Models
 {
-    public class ItemSize
+    public class StructureSize
     {
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public ItemSize(int width, int height)
+        public StructureSize(int width, int height)
         {
             Width = width;
             Height = height;

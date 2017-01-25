@@ -18,6 +18,7 @@ namespace Assets.Scripts.Controllers
         private bool _emptied;
         public bool CanReceiveItem = true;
         public bool CanTakeItemFrom = true;
+        public bool CanBeSelected = false;
 
         #region ON POINTER DOWN
         public void OnPointerDown(PointerEventData eventData)
@@ -134,6 +135,11 @@ namespace Assets.Scripts.Controllers
         #region ON POINTER CLICK
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (CanBeSelected)
+            {
+                ItemSelectionController.UpdateSelection(this.transform.GetSiblingIndex()-1);
+            }
+
             this.OnEndDrag(eventData);
         }
         #endregion
@@ -153,25 +159,21 @@ namespace Assets.Scripts.Controllers
         #region TOOLTIP
         public override string GetTooltipTitle()
         {
-            //TODO Item object doesnt have title and/or description?!?!
-            //TODO as a workaround i'm taking it from blueprint
             var isv = this.GetComponent<ItemStackView>();
             if (isv == null || !isv.HasItem) return null;
             var i = isv.GetItemStack();
             if (i == null) return null;
-            var title = BlueprintsDatabase.GetBlueprint(i.Item.ItemId).Title;
+            var title = i.Item.Title;
             return title;
         }
 
         public override string GetTooltipDescription()
         {
-            //TODO Item object doesnt have title and/or description?!?!
-            //TODO as a workaround i'm taking it from blueprint
             var isv = this.GetComponent<ItemStackView>();
             if (isv == null || !isv.HasItem) return null;
             var i = isv.GetItemStack();
             if (i == null) return null;
-            var description = BlueprintsDatabase.GetBlueprint(i.Item.ItemId).Description;
+            var description = i.Item.Description;
             return description;
         }
         #endregion

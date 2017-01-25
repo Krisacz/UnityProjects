@@ -32,15 +32,18 @@ namespace Assets.Scripts.Controllers
             transform.position = new Vector3(followPosition.x, followPosition.y, this.transform.position.z);
 
             //Zoom
-            var scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (Math.Abs(scroll) > 0.0000000001f)
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-                _targetOrtho -= scroll * ZoomSpeed;
-                _targetOrtho = Mathf.Clamp(_targetOrtho, MinOrtho, MaxOrtho);
-            }
+                var scroll = Input.GetAxis("Mouse ScrollWheel");
+                if (Math.Abs(scroll) > 0.0000000001f)
+                {
+                    _targetOrtho -= scroll*ZoomSpeed;
+                    _targetOrtho = Mathf.Clamp(_targetOrtho, MinOrtho, MaxOrtho);
+                }
 
-            Camera.main.orthographicSize = Mathf.MoveTowards(
-                Camera.main.orthographicSize, _targetOrtho, SmoothSpeed * Time.deltaTime);
+                Camera.main.orthographicSize = Mathf.MoveTowards(
+                    Camera.main.orthographicSize, _targetOrtho, SmoothSpeed*Time.deltaTime);
+            }
         }
     }
 }

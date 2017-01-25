@@ -11,6 +11,12 @@ namespace Assets.Scripts.Controllers
     {
         public GameObject[] Inventories;
 
+        public void Start()
+        {
+            AddItem(ItemId.Foundation, 1);
+            AddItem(ItemId.Wall, 1);
+        }
+
         #region ADD ITEM
         //Returns number of NOT added items due to lack of space - 0 means that all requested items has been added
         public int AddItem(ItemId id, int count, int inventoryIndex = -1)
