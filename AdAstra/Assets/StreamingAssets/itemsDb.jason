@@ -9,7 +9,8 @@
 		"IsStructure": false,
 		"StructureSize": { "Width": 1, "Height": 1 },		
 		"StructureBlocking": false,
-		"StructureElevation": "None"
+		"StructureElevation": "None",
+		"ConstructionTime": 0.0
 	},
 	
 	{
@@ -23,32 +24,49 @@
 		"IsStructure": false,
 		"StructureSize": { "Width": 1, "Height": 1 },		
 		"StructureBlocking": false,
-		"StructureElevation": "None"
+		"StructureElevation": "None",
+		"ConstructionTime": 0.0
 	},
 		
 	{
 		"ItemId": "Foundation",
 		"Title": "Foundation",
 		"Description": "Base structure used to expand your ship.",
-		"MaxStackSize": 2,
+		"MaxStackSize": 10,
 		"SpriteName": "foundation",
 		
 		"IsStructure": true,
 		"StructureSize": { "Width": 1, "Height": 1 },		
 		"StructureBlocking": false,
-		"StructureElevation": "Ground"		
+		"StructureElevation": "Ground",
+		"ConstructionTime": 3.0	
 	},
+	
+	{
+		"ItemId": "Floor",
+		"Title": "Floor",
+		"Description": "Basic floow - standard walking speed.",
+		"MaxStackSize": 10,
+		"SpriteName": "floor",
+		
+		"IsStructure": true,
+		"StructureSize": { "Width": 1, "Height": 1 },		
+		"StructureBlocking": false,
+		"StructureElevation": "OnGround",
+		"ConstructionTime": 5.0		
+	}	,
 	
 	{
 		"ItemId": "Wall",
 		"Title": "Wall",
 		"Description": "Basic wall - will resist most of small rocks.",
-		"MaxStackSize": 2,
+		"MaxStackSize": 10,
 		"SpriteName": "wall",
 		
 		"IsStructure": true,
 		"StructureSize": { "Width": 1, "Height": 1 },		
 		"StructureBlocking": true,
-		"StructureElevation": "OnGround"		
+		"StructureElevation": "OnGround",
+		"ConstructionTime": 5.0		
 	}
 ]

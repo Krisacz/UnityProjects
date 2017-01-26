@@ -112,7 +112,8 @@ namespace Assets.Scripts
             return go;
         }
 
-        public static GameObject StructureItem(Item item, bool blocking, Transform transform)
+        public static GameObject StructureItem(Item item, bool blocking, 
+            StructureElevation elevation, Transform transform)
         {
             var go = FromPrefab(blocking ? "StructureBlocking" : "StructureNonBlocking");
 
@@ -122,7 +123,9 @@ namespace Assets.Scripts
 
             go.transform.position = transform.position;
             go.transform.parent = transform;
-            go.GetComponent<SpriteRenderer>().sprite = SpritesDatabase.Get(item.SpriteName);
+            var spriteRenderer = go.GetComponent<SpriteRenderer>();
+            spriteRenderer.sprite = SpritesDatabase.Get(item.SpriteName);
+            spriteRenderer.sortingOrder = (int)elevation;
             return go;
         }
         #endregion

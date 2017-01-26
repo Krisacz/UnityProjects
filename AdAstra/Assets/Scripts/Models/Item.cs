@@ -16,11 +16,11 @@ namespace Assets.Scripts.Models
         public StructureSize StructureSize { get; private set; }
         public bool StructureBlocking { get; private set; }
         public StructureElevation StructureElevation { get; private set; }
+        public float ConstructionTime { get; private set; }
 
-        public Item(ItemId itemId, string title, string description, 
-            int maxStackSize, string spriteName,
-            bool isStructure, StructureSize structureSize, 
-            bool structureBlocking, StructureElevation structureElevation)
+        public Item(ItemId itemId, string title, string description, int maxStackSize, 
+            string spriteName, bool isStructure, StructureSize structureSize, 
+            bool structureBlocking, StructureElevation structureElevation, float constructionTime)
         {
             ItemId = itemId;
             Title = title;
@@ -32,6 +32,7 @@ namespace Assets.Scripts.Models
             StructureSize = structureSize;
             StructureBlocking = structureBlocking;
             StructureElevation = structureElevation;
+            ConstructionTime = constructionTime;
         }
     }
 }

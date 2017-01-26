@@ -14,6 +14,7 @@ namespace Assets.Scripts.Models
 
         //===== STRUCTURE
         Foundation,
+        Floor,
         Wall
     }
 }

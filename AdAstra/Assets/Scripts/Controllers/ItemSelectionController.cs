@@ -54,7 +54,7 @@ namespace Assets.Scripts.Controllers
             var slots = _slotsPanel.GetComponentsInChildren<ItemStackView>();
             _curentlySelectedIndex++;
             if (_curentlySelectedIndex >= slots.Length) _curentlySelectedIndex = 0;
-            Log.Info(_curentlySelectedIndex.ToString());
+            //Log.Info(_curentlySelectedIndex.ToString());
             UpdateSelection(_curentlySelectedIndex);
         }
 
@@ -63,7 +63,7 @@ namespace Assets.Scripts.Controllers
             var slots = _slotsPanel.GetComponentsInChildren<ItemStackView>();
             _curentlySelectedIndex--;
             if (_curentlySelectedIndex < 0) _curentlySelectedIndex = slots.Length - 1;
-            Log.Info(_curentlySelectedIndex.ToString());
+            //Log.Info(_curentlySelectedIndex.ToString());
             UpdateSelection(_curentlySelectedIndex);
         }
 

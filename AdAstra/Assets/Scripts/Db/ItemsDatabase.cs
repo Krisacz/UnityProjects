@@ -45,9 +45,10 @@ namespace Assets.Scripts.Db
                 JsonHelper.AsInt(json["StructureSize"]["Height"]));
             var structureBlocking = JsonHelper.AsBool(json["StructureBlocking"]);
             var structureElevation = JsonHelper.AsEnum<StructureElevation>(json["StructureElevation"]);
-            
-            return new Item(itemId, title, description, maxStackSize, spriteName,
-                isStructure, structureSize, structureBlocking, structureElevation);
+            var constructionTime = JsonHelper.AsFloat(json["ConstructionTime"]);
+
+            return new Item(itemId, title, description, maxStackSize, spriteName, isStructure,
+                structureSize, structureBlocking, structureElevation, constructionTime);
         }
     }
 }

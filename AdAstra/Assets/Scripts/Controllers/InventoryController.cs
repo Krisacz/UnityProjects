@@ -13,8 +13,9 @@ namespace Assets.Scripts.Controllers
 
         public void Start()
         {
-            AddItem(ItemId.Foundation, 1);
-            AddItem(ItemId.Wall, 1);
+            AddItem(ItemId.Foundation, 10);
+            AddItem(ItemId.Floor, 10);
+            AddItem(ItemId.Wall, 10);
         }
 
         #region ADD ITEM

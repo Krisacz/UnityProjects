@@ -17,6 +17,14 @@
 	
 	{
 		"BlueprintGroup": "Structures",		
+		"ResultItemId": "Floor",
+		"ResultItemCount": 1,
+		"CraftingTime": 2.5,
+		"Requirements": { "IronOre": 2 }
+	},
+	
+	{
+		"BlueprintGroup": "Structures",		
 		"ResultItemId": "Wall",
 		"ResultItemCount": 1,
 		"CraftingTime": 1.5,

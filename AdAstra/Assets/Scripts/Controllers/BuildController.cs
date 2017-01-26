@@ -16,6 +16,7 @@ namespace Assets.Scripts.Controllers
         private static readonly Color AllowedColor = new Color32(0x00, 0xFF, 0x00, 0x40);
         private static readonly Color NotAllowedColor = new Color32(0xFF, 0x00, 0x00, 0x40);
         private static readonly Color BlankColor = new Color32(0xFF, 0xFF, 0xFF, 0x00);
+        private static readonly Color NotConstructed = new Color32(0xFF, 0xFF, 0x00, 0x80);
 
         public void Start()
         {
@@ -109,6 +110,18 @@ namespace Assets.Scripts.Controllers
             return EscapePodView.GetStructureSlotView(x, y).IsEmpty(structureElevation);
         }
 
+        public static void RefreshNotContructedStructuresOverlay()
+        {
+            for (var x = 0; x < EscapePodView.Columns; x++)
+            {
+                for (var y = 0; y < EscapePodView.Rows; y++)
+                {
+                    var ss = EscapePodView.GetStructureSlotView(x, y);
+                    SetBuildOverlayColor(x, y, ss.IsNotConstructed() ? NotConstructed : BlankColor);
+                }
+            }
+        }
+
         private static void SetBuildOverlayColor(int x, int y, Color color)
         {
             EscapePodView.StructureSlots[x,y].GetComponent<SpriteRenderer>().color = color;
@@ -117,14 +130,39 @@ namespace Assets.Scripts.Controllers
         public static void BuildModeOff()
         {
             _isOn = false;
-            var epv = EscapePod.GetComponent<EscapePodView>();
-            for (var x = 0; x < epv.Columns; x++)
+            RefreshNotContructedStructuresOverlay();
+        }
+
+        public static void Build(int x, int y)
+        {
+            var currentItem = ItemSelectionController.GetSelectedSlot().HasItem
+                ? ItemSelectionController.GetSelectedSlot().GetItemStack().Item
+                : null;
+
+            if (currentItem == null)
             {
-                for (var y = 0; y < epv.Rows; y++)
-                {
-                    var ssGo = epv.StructureSlots[x, y];
-                    ssGo.GetComponent<SpriteRenderer>().color = BlankColor;
-                }
+                //This should neve happen!
+                Log.Error("BuildController", "Build",
+                    string.Format("Strange! Somehow you are " +
+                                  "trying to build with NULL item! [X:{0},Y:{1}]!", x, y));
+                return;
+            }
+
+            //Build!
+            var elevation = currentItem.StructureElevation;
+            var itemId = currentItem.ItemId;
+            var success = EscapePodView.AddStructure(x, y, elevation, itemId, false);
+            if (success)
+            {
+                ItemSelectionController.GetSelectedSlot().UpdateStackCount(-1);
+                RefreshBuildOverlay();
+            }
+            else
+            {
+                //This should neve happen!
+                Log.Error("BuildController", "Build",
+                    string.Format("Strange! Somehow you are were unable to " +
+                                  "build in here! [X:{0},Y:{1}]!", x, y));
             }
         }
     }

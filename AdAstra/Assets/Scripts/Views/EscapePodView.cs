@@ -36,28 +36,38 @@ namespace Assets.Scripts.Views
             {
                 for (var y = 0; y < Rows; y++)
                 {
-                    //Floors
+                    //Foundation
                     if (x >= 12 && x <= 18 && y >= 12 && y <= 18)
                     {
-                        AddStructure(x, y, StructureElevation.Ground, ItemId.Foundation);
+                        AddStructure(x, y, StructureElevation.Ground, ItemId.Foundation, true);
 
                         //Walls
                         if (x == 12 || x == 18 || y == 12 || y == 18)
                         {
                             //Except this one...
-                            if(x == 15 && y == 12) continue;
-                            AddStructure(x, y, StructureElevation.OnGround, ItemId.Wall);
+                            if (x == 15 && y == 12)
+                            {
+                                AddStructure(x, y, StructureElevation.OnGround, ItemId.Floor, true);
+                                continue;
+                            }
+
+                            AddStructure(x, y, StructureElevation.OnGround, ItemId.Wall, true);
+                        }
+                        else
+                        {
+                            AddStructure(x, y, StructureElevation.OnGround, ItemId.Floor, true);
                         }
                     }
                 }
             }
         }
 
-        public bool AddStructure(int x, int y, StructureElevation elevation, ItemId itemId)
+        public bool AddStructure(int x, int y, StructureElevation elevation, 
+            ItemId itemId, bool instaBuild)
         {
             var structureSlotGo = StructureSlots[x, y];
             var structureSlotView = structureSlotGo.GetComponent<StructureSlotView>();
-            return structureSlotView.AddStructure(elevation, itemId);
+            return structureSlotView.AddStructure(elevation, itemId, instaBuild);
         }
 
         public StructureSlotView GetStructureSlotView(int x, int y)

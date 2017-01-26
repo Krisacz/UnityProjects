@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Policy;
 using Assets.Scripts.Db;
 using Assets.Scripts.Views;
 using UnityEngine;
@@ -62,7 +63,7 @@ namespace Assets.Scripts.Controllers
         public void OnDrop(PointerEventData eventData)
         {
             if (!CanReceiveItem) return;
-
+            
             var localItemStackView = this.GetComponent<ItemStackView>();
             var draggedItemStackView = eventData.pointerDrag.GetComponent<ItemStackView>();
 
@@ -104,6 +105,11 @@ namespace Assets.Scripts.Controllers
             //Set local slot to dragged item and dragged slot to local item (the one we dropped it on)
             localItemStackView.UpdateItemStack(draggedItemStack, draggedGameObject);
             draggedItemStackView.UpdateItemStack(localItemStack, localGameObject);
+
+            if (CanBeSelected)
+            {
+                ItemSelectionController.UpdateSelection(this.transform.GetSiblingIndex() - 1);
+            }
         }
         #endregion
 
@@ -111,6 +117,7 @@ namespace Assets.Scripts.Controllers
         public void OnEndDrag(PointerEventData eventData)
         {
             ShowTooltip = true;
+            
             var itemStackView = this.GetComponent<ItemStackView>();
             if (!itemStackView.HasItem) return;
 
@@ -137,7 +144,7 @@ namespace Assets.Scripts.Controllers
         {
             if (CanBeSelected)
             {
-                ItemSelectionController.UpdateSelection(this.transform.GetSiblingIndex()-1);
+                ItemSelectionController.UpdateSelection(this.transform.GetSiblingIndex() - 1);
             }
 
             this.OnEndDrag(eventData);
