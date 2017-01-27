@@ -19,49 +19,67 @@ namespace Assets.Scripts.Views
         private int _x = -1;
         private int _y = -1;
 
+        #region ADD STRUCTURE
         //Returns TRUE is succesfully added, false if it already has a structure on this elevation
         public bool AddStructure(StructureElevation elevation, ItemId itemId, bool instaBuild)
         {
             //Item (structure) already exist
             if (_items.ContainsKey(elevation) && _items[elevation] != null)
             {
-                Log.Warn("StructureSlotView", "AddStructure", 
+                Log.Warn("StructureSlotView", "AddStructure",
                     string.Format("Structure already exist on Elevation = {0}", elevation));
                 return false;
             }
 
             var item = ItemsDatabase.Get(itemId);
-            var go = GameObjectFactory.StructureItem(item, item.StructureBlocking, elevation, this.transform);
-            
+            var isBlocking = item.FunctionProperties[FunctionProperty.IsBlocking].Equals("true");
+            var go = GameObjectFactory.StructureItem(item, isBlocking, elevation, this.transform);
+            var cTime = float.Parse(item.FunctionProperties[FunctionProperty.ConstructionTime]);
+
+            if (!instaBuild)
+            {
+                //TODO Consider this: make all sturtures below this one invisible to give
+                //TODO player better feedback what is in this slot and whats need to be build
+                //TODO Or some other representation of "not cnostructed" item
+                go.GetComponent<SpriteRenderer>().color = new Color32(0xFF, 0xFF, 0xFF, 0x80);
+                go.GetComponent<BoxCollider2D>().enabled = !isBlocking;
+            }
+
             if (_items.ContainsKey(elevation))
             {
                 _items[elevation] = item;
                 _gameObjects[elevation] = go;
-                _construction[elevation] = instaBuild ? 0.0f : item.ConstructionTime;
+                _construction[elevation] = instaBuild ? 0.0f : cTime;
             }
             else
             {
                 _items.Add(elevation, item);
                 _gameObjects.Add(elevation, go);
-                _construction.Add(elevation, instaBuild ? 0.0f : item.ConstructionTime);
+                _construction.Add(elevation, instaBuild ? 0.0f : cTime);
             }
 
             return true;
         }
+        #endregion
 
+        #region SET GRID POSITION
         public void SetGridPosition(int x, int y)
         {
             _x = x;
             _y = y;
         }
-
+        #endregion
+        
+        #region IS EMPTY
         public bool IsEmpty(StructureElevation structureElevation = StructureElevation.None)
         {
-            if(structureElevation == StructureElevation.None) return _gameObjects.Count == 0;
+            if (structureElevation == StructureElevation.None) return _gameObjects.Count == 0;
             if (!_gameObjects.ContainsKey(structureElevation)) return true;
             return _gameObjects[structureElevation] == null;
         }
+        #endregion
 
+        #region IS NOT CONSTRUCTED
         public bool IsNotConstructed()
         {
             if (_construction.Count == 0) return false;
@@ -74,30 +92,38 @@ namespace Assets.Scripts.Views
             }
             return false;
         }
-
+        #endregion
+        
+        #region ON POINTER ENTER
         public void OnPointerEnter(PointerEventData eventData)
         {
             //Check if we are in building mode
-            if(!BuildController.IsOn()) return;
+            if (!BuildController.IsOn()) return;
 
-            var spriteRenderer = this.GetComponent<SpriteRenderer>();
+            //Change "overlay" sprite to current item
             var isv = ItemSelectionController.GetSelectedSlot();
             var sprite = isv.HasItem
                 ? SpritesDatabase.Get(isv.GetItemStack().Item.SpriteName)
                 : SpritesDatabase.Get("square");
-            spriteRenderer.sprite = sprite;
-        }
 
+            var marker = this.transform.FindChild("Marker");
+            marker.GetComponent<SpriteRenderer>().sprite = sprite;
+        }
+        #endregion
+
+        #region ON POINTER EXIT
         public void OnPointerExit(PointerEventData eventData)
         {
             //Check if we are in building mode
             if (!BuildController.IsOn()) return;
 
-            var spriteRenderer = this.GetComponent<SpriteRenderer>();
             var sprite = SpritesDatabase.Get("square");
-            spriteRenderer.sprite = sprite;
+            var marker = this.transform.FindChild("Marker");
+            marker.GetComponent<SpriteRenderer>().sprite = sprite;
         }
+        #endregion
 
+        #region ON POINTER CLICK
         public void OnPointerClick(PointerEventData eventData)
         {
             //Check if we are in building mode
@@ -125,16 +151,58 @@ namespace Assets.Scripts.Views
                     break;
             }
         }
+        #endregion
 
         #region CONSTRUCTION
         private bool _constructing = false;
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (!BuildController.IsOn() && IsNotConstructed())
+            //Only in NON Build mode
+            if(BuildController.IsOn()) return;
+
+            //If all are already constructed - bail out
+            if(!IsNotConstructed()) return;
+
+            //Check if distance is ok
+            var p = PlayerController.GetBounds().center;
+            var s = GetComponent<BoxCollider2D>().bounds.center;
+            var distance = Vector2.Distance(p, s);
+            if (distance > 2.0f)
             {
-                _constructing = true;
+                Log.Info("StructureSlotView", "OnPointerDown", "Player is too far to build!");
+                return;
             }
+
+            //Check if player is not standing on building structure
+            if (PlayerController.GetBounds().Intersects(GetComponent<BoxCollider2D>().bounds))
+            {
+                Log.Info("StructureSlotView", "OnPointerDown", "Player is too close to build!");
+                return;    
+            }
+
+            //Check if player is holding appropriate tool
+            var selectedItem = ItemSelectionController.GetSelectedSlot();
+            if (selectedItem.HasItem)
+            {
+                var item = selectedItem.GetItemStack().Item;
+                var isTool = item.Function == Function.Tool;
+                if (!isTool)
+                {
+                    Log.Info("StructureSlotView", "OnPointerDown", "Construction tool not equipped!");
+                    return;
+                }
+
+                var canConstruct = item.FunctionProperties.ContainsKey(FunctionProperty.ConstructionSpeed);
+                if(!canConstruct)
+                {
+                    Log.Info("StructureSlotView", "OnPointerDown", "Construction tool not equipped!");
+                    return;
+                }
+            }
+            
+             
+            _constructing = true;
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -142,24 +210,59 @@ namespace Assets.Scripts.Views
             if (_constructing)
             {
                 _constructing = false;
+                WorkProgressController.Off();
             }
         }
 
         public void Update()
         {
+            //In a build mode or not constructing
             if(BuildController.IsOn()) return;
             if (!_constructing) return;
-            //TODO Chenge selection - select first elevation from donw to up 
-            //TODO with construction time
-            var structureElevation = _construction.Keys.First();
-            _construction[structureElevation] -= Time.deltaTime;
+
+            //Get first not constructed structure
+            var structureElevation = StructureElevation.None;
+            foreach (var c in _construction)
+            {
+                if (c.Value > 0.0f)
+                {
+                    structureElevation = c.Key;
+                    break;
+                }
+            }
+
+            //Nothing to construct
+            if (structureElevation == StructureElevation.None)
+            {
+                Log.Error("StructureSlotView", "Update", 
+                    string.Format("Trying to construct but nothing to construct! [{0},{1}]", _x, _y));
+                return;
+            }
+
+            //Get construction speed
+            var item = _items[structureElevation];
+            var constructionSpeed = float.Parse(item.FunctionProperties[FunctionProperty.ConstructionSpeed]);
+
+            //Construct!
+            _construction[structureElevation] -= (Time.deltaTime * constructionSpeed);
+            WorkProgressController.UpdateWork(_construction[structureElevation], 
+                float.Parse(_items[structureElevation].FunctionProperties[FunctionProperty.ConstructionTime]));
+
+            //Construction finished!
             if (_construction[structureElevation] <= 0.0f)
             {
+                WorkProgressController.Off();
                 _construction[structureElevation] = 0.0f;
+                var go = _gameObjects[structureElevation];
+                go.GetComponent<SpriteRenderer>().color = Color.white;
+                var isBlocking = item.FunctionProperties[FunctionProperty.IsBlocking].Equals("true");
+                go.GetComponent<BoxCollider2D>().enabled = isBlocking;
+
                 _constructing = false;
                 BuildController.RefreshNotContructedStructuresOverlay();
             }
-            Log.Info(_construction[structureElevation].ToString(CultureInfo.InvariantCulture));
+
+            //Log.Info(_construction[structureElevation].ToString(CultureInfo.InvariantCulture));
         }
         #endregion
 

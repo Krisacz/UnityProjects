@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Assets.Scripts.Models;
 using LitJson;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Assets.Scripts
 {
-    public static class JsonHelper
+    public static class JHelper
     {
         public static string AsString(IEnumerable data)
         {
@@ -43,6 +45,19 @@ namespace Assets.Scripts
         public static Dictionary<T1, T2> AsDictionary<T1,T2>(string data)
         {
             return JsonMapper.ToObject<Dictionary<T1, T2>>(data);
-        } 
+        }
+
+        public static Dictionary<FunctionProperty, string> AsFuncProperty(string data)
+        {
+            var dic = AsDictionary<string, string>(data);
+            var result = new Dictionary<FunctionProperty, string>();
+            foreach (var kv in dic)
+            {
+                var fp = (FunctionProperty) Enum.Parse(typeof (FunctionProperty), kv.Key);
+                result.Add(fp, kv.Value);
+            }
+
+            return result;
+        }
     }
 }

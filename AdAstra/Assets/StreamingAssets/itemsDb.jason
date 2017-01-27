@@ -5,12 +5,8 @@
 		"Description": "One of the most common ores.",
 		"MaxStackSize": 5,
 		"SpriteName": "iron_ore",
-		
-		"IsStructure": false,
-		"StructureSize": { "Width": 1, "Height": 1 },		
-		"StructureBlocking": false,
-		"StructureElevation": "None",
-		"ConstructionTime": 0.0
+		"Function": "Resource",
+		"Properties": { "Rarity": "10" }
 	},
 	
 	{
@@ -19,13 +15,8 @@
 		"Description": "Quite rare, amazing conductor!",
 		"MaxStackSize": 3,
 		"SpriteName": "gold_ore",
-		
-
-		"IsStructure": false,
-		"StructureSize": { "Width": 1, "Height": 1 },		
-		"StructureBlocking": false,
-		"StructureElevation": "None",
-		"ConstructionTime": 0.0
+		"Function": "Resource",
+		"Properties": { "Rarity": "100" }
 	},
 		
 	{
@@ -34,12 +25,8 @@
 		"Description": "Base structure used to expand your ship.",
 		"MaxStackSize": 10,
 		"SpriteName": "foundation",
-		
-		"IsStructure": true,
-		"StructureSize": { "Width": 1, "Height": 1 },		
-		"StructureBlocking": false,
-		"StructureElevation": "Ground",
-		"ConstructionTime": 3.0	
+		"Function": "Structure",
+		"Properties": { "SizeW": "1", "SizeH": "1", "IsBlocking": "false", "Elevation": "Ground", "ConstructionTime": "0.75" }
 	},
 	
 	{
@@ -48,13 +35,9 @@
 		"Description": "Basic floow - standard walking speed.",
 		"MaxStackSize": 10,
 		"SpriteName": "floor",
-		
-		"IsStructure": true,
-		"StructureSize": { "Width": 1, "Height": 1 },		
-		"StructureBlocking": false,
-		"StructureElevation": "OnGround",
-		"ConstructionTime": 5.0		
-	}	,
+		"Function": "Structure",
+		"Properties": { "SizeW": "1", "SizeH": "1", "IsBlocking": "false", "Elevation": "OnGround", "ConstructionTime": "1.5" }
+	},
 	
 	{
 		"ItemId": "Wall",
@@ -62,11 +45,17 @@
 		"Description": "Basic wall - will resist most of small rocks.",
 		"MaxStackSize": 10,
 		"SpriteName": "wall",
-		
-		"IsStructure": true,
-		"StructureSize": { "Width": 1, "Height": 1 },		
-		"StructureBlocking": true,
-		"StructureElevation": "OnGround",
-		"ConstructionTime": 5.0		
+		"Function": "Structure",
+		"Properties": { "SizeW": "1", "SizeH": "1", "IsBlocking": "true", "Elevation": "OnGround", "ConstructionTime": "2.5" }
+	},
+	
+	{
+		"ItemId": "Welder",
+		"Title": "Welder",
+		"Description": "Used in structure contruction.",
+		"MaxStackSize": 1,
+		"SpriteName": "welder",
+		"Function": "Tool",
+		"Properties": { "ConstructionSpeed": "1.0" }
 	}
 ]

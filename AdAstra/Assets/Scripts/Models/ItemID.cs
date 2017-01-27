@@ -15,6 +15,9 @@ namespace Assets.Scripts.Models
         //===== STRUCTURE
         Foundation,
         Floor,
-        Wall
+        Wall,
+
+        //===== TOOL
+        Welder,
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using Assets.Scripts.Views;
 using UnityEngine;
@@ -37,10 +38,16 @@ namespace Assets.Scripts.Controllers
 
         public static void RefreshBuildOverlay()
         {
+            var blank = SpritesDatabase.Get("square");
+
             for (var x = 0; x < EscapePodView.Columns; x++)
             {
                 for (var y = 0; y < EscapePodView.Rows; y++)
                 {
+                    var go = EscapePodView.StructureSlots[x, y];
+                    var marker = go.transform.FindChild("Marker");
+                    marker.GetComponent<SpriteRenderer>().sprite = blank;
+
                     var c = CanBuildInStructureSlot(x, y);
                     switch (c)
                     {
@@ -67,11 +74,18 @@ namespace Assets.Scripts.Controllers
                 ? ItemSelectionController.GetSelectedSlot().GetItemStack().Item
                 : null;
 
+            if (EscapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 0;
+            
+
+
             if (IsEmpty(x, y))
             {
                 if (HasAdjecentStructure(x, y))
                 {
-                    return currentItem != null && currentItem.StructureElevation == StructureElevation.Ground ? 1 : 0;
+                    if (currentItem == null) return 0;
+                    var elevationStr = currentItem.FunctionProperties[FunctionProperty.Elevation];
+                    var elevation = (StructureElevation)Enum.Parse(typeof (StructureElevation), elevationStr);
+                    return elevation == StructureElevation.Ground ? 1 : 0;
                 }
                 else
                 {
@@ -80,7 +94,10 @@ namespace Assets.Scripts.Controllers
             }
             else
             {
-                return currentItem != null && IsEmpty(x, y, currentItem.StructureElevation) ? 1 : 0;
+                if (currentItem == null) return 0;
+                var elevationStr = currentItem.FunctionProperties[FunctionProperty.Elevation];
+                var elevation = (StructureElevation)Enum.Parse(typeof(StructureElevation), elevationStr);
+                return IsEmpty(x, y, elevation) ? 1 : 0;
             }
         }
 
@@ -112,19 +129,30 @@ namespace Assets.Scripts.Controllers
 
         public static void RefreshNotContructedStructuresOverlay()
         {
+            var empty = SpritesDatabase.Get("square");
+            var notConstructed = SpritesDatabase.Get("not_constructed");
+
             for (var x = 0; x < EscapePodView.Columns; x++)
             {
                 for (var y = 0; y < EscapePodView.Rows; y++)
                 {
-                    var ss = EscapePodView.GetStructureSlotView(x, y);
-                    SetBuildOverlayColor(x, y, ss.IsNotConstructed() ? NotConstructed : BlankColor);
+                    var go = EscapePodView.StructureSlots[x, y];
+                    var ssv = go.GetComponent<StructureSlotView>();
+                    var isNotConstructed = ssv.IsNotConstructed();
+                    var marker = go.transform.FindChild("Marker");
+                    var sprite = isNotConstructed ? notConstructed : empty;
+
+                    marker.GetComponent<SpriteRenderer>().sprite = sprite;
+                    SetBuildOverlayColor(x, y, isNotConstructed ? NotConstructed : BlankColor);
                 }
             }
         }
 
         private static void SetBuildOverlayColor(int x, int y, Color color)
         {
-            EscapePodView.StructureSlots[x,y].GetComponent<SpriteRenderer>().color = color;
+            var go = EscapePodView.StructureSlots[x,y];
+            var marker = go.transform.FindChild("Marker");
+            marker.GetComponent<SpriteRenderer>().color = color;
         }
 
         public static void BuildModeOff()
@@ -149,7 +177,8 @@ namespace Assets.Scripts.Controllers
             }
 
             //Build!
-            var elevation = currentItem.StructureElevation;
+            var elevationStr = currentItem.FunctionProperties[FunctionProperty.Elevation];
+            var elevation = (StructureElevation)Enum.Parse(typeof(StructureElevation), elevationStr);
             var itemId = currentItem.ItemId;
             var success = EscapePodView.AddStructure(x, y, elevation, itemId, false);
             if (success)

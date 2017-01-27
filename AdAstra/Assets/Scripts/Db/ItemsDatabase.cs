@@ -34,21 +34,16 @@ namespace Assets.Scripts.Db
 
         private static Item MapJsonObjectToItem(JsonData json)
         {
-            var itemId = JsonHelper.AsEnum<ItemId>(json["ItemId"]);
-            var title = JsonHelper.AsString(json["Title"]);
-            var description = JsonHelper.AsString(json["Description"]);
-            var maxStackSize = JsonHelper.AsInt(json["MaxStackSize"]);
-            var spriteName = JsonHelper.AsString(json["SpriteName"]);
-
-            var isStructure = JsonHelper.AsBool(json["IsStructure"]);
-            var structureSize = new StructureSize(JsonHelper.AsInt(json["StructureSize"]["Width"]),
-                JsonHelper.AsInt(json["StructureSize"]["Height"]));
-            var structureBlocking = JsonHelper.AsBool(json["StructureBlocking"]);
-            var structureElevation = JsonHelper.AsEnum<StructureElevation>(json["StructureElevation"]);
-            var constructionTime = JsonHelper.AsFloat(json["ConstructionTime"]);
-
-            return new Item(itemId, title, description, maxStackSize, spriteName, isStructure,
-                structureSize, structureBlocking, structureElevation, constructionTime);
+            var itemId = JHelper.AsEnum<ItemId>(json["ItemId"]);
+            var title = JHelper.AsString(json["Title"]);
+            var description = JHelper.AsString(json["Description"]);
+            var maxStackSize = JHelper.AsInt(json["MaxStackSize"]);
+            var spriteName = JHelper.AsString(json["SpriteName"]);
+            var function = JHelper.AsEnum<Function>(json["Function"]);
+            var properties = JHelper.AsFuncProperty(json["Properties"].ToJson());
+            
+            return new Item(itemId, title, description, maxStackSize, spriteName, 
+                function, properties);
         }
     }
 }

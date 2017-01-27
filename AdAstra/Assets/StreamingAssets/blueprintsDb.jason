@@ -37,5 +37,13 @@
 		"ResultItemCount": 1,
 		"CraftingTime": 1.75,
 		"Requirements": { "IronOre": 2, "GoldOre": 1 }
+	},
+	
+	{
+		"BlueprintGroup": "Tools",	
+		"ResultItemId": "Welder",
+		"ResultItemCount": 1,
+		"CraftingTime": 3.75,
+		"Requirements": { "IronOre": 2, "GoldOre": 2 }
 	}
 ]

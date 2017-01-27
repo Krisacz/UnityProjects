@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Models
@@ -10,29 +11,20 @@ namespace Assets.Scripts.Models
         public string Description { get; private set; }
         public int MaxStackSize { get; private set; }
         public string SpriteName { get; private set; }
-
-        //If item is a structure:
-        public bool IsStructure { get; private set;}
-        public StructureSize StructureSize { get; private set; }
-        public bool StructureBlocking { get; private set; }
-        public StructureElevation StructureElevation { get; private set; }
-        public float ConstructionTime { get; private set; }
-
-        public Item(ItemId itemId, string title, string description, int maxStackSize, 
-            string spriteName, bool isStructure, StructureSize structureSize, 
-            bool structureBlocking, StructureElevation structureElevation, float constructionTime)
+        public Function Function { get; private set; }
+        public Dictionary<FunctionProperty, string> FunctionProperties { get; private set; }
+        
+        public Item(ItemId itemId, string title, string description, int maxStackSize, string sprite,
+            Function function, Dictionary<FunctionProperty, string> functionProperties)
         {
             ItemId = itemId;
             Title = title;
             Description = description;
             MaxStackSize = maxStackSize;
-            SpriteName = spriteName;
+            SpriteName = sprite;
 
-            IsStructure = isStructure;
-            StructureSize = structureSize;
-            StructureBlocking = structureBlocking;
-            StructureElevation = structureElevation;
-            ConstructionTime = constructionTime;
+            Function = function;
+            FunctionProperties = functionProperties;
         }
     }
 }

@@ -11,10 +11,12 @@ namespace Assets.Scripts.Controllers
         private Rigidbody2D _rigidbody2D;
         private bool _inventoryVisible;
         private bool _craftingVisible;
+        private static CircleCollider2D _playerCollider;
 
         void Start ()
         {
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            _playerCollider = GetComponent<CircleCollider2D>();
         }
 
         void FixedUpdate()
@@ -27,6 +29,11 @@ namespace Assets.Scripts.Controllers
         {
             ToggleInventory();
             ToggleCrafting();
+        }
+
+        public static Bounds GetBounds()
+        {
+            return _playerCollider.bounds;
         }
 
         private void LookAtMouse()
