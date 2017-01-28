@@ -75,16 +75,13 @@ namespace Assets.Scripts.Controllers
                 : null;
 
             if (EscapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 0;
-            
-
 
             if (IsEmpty(x, y))
             {
                 if (HasAdjecentStructure(x, y))
                 {
                     if (currentItem == null) return 0;
-                    var elevationStr = currentItem.FunctionProperties[FunctionProperty.Elevation];
-                    var elevation = (StructureElevation)Enum.Parse(typeof (StructureElevation), elevationStr);
+                    var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
                     return elevation == StructureElevation.Ground ? 1 : 0;
                 }
                 else
@@ -95,8 +92,7 @@ namespace Assets.Scripts.Controllers
             else
             {
                 if (currentItem == null) return 0;
-                var elevationStr = currentItem.FunctionProperties[FunctionProperty.Elevation];
-                var elevation = (StructureElevation)Enum.Parse(typeof(StructureElevation), elevationStr);
+                var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
                 return IsEmpty(x, y, elevation) ? 1 : 0;
             }
         }
@@ -177,8 +173,7 @@ namespace Assets.Scripts.Controllers
             }
 
             //Build!
-            var elevationStr = currentItem.FunctionProperties[FunctionProperty.Elevation];
-            var elevation = (StructureElevation)Enum.Parse(typeof(StructureElevation), elevationStr);
+            var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
             var itemId = currentItem.ItemId;
             var success = EscapePodView.AddStructure(x, y, elevation, itemId, false);
             if (success)

@@ -32,9 +32,9 @@ namespace Assets.Scripts.Views
             }
 
             var item = ItemsDatabase.Get(itemId);
-            var isBlocking = item.FunctionProperties[FunctionProperty.IsBlocking].Equals("true");
+            var isBlocking = item.FunctionProperties.AsBool(FunctionProperty.IsBlocking);
             var go = GameObjectFactory.StructureItem(item, isBlocking, elevation, this.transform);
-            var cTime = float.Parse(item.FunctionProperties[FunctionProperty.ConstructionTime]);
+            var cTime = item.FunctionProperties.AsFloat(FunctionProperty.ConstructionTime);
 
             if (!instaBuild)
             {
@@ -123,7 +123,7 @@ namespace Assets.Scripts.Views
         }
         #endregion
 
-        #region ON POINTER CLICK
+        #region ON POINTER CLICK - BUILDING NEW STRUCTURE
         public void OnPointerClick(PointerEventData eventData)
         {
             //Check if we are in building mode
@@ -194,13 +194,17 @@ namespace Assets.Scripts.Views
                 }
 
                 var canConstruct = item.FunctionProperties.ContainsKey(FunctionProperty.ConstructionSpeed);
-                if(!canConstruct)
+                if (!canConstruct)
                 {
                     Log.Info("StructureSlotView", "OnPointerDown", "Construction tool not equipped!");
                     return;
                 }
             }
-            
+            else
+            {
+                Log.Info("StructureSlotView", "OnPointerDown", "Construction tool not equipped!");
+                return;
+            }
              
             _constructing = true;
         }
@@ -240,13 +244,14 @@ namespace Assets.Scripts.Views
             }
 
             //Get construction speed
-            var item = _items[structureElevation];
-            var constructionSpeed = float.Parse(item.FunctionProperties[FunctionProperty.ConstructionSpeed]);
-
+            var selectedItem = ItemSelectionController.GetSelectedSlot().GetItemStack().Item;
+            var constructionSpeed = selectedItem.FunctionProperties
+                .AsFloat(FunctionProperty.ConstructionSpeed);
+                
             //Construct!
             _construction[structureElevation] -= (Time.deltaTime * constructionSpeed);
             WorkProgressController.UpdateWork(_construction[structureElevation], 
-                float.Parse(_items[structureElevation].FunctionProperties[FunctionProperty.ConstructionTime]));
+                _items[structureElevation].FunctionProperties.AsFloat(FunctionProperty.ConstructionTime));
 
             //Construction finished!
             if (_construction[structureElevation] <= 0.0f)
@@ -255,7 +260,8 @@ namespace Assets.Scripts.Views
                 _construction[structureElevation] = 0.0f;
                 var go = _gameObjects[structureElevation];
                 go.GetComponent<SpriteRenderer>().color = Color.white;
-                var isBlocking = item.FunctionProperties[FunctionProperty.IsBlocking].Equals("true");
+                var item = _items[structureElevation];
+                var isBlocking = item.FunctionProperties.AsBool(FunctionProperty.IsBlocking);
                 go.GetComponent<BoxCollider2D>().enabled = isBlocking;
 
                 _constructing = false;
