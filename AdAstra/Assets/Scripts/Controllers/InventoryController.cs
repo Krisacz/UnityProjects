@@ -16,6 +16,7 @@ namespace Assets.Scripts.Controllers
             AddItem(ItemId.Foundation, 10);
             AddItem(ItemId.Floor, 10);
             AddItem(ItemId.Wall, 10);
+            AddItem(ItemId.Welder, 1);
         }
 
         #region ADD ITEM

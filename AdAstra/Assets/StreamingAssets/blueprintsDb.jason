@@ -45,5 +45,13 @@
 		"ResultItemCount": 1,
 		"CraftingTime": 3.75,
 		"Requirements": { "IronOre": 2, "GoldOre": 2 }
+	},
+	
+	{
+		"BlueprintGroup": "Machines",	
+		"ResultItemId": "Printer3D",
+		"ResultItemCount": 1,
+		"CraftingTime": 2.5,
+		"Requirements": { "IronOre": 5 }
 	}
 ]

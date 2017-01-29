@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using UnityEngine;
 
@@ -39,7 +40,7 @@ namespace Assets.Scripts.Views
                     //Foundation
                     if (x >= 12 && x <= 18 && y >= 12 && y <= 18)
                     {
-                        AddStructure(x, y, StructureElevation.Ground, ItemId.Foundation, true);
+                        AddStructure(x, y, ItemId.Foundation, true);
 
                         //Walls
                         if (x == 12 || x == 18 || y == 12 || y == 18)
@@ -47,27 +48,36 @@ namespace Assets.Scripts.Views
                             //Except this one...
                             if (x == 15 && y == 12)
                             {
-                                AddStructure(x, y, StructureElevation.OnGround, ItemId.Floor, true);
+                                AddStructure(x, y, ItemId.Floor, true);
                                 continue;
                             }
 
-                            AddStructure(x, y, StructureElevation.OnGround, ItemId.Wall, true);
+                            AddStructure(x, y, ItemId.Wall, true);
                         }
                         else
                         {
-                            AddStructure(x, y, StructureElevation.OnGround, ItemId.Floor, true);
+                            AddStructure(x, y, ItemId.Floor, true);
                         }
                     }
                 }
             }
         }
 
-        public bool AddStructure(int x, int y, StructureElevation elevation, 
-            ItemId itemId, bool instaBuild)
+        public bool AddStructure(int x, int y, ItemId itemId, bool instaBuild)
         {
+            var item = ItemsDatabase.Get(itemId);
+            if (!item.FunctionProperties.ContainsKey(FunctionProperty.Elevation))
+            {
+                Log.Error("EscapePodView", "AddStructure", 
+                    string.Format("You are trying to build with item without elevation property." +
+                                  " ItemId = {0}", itemId));
+                return false;
+            }
+
+            var e = item.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
             var structureSlotGo = StructureSlots[x, y];
             var structureSlotView = structureSlotGo.GetComponent<StructureSlotView>();
-            return structureSlotView.AddStructure(elevation, itemId, instaBuild);
+            return structureSlotView.AddStructure(e, itemId, instaBuild);
         }
 
         public StructureSlotView GetStructureSlotView(int x, int y)

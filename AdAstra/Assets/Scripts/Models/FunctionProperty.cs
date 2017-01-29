@@ -18,6 +18,9 @@ namespace Assets.Scripts.Models
         Rarity,
 
         //==== TOOL
-        ConstructionSpeed
+        ConstructionSpeed,
+
+        //==== MACHINE
+        ManufactureSpeed,
     }
 }

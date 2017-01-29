@@ -70,31 +70,48 @@ namespace Assets.Scripts.Controllers
         //Return: -1 -> BLANK, 0 - NOT ALLOWED, 1 - ALLOWED
         public static int CanBuildInStructureSlot(int x, int y)
         {
-            var currentItem = ItemSelectionController.GetSelectedSlot().HasItem
-                ? ItemSelectionController.GetSelectedSlot().GetItemStack().Item
-                : null;
+            var currentItem = ItemSelectionController.GetItem();
+            
+            //If currently selected item is NOT structure type (or is NULL)
+            if (currentItem == null 
+                || !currentItem.FunctionProperties.ContainsKey(FunctionProperty.Elevation))
+            {
+                return HasAdjecentStructure(x, y) ? 0 : -1;
+            }
 
+            //If X/Y slot has any unconstructed structures
             if (EscapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 0;
 
+            //Get selected "structure" item elevation property
+            var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
+
+            //If structure slot is empty...
             if (IsEmpty(x, y))
             {
+                //And it's adjecent to existing structure...
                 if (HasAdjecentStructure(x, y))
                 {
-                    if (currentItem == null) return 0;
-                    var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
-                    return elevation == StructureElevation.Ground ? 1 : 0;
+                    //If it's "FIRST" (BelowGroud) layer/elevation 
+                    return elevation == StructureElevation.BelowGround ? 1 : 0;
                 }
-                else
-                {
-                    return -1;
-                }
+
+                //If it's not adjecent
+                return -1;
             }
-            else
+
+            //Structure below is built
+            var structureBelowIsBuilt = IsEmpty(x, y, elevation - 1) == false;
+
+            //If item function is MACHINE - it needs to be build on the FLOOR
+            if (currentItem.Function == Function.Machine)
             {
-                if (currentItem == null) return 0;
-                var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
-                return IsEmpty(x, y, elevation) ? 1 : 0;
+                var itemBelow = GetStuctureItemFromElevation(x, y, elevation - 1);
+                if (itemBelow == null) return 0;
+                return itemBelow.ItemId == ItemId.Floor ? 1 : 0;
             }
+
+            //If structure slot is not empty but SPECIFIC elevation in same slot is:
+            return structureBelowIsBuilt && IsEmpty(x, y, elevation) ? 1 : 0;
         }
 
         private static bool HasAdjecentStructure(int x, int y)
@@ -118,9 +135,15 @@ namespace Assets.Scripts.Controllers
             return false;
         }
 
-        private static bool IsEmpty(int x, int y, StructureElevation structureElevation = StructureElevation.None)
+        private static bool IsEmpty(int x, int y, 
+            StructureElevation structureElevation = StructureElevation.None)
         {
             return EscapePodView.GetStructureSlotView(x, y).IsEmpty(structureElevation);
+        }
+
+        private static Item GetStuctureItemFromElevation(int x, int y, StructureElevation elevation)
+        {
+            return EscapePodView.GetStructureSlotView(x, y).GetItem(elevation);
         }
 
         public static void RefreshNotContructedStructuresOverlay()
@@ -159,9 +182,7 @@ namespace Assets.Scripts.Controllers
 
         public static void Build(int x, int y)
         {
-            var currentItem = ItemSelectionController.GetSelectedSlot().HasItem
-                ? ItemSelectionController.GetSelectedSlot().GetItemStack().Item
-                : null;
+            var currentItem = ItemSelectionController.GetItem();
 
             if (currentItem == null)
             {
@@ -173,12 +194,11 @@ namespace Assets.Scripts.Controllers
             }
 
             //Build!
-            var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
             var itemId = currentItem.ItemId;
-            var success = EscapePodView.AddStructure(x, y, elevation, itemId, false);
+            var success = EscapePodView.AddStructure(x, y, itemId, false);
             if (success)
             {
-                ItemSelectionController.GetSelectedSlot().UpdateStackCount(-1);
+                ItemSelectionController.GetItemStackView().UpdateStackCount(-1);
                 RefreshBuildOverlay();
             }
             else

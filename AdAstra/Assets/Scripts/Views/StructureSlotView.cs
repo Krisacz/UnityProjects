@@ -100,14 +100,21 @@ namespace Assets.Scripts.Views
             //Check if we are in building mode
             if (!BuildController.IsOn()) return;
 
-            //Change "overlay" sprite to current item
-            var isv = ItemSelectionController.GetSelectedSlot();
-            var sprite = isv.HasItem
-                ? SpritesDatabase.Get(isv.GetItemStack().Item.SpriteName)
-                : SpritesDatabase.Get("square");
-
+            //Check if selected item is of a structure type...
+            //TODO Include other placable items like machines which are not structures
+            var item = ItemSelectionController.GetItem();
             var marker = this.transform.FindChild("Marker");
-            marker.GetComponent<SpriteRenderer>().sprite = sprite;
+            var empty = SpritesDatabase.Get("square");
+
+            //...If not keep empty overlay 
+            if (item == null || !item.FunctionProperties.ContainsKey(FunctionProperty.Elevation))
+            {
+                marker.GetComponent<SpriteRenderer>().sprite = empty;
+                return;
+            }
+
+            //otherwise change "overlay" sprite to currently selected "structure" item
+            marker.GetComponent<SpriteRenderer>().sprite = SpritesDatabase.Get(item.SpriteName);
         }
         #endregion
 
@@ -182,7 +189,7 @@ namespace Assets.Scripts.Views
             }
 
             //Check if player is holding appropriate tool
-            var selectedItem = ItemSelectionController.GetSelectedSlot();
+            var selectedItem = ItemSelectionController.GetItemStackView();
             if (selectedItem.HasItem)
             {
                 var item = selectedItem.GetItemStack().Item;
@@ -244,7 +251,7 @@ namespace Assets.Scripts.Views
             }
 
             //Get construction speed
-            var selectedItem = ItemSelectionController.GetSelectedSlot().GetItemStack().Item;
+            var selectedItem = ItemSelectionController.GetItemStackView().GetItemStack().Item;
             var constructionSpeed = selectedItem.FunctionProperties
                 .AsFloat(FunctionProperty.ConstructionSpeed);
                 
@@ -269,6 +276,18 @@ namespace Assets.Scripts.Views
             }
 
             //Log.Info(_construction[structureElevation].ToString(CultureInfo.InvariantCulture));
+        }
+        #endregion
+
+        #region GET
+        public Item GetItem(StructureElevation elevation)
+        {
+            return _items.ContainsKey(elevation) ? _items[elevation] : null;
+        }
+
+        public GameObject GetGo(StructureElevation elevation)
+        {
+            return _gameObjects.ContainsKey(elevation) ? _gameObjects[elevation] : null;
         }
         #endregion
 

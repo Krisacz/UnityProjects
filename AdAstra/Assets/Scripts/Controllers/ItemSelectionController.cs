@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Views;
+﻿using Assets.Scripts.Models;
+using Assets.Scripts.Views;
 using UnityEngine;
 
 namespace Assets.Scripts.Controllers
@@ -67,10 +68,22 @@ namespace Assets.Scripts.Controllers
             UpdateSelection(_curentlySelectedIndex);
         }
 
-        public static ItemStackView GetSelectedSlot()
+        public static ItemStackView GetItemStackView()
         {
             var slots = _slotsPanel.GetComponentsInChildren<ItemStackView>();
             return slots[_curentlySelectedIndex];
+        }
+
+        public static ItemStack GetItemStack()
+        {
+            var itemStackView = GetItemStackView();
+            return itemStackView.HasItem ? itemStackView.GetItemStack() : null;
+        }
+
+        public static Item GetItem()
+        {
+            var itemStack = GetItemStack();
+            return itemStack.Item;
         }
     }
 }

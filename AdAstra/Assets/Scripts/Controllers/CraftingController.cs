@@ -50,6 +50,10 @@ namespace Assets.Scripts.Controllers
             var toolsBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Tools);
             foreach (var blueprint in toolsBlueprints) AddItemBlueprint(blueprint);
 
+            var machinesBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Machines);
+            foreach (var blueprint in machinesBlueprints) AddItemBlueprint(blueprint);
+
+
             UpdateBlueprintGroupsViews();
             ClearSelectedBlueprintPanel();
         }
