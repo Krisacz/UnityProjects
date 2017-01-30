@@ -83,7 +83,7 @@ namespace Assets.Scripts.Controllers
         public static Item GetItem()
         {
             var itemStack = GetItemStack();
-            return itemStack.Item;
+            return itemStack != null ? itemStack.Item : null;
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using Assets.Scripts.Views;
@@ -79,6 +80,72 @@ namespace Assets.Scripts.Controllers
             Log.Info("InventoryController", "AddItemToFirstAvailableInventory",
                 string.Format("Inventory(s) full - unable to insert {0} x{1}", id, countToInsert));
             return countToInsert;
+        }
+        #endregion
+
+        #region CHECK ADD ITEM
+        // Returns items/count of NOT added items due to lack of space
+        // empty means that all requested items can be be added
+        public Dictionary<ItemId, int> CheckAddItem(Dictionary<ItemId, int> items, int inventoryIndex = -1)
+        {
+            if (inventoryIndex <= -1)
+            {
+                return CheckAddItemToFirstAvaInv(items);
+            }
+            else
+            {
+                return CheckAddItemToSpecInv(items, inventoryIndex);
+            }
+        }
+
+        private Dictionary<ItemId, int> CheckAddItemToSpecInv(Dictionary<ItemId, int> items,
+            int inventoryIndex)
+        {
+            var toInsert = new Dictionary<ItemId, int>(items);
+            var inventory = Inventories[inventoryIndex];
+            var allSlots = inventory.GetComponentsInChildren<ItemStackView>();
+            foreach (var isv in allSlots)
+            {
+                var itemStack = isv.GetItemStack();
+
+                if (isv.HasItem)
+                {
+                    var itemId = itemStack.Item.ItemId;
+                    if (toInsert.ContainsKey(itemId))
+                    {
+                        var itemMaxStack = itemStack.Item.MaxStackSize;
+                        var canInsert = itemMaxStack - itemStack.Count;
+                        toInsert[itemId] -= Math.Min(canInsert, toInsert[itemId]);
+                        if (toInsert[itemId] <= 0) toInsert.Remove(itemId);
+                    }
+                }
+                else
+                {
+                    var firstItemId = toInsert.First().Key;
+                    var firstItemCount = toInsert.First().Value;
+                    var item = ItemsDatabase.Get(firstItemId);
+                    toInsert[firstItemId] -= Math.Min(firstItemCount, item.MaxStackSize);
+                    if (toInsert[firstItemId] == 0) toInsert.Remove(firstItemId);
+                }
+
+                //If we've removed all return null
+                if (toInsert.Count == 0) return toInsert;
+            }
+
+            return toInsert;
+        }
+
+        private Dictionary<ItemId, int> CheckAddItemToFirstAvaInv(Dictionary<ItemId, int> items)
+        {
+            var toInsert = new Dictionary<ItemId, int>(items);
+
+            for (var index = 0; index < Inventories.Length; index++)
+            {
+                toInsert = CheckAddItemToSpecInv(toInsert, index);
+                if (toInsert.Count == 0) return toInsert;
+            }
+
+            return toInsert;
         }
         #endregion
 

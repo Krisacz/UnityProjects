@@ -116,7 +116,8 @@ namespace Assets.Scripts.Controllers
             //Add blueprints for current group
             foreach (var blueprint in _blueprints[blueprintGroup])
             {
-                var go = GameObjectFactory.ItemBlueprint(blueprint, ItemBlueprintsPanel.transform);
+                var go = GameObjectFactory.ItemBlueprint(blueprint, ItemBlueprintsPanel.transform
+                    , ItemBlueprintController.BlueprintOnClick.Select);
                 _selectedGroupBlueprints.Add(go);
             }
         }
@@ -281,7 +282,7 @@ namespace Assets.Scripts.Controllers
             if (_craftingInProcess && CraftingQueuePanel.transform.childCount < MaxQueuedBlueprints)
             {
                 var go = GameObjectFactory.ItemBlueprint(_selectedBlueprint,
-                    CraftingQueuePanel.transform, false);
+                    CraftingQueuePanel.transform, ItemBlueprintController.BlueprintOnClick.RemoveFromQueue);
                 go.transform.SetAsFirstSibling();
                 RemoveRequiredItems();
                 UpdateSelectedBlueprintRequirements();
@@ -293,7 +294,7 @@ namespace Assets.Scripts.Controllers
                 && _outputInventory.FreeSlots() == 0)
             {
                 var go = GameObjectFactory.ItemBlueprint(_selectedBlueprint,
-                    CraftingQueuePanel.transform, false);
+                    CraftingQueuePanel.transform, ItemBlueprintController.BlueprintOnClick.RemoveFromQueue);
                 go.transform.SetAsFirstSibling();
                 RemoveRequiredItems();
                 UpdateSelectedBlueprintRequirements();

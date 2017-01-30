@@ -26,7 +26,7 @@
 		"MaxStackSize": 10,
 		"SpriteName": "foundation",
 		"Function": "Structure",
-		"Properties": { "SizeW": "1", "SizeH": "1", "IsBlocking": "false", "Elevation": "BelowGround", "ConstructionTime": "0.75" }
+		"Properties": { "IsBlocking": "false", "Elevation": "BelowGround", "ConstructionTime": "0.75" }
 	},
 	
 	{
@@ -36,7 +36,7 @@
 		"MaxStackSize": 10,
 		"SpriteName": "floor",
 		"Function": "Structure",
-		"Properties": { "SizeW": "1", "SizeH": "1", "IsBlocking": "false", "Elevation": "Ground", "ConstructionTime": "1.5" }
+		"Properties": { "IsBlocking": "false", "Elevation": "Ground", "ConstructionTime": "1.5" }
 	},
 	
 	{
@@ -46,7 +46,7 @@
 		"MaxStackSize": 10,
 		"SpriteName": "wall",
 		"Function": "Structure",
-		"Properties": { "SizeW": "1", "SizeH": "1", "IsBlocking": "true", "Elevation": "Ground", "ConstructionTime": "2.5" }
+		"Properties": { "IsBlocking": "true", "Elevation": "Ground", "ConstructionTime": "2.5" }
 	},
 	
 	{
@@ -66,6 +66,6 @@
 		"MaxStackSize": 1,
 		"SpriteName": "printer3d",
 		"Function": "Machine",
-		"Properties": { "Elevation": "OnGround", "ManufactureSpeed": "1.0" }
+		"Properties": { "IsBlocking": "true", "Elevation": "OnGround", "ConstructionTime": "5.5", "ManufactureSpeed": "1.0" }
 	}
 ]

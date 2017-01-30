@@ -1,0 +1,7 @@
+﻿//TODO LIST
+
+1. Removing unconstructed structures
+2. Removing already constructed structures
+3. Custom crafting UI for player/machines
+4. Message feed 
+...

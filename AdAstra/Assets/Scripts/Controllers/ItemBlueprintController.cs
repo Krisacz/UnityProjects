@@ -1,11 +1,15 @@
-﻿using Assets.Scripts.Models;
+﻿using System;
+using Assets.Scripts.Models;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Controllers
 {
     public class ItemBlueprintController : MonoBehaviour
     {
-        public bool CanBeSelected = true;
+        public BlueprintOnClick ActionOnClick;
+        public enum BlueprintOnClick { Select, RemoveFromQueue }
+
         private Blueprint _blueprint;
 
         public Blueprint GetBlueprint()
@@ -20,9 +24,35 @@ namespace Assets.Scripts.Controllers
 
         public void OnSelected()
         {
-            if(!CanBeSelected) return;
             var cc = GetComponentInParent<CraftingController>();
-            cc.OnBlueprintSelected(_blueprint);
+
+            switch (ActionOnClick)
+            {
+                case BlueprintOnClick.Select:
+                    cc.OnBlueprintSelected(_blueprint);
+                    return;
+
+                case BlueprintOnClick.RemoveFromQueue:
+                    var ic = cc.InventoryController.GetComponent<InventoryController>();
+                    var canRemove = ic.CheckAddItem(_blueprint.Requirements);
+                    if (canRemove.Count == 0)
+                    {
+                        foreach (var requirement in _blueprint.Requirements)
+                        {
+                            ic.AddItem(requirement.Key, requirement.Value);
+                        }
+                        cc.UpdateSelectedBlueprintRequirements();
+                        Destroy(this.transform.gameObject);
+                    }
+                    else
+                    {
+                        Log.Warn("ItemBlueprintController", "OnSelected",
+                            "Can not remove queued blueprint, not enough space in the inventory.");
+                    }
+                    return;
+
+                default: throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
