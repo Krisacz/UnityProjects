@@ -18,6 +18,10 @@ namespace Assets.Scripts.Models
         Wall,
 
         //===== TOOL
+        Constructor,
+        Assembler,
         Welder,
+        MinningDrill,
+        OreScanner
     }
 }

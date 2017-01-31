@@ -37,6 +37,14 @@ namespace Assets.Scripts.Controllers
             AddItemsControl();
             ItemsToCheck();
             ItemsToRemove();
+            NotificationsControl();
+        }
+
+        private void NotificationsControl()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha8)) NotificationFeedController.Add(Icons.Tick, "Some test success message");
+            if (Input.GetKeyDown(KeyCode.Alpha9)) NotificationFeedController.Add(Icons.Warning, "Some test warning message");
+            if (Input.GetKeyDown(KeyCode.Alpha0)) NotificationFeedController.Add(Icons.Error, "Some test error message");
         }
 
         private void BuildModeToggle()

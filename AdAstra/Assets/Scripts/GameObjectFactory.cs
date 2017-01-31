@@ -130,6 +130,29 @@ namespace Assets.Scripts
         }
         #endregion
 
+        #region NOTIFICATION
+        public static GameObject Noticifaction(string spriteName, string message, Transform parent)
+        {
+            var go = FromPrefab("Notification");
+            go.GetComponentInChildren<Text>().text = message;
+            if (!string.IsNullOrEmpty(spriteName))
+            {
+                var image = go.GetComponentInChildren<Image>();
+                image.color = new Color32(0xFF, 0xFF, 0xFF, 0xFF);
+                image.sprite = SpritesDatabase.Get(spriteName);
+            }
+            go.transform.SetParent(parent);
+            go.transform.position = parent.position;
+            go.transform.position = new Vector3(go.transform.position.x, go.transform.position.y - 50f, go.transform.position.z);
+
+            //Set name for debuging
+            var gameObjectName = "Notification Message";
+            go.name = gameObjectName;
+
+            return go;
+        }
+        #endregion
+
         #region HELP METHODS
         private static GameObject FromPrefab(string prefabName)
         {

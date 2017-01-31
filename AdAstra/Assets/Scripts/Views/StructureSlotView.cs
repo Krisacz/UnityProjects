@@ -34,7 +34,8 @@ namespace Assets.Scripts.Views
             var item = ItemsDatabase.Get(itemId);
             var isBlocking = item.FunctionProperties.AsBool(FunctionProperty.IsBlocking);
             var go = GameObjectFactory.StructureItem(item, isBlocking, elevation, this.transform);
-            var cTime = item.FunctionProperties.AsFloat(FunctionProperty.ConstructionTime);
+            var isStructure = item.Function == Function.Structure;
+            var cTime = item.FunctionProperties.AsFloat(isStructure ? FunctionProperty.ConstructionTime : FunctionProperty.AssemblyTime);
 
             if (!instaBuild)
             {
@@ -200,10 +201,17 @@ namespace Assets.Scripts.Views
                     return;
                 }
 
-                var canConstruct = item.FunctionProperties.ContainsKey(FunctionProperty.ConstructionSpeed);
-                if (!canConstruct)
+                //If constructing object is a STRUCTURE, player needs to have equiped "Constructor"
+                if (GetNotConstructedObjectFunction() == Function.Structure && item.ItemId != ItemId.Constructor)
                 {
-                    Log.Info("StructureSlotView", "OnPointerDown", "Construction tool not equipped!");
+                    Log.Info("StructureSlotView", "OnPointerDown", "Constructor not equipped!");
+                    return;
+                }
+
+                //If constructing object is a MACHINE, player needs to have equiped "Assembler"
+                if (GetNotConstructedObjectFunction() == Function.Machine && item.ItemId != ItemId.Assembler)
+                {
+                    Log.Info("StructureSlotView", "OnPointerDown", "Assembler tool not equipped!");
                     return;
                 }
             }
@@ -232,42 +240,43 @@ namespace Assets.Scripts.Views
             if (!_constructing) return;
 
             //Get first not constructed structure
-            var structureElevation = StructureElevation.None;
-            foreach (var c in _construction)
-            {
-                if (c.Value > 0.0f)
-                {
-                    structureElevation = c.Key;
-                    break;
-                }
-            }
+            var elevation = GetNotConstructedObjectElevation();
 
             //Nothing to construct
-            if (structureElevation == StructureElevation.None)
+            if (elevation == StructureElevation.None)
             {
                 Log.Error("StructureSlotView", "Update", 
                     string.Format("Trying to construct but nothing to construct! [{0},{1}]", _x, _y));
                 return;
             }
 
-            //Get construction speed
+            //Establish if we are constructing or assembling
+            //True - STRUCTURE # False - MACHINE
+            var isStructure = GetNotConstructedObjectFunction() == Function.Structure;
+            
+            //Get construction/assembly speed (depend if we are working on structure or machine)
+            //If we got so far here - we definitelly have equipped correct tool
             var selectedItem = ItemSelectionController.GetItemStackView().GetItemStack().Item;
-            var constructionSpeed = selectedItem.FunctionProperties
-                .AsFloat(FunctionProperty.ConstructionSpeed);
-                
+            var workSpeed = isStructure 
+                ? selectedItem.FunctionProperties.AsFloat(FunctionProperty.ConstructionSpeed)
+                : selectedItem.FunctionProperties.AsFloat(FunctionProperty.AssemblySpeed);
+
             //Construct!
-            _construction[structureElevation] -= (Time.deltaTime * constructionSpeed);
-            WorkProgressController.UpdateWork(_construction[structureElevation], 
-                _items[structureElevation].FunctionProperties.AsFloat(FunctionProperty.ConstructionTime));
+            var maxTime = isStructure
+                ? _items[elevation].FunctionProperties.AsFloat(FunctionProperty.ConstructionTime)
+                : _items[elevation].FunctionProperties.AsFloat(FunctionProperty.AssemblyTime);
+
+            _construction[elevation] -= (Time.deltaTime * workSpeed);
+            WorkProgressController.UpdateWork(_construction[elevation], maxTime);
 
             //Construction finished!
-            if (_construction[structureElevation] <= 0.0f)
+            if (_construction[elevation] <= 0.0f)
             {
                 WorkProgressController.Off();
-                _construction[structureElevation] = 0.0f;
-                var go = _gameObjects[structureElevation];
+                _construction[elevation] = 0.0f;
+                var go = _gameObjects[elevation];
                 go.GetComponent<SpriteRenderer>().color = Color.white;
-                var item = _items[structureElevation];
+                var item = _items[elevation];
                 var isBlocking = item.FunctionProperties.AsBool(FunctionProperty.IsBlocking);
                 go.GetComponent<BoxCollider2D>().enabled = isBlocking;
 
@@ -277,6 +286,25 @@ namespace Assets.Scripts.Views
 
             //Log.Info(_construction[structureElevation].ToString(CultureInfo.InvariantCulture));
         }
+
+        private StructureElevation GetNotConstructedObjectElevation()
+        {
+            var elevation = StructureElevation.None;
+            foreach (var c in _construction)
+            {
+                if (!(c.Value > 0.0f)) continue;
+                elevation = c.Key;
+                break;
+            }
+            return elevation;
+        }
+
+        private Function GetNotConstructedObjectFunction()
+        {
+            var elevation = GetNotConstructedObjectElevation();
+            return elevation == StructureElevation.None ? Function.None : _items[elevation].Function;
+        }
+
         #endregion
 
         #region GET

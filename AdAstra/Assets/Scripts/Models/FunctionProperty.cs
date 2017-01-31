@@ -8,8 +8,6 @@ namespace Assets.Scripts.Models
     public enum FunctionProperty
     {
         //=== STRUCTURE
-        SizeW,
-        SizeH,
         IsBlocking,
         Elevation,
         ConstructionTime,
@@ -17,10 +15,24 @@ namespace Assets.Scripts.Models
         //==== RESOURCE
         Rarity,
 
+        //==== MACHINE
+        AssemblyTime,
+
         //==== TOOL
         ConstructionSpeed,
-
-        //==== MACHINE
-        ManufactureSpeed,
+        DeconstructionSpeed,
+        Reliability,
+        Range,
+        AssemblySpeed,
+        DisassemblySpeed,
+        RepairSpeed,
+        RepairEfficiency,
+        DrillSpeed,
+        ExtractionYield,
+        BurstExtractionChance,
+        DrillHeadLevel,
+        ScanSpeed,
+        ScanSuccess,
+        ScanLevel
     }
 }

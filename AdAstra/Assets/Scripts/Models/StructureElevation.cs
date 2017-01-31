@@ -7,7 +7,7 @@ namespace Assets.Scripts.Models
 {
     public enum StructureElevation
     {
-        None        = -1,
+        None        =  0,
         BelowGround =  1,
         Ground      =  2,
         OnGround    =  3,

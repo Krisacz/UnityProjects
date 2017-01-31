@@ -5,12 +5,11 @@ using System.Text;
 
 namespace Assets.Scripts.Models
 {
-    public enum Function
+    public enum Icons
     {
         None,
-        Resource,
-        Tool,
-        Structure,
-        Machine
+        Tick,
+        Warning,
+        Error
     }
 }
