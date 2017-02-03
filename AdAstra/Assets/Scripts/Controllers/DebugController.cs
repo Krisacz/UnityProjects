@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Controllers
 {
+    //[ExecuteInEditMode]
     public class DebugController : MonoBehaviour
     {
         public GameObject InventoryController;
@@ -27,13 +28,12 @@ namespace Assets.Scripts.Controllers
         // Use this for initialization
         void Start()
         {
-
+            
         }
 
         // Update is called once per frame
         void Update()
         {
-            BuildModeToggle();
             AddItemsControl();
             ItemsToCheck();
             ItemsToRemove();
@@ -42,24 +42,12 @@ namespace Assets.Scripts.Controllers
 
         private void NotificationsControl()
         {
+            if (Input.GetKeyDown(KeyCode.Alpha5)) NotificationFeedController.Add("iron_ore", "+1 Raw Iron Ore");
+            if (Input.GetKeyDown(KeyCode.Alpha6)) NotificationFeedController.Add("gold_ore", "+1 Raw Gold Ore");
+            if (Input.GetKeyDown(KeyCode.Alpha7)) NotificationFeedController.Add(string.Empty, "Some test just-message no-image.");
             if (Input.GetKeyDown(KeyCode.Alpha8)) NotificationFeedController.Add(Icons.Tick, "Some test success message");
             if (Input.GetKeyDown(KeyCode.Alpha9)) NotificationFeedController.Add(Icons.Warning, "Some test warning message");
             if (Input.GetKeyDown(KeyCode.Alpha0)) NotificationFeedController.Add(Icons.Error, "Some test error message");
-        }
-
-        private void BuildModeToggle()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (BuildController.IsOn())
-                {
-                    BuildController.BuildModeOff();
-                }
-                else
-                {
-                    BuildController.BuildModeOn();
-                }
-            }
         }
 
         private void AddItemsControl()

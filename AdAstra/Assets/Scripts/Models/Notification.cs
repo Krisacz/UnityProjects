@@ -20,5 +20,6 @@ namespace Assets.Scripts.Models
         public GameObject GameObj { get; set; }
         public Mode State { get; set; }
         public float ShowDuration { get; set; }
+        public bool HasSprite { get; set; }
     }
 }

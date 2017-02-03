@@ -19,10 +19,39 @@ namespace Assets.Scripts.Controllers
         private static readonly Color BlankColor = new Color32(0xFF, 0xFF, 0xFF, 0x00);
         private static readonly Color NotConstructed = new Color32(0xFF, 0xFF, 0x00, 0x80);
 
+        private static readonly Color BuildableArea = new Color(1f, 1f, 0f, 0.5f);
+
         public void Start()
         {
             EscapePodView = EscapePod.GetComponent<EscapePodView>();
         }
+
+        public void Update()
+        {
+            BuildModeToggle();
+            DebugModeToggle();
+        }
+
+        private void BuildModeToggle()
+        {
+            if (!Input.GetKeyDown(KeyCode.Space)) return;
+
+            if (IsOn())
+            {
+                BuildModeOff();
+            }
+            else
+            {
+                BuildModeOn();
+            }
+        }
+
+        private void DebugModeToggle()
+        {
+            if (!Input.GetKeyDown(KeyCode.Backspace)) return;
+            DebugShowBuilableArea();
+        }
+
 
         private static bool _isOn = false;
         public static bool IsOn()
@@ -207,6 +236,17 @@ namespace Assets.Scripts.Controllers
                 Log.Error("BuildController", "Build",
                     string.Format("Strange! Somehow you are were unable to " +
                                   "build in here! [X:{0},Y:{1}]!", x, y));
+            }
+        }
+
+        private static void DebugShowBuilableArea()
+        {
+            for (var x = 0; x < EscapePodView.Columns; x++)
+            {
+                for (var y = 0; y < EscapePodView.Rows; y++)
+                {
+                    SetBuildOverlayColor(x, y, BuildableArea);
+                }
             }
         }
     }

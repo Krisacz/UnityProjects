@@ -17,6 +17,7 @@ namespace Assets.Scripts.Views
             StructureSlots = new GameObject[Columns, Rows];
             Init();
             CreateInitialEscapePod();
+            this.transform.position = new Vector3(-15f, -15f, 0f);
         }
 
         private void Init()

@@ -134,17 +134,20 @@ namespace Assets.Scripts
         public static GameObject Noticifaction(string spriteName, string message, Transform parent)
         {
             var go = FromPrefab("Notification");
-            go.GetComponentInChildren<Text>().text = message;
+            var text = go.GetComponentInChildren<Text>();
+            text.text = message;
+            text.color = new Color(1f, 1f, 1f, 0f);
+
             if (!string.IsNullOrEmpty(spriteName))
             {
                 var image = go.GetComponentInChildren<Image>();
-                image.color = new Color32(0xFF, 0xFF, 0xFF, 0xFF);
+                image.color = new Color(1f, 1f, 1f, 0f);
                 image.sprite = SpritesDatabase.Get(spriteName);
             }
-            go.transform.SetParent(parent);
-            go.transform.position = parent.position;
-            go.transform.position = new Vector3(go.transform.position.x, go.transform.position.y - 50f, go.transform.position.z);
 
+            go.transform.SetParent(parent);
+            go.GetComponent<RectTransform>().localPosition = new Vector3(0f, -30f, 0f);
+            
             //Set name for debuging
             var gameObjectName = "Notification Message";
             go.name = gameObjectName;

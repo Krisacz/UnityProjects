@@ -6,20 +6,25 @@ using System.Runtime.CompilerServices;
 using Assets.Scripts;
 using Assets.Scripts.Models;
 using UnityEditor;
+using UnityEngine.UI;
 
 public class NotificationFeedController : MonoBehaviour
 {
+    private const int MaxVisible = 1;
+    private const float SpeedIn = 4f;
+    private const float SpeedOut = 6f;
+    private const float ShowDuration = 0.5f;
+    public static NotificationFeedController This;
+
     private static readonly List<Notification> Notifications = new List<Notification>();
     private static readonly List<GameObject> ToDestroy = new List<GameObject>();
     private static int _visible = 0;
-    private static int _maxVisible = 3;
-    private static float _speed = 0.01f;
-    private static float _showDuration = 2f;
     private static Transform _this;
 
     public void Start()
     {
         _this = this.transform;
+        This = this;
     }
 
     void Update ()
@@ -49,32 +54,39 @@ public class NotificationFeedController : MonoBehaviour
 	    }
         
         //Destroy
-        //Notifications.RemoveAll(x => x.State == Notification.Mode.Destroy);
-        //foreach (var gameObj in ToDestroy) if(gameObj != null) Destroy(gameObj);
-        //ToDestroy.RemoveAll(x => x == null);
+        Notifications.RemoveAll(x => x.State == Notification.Mode.Destroy);
+        foreach (var gameObj in ToDestroy) if(gameObj != null) Destroy(gameObj);
+        ToDestroy.RemoveAll(x => x == null);
     }
 
     private static void Wait(Notification notification)
     {
-        if(_visible == _maxVisible) return;
+        if(_visible == MaxVisible) return;
 
         _visible++;
         notification.State = Notification.Mode.Appear;
-        var position = notification.GameObj.transform.position;
-        notification.GameObj.transform.position = new Vector3(0f, position.y, position.z);
     }
 
     private static void Appear(Notification notification)
     {
-        var currentPosition = notification.GameObj.transform.position;
-        var newPos = new Vector3(0f, currentPosition.y + _speed * Time.deltaTime, currentPosition.z);
-        if (newPos.y >= -1f && newPos.y <= 1f)
+        var step = SpeedIn * Time.deltaTime;
+
+        var startPosition = notification.GameObj.GetComponent<RectTransform>().localPosition;
+        var endPosition = new Vector3(0f, 0f, 0f);
+        var newPosition = Vector3.Lerp(startPosition, endPosition, step);
+
+        var startAlpha = notification.GameObj.GetComponentInChildren<Text>().color.a;
+        var newAlpha = Mathf.Lerp(startAlpha, 1f, step);
+
+        if (newPosition.y >= -1f)
         {
-            newPos.y = 0f;
             notification.State = Notification.Mode.Show;
         }
 
-        notification.GameObj.transform.position = newPos;
+        notification.GameObj.GetComponent<RectTransform>().localPosition = newPosition;
+        var c = notification.GameObj.GetComponentInChildren<Text>().color;
+        notification.GameObj.GetComponentInChildren<Text>().color = new Color(c.r, c.g, c.b, newAlpha);
+        if(notification.HasSprite) notification.GameObj.GetComponentInChildren<Image>().color = new Color(1f, 1f, 1f, newAlpha);
     }
 
     private static void Show(Notification notification)
@@ -83,19 +95,31 @@ public class NotificationFeedController : MonoBehaviour
         if (notification.ShowDuration <= 0f)
         {
             notification.State = Notification.Mode.Disappear;
+            _visible--;
         }
     }
 
     private static void Disappear(Notification notification)
     {
-        var currentPosition = notification.GameObj.transform.position;
-        var newPos = new Vector3(currentPosition.x, currentPosition.y + _speed * Time.deltaTime, currentPosition.z);
-        notification.GameObj.transform.position = newPos;
-        if (newPos.y >= -50f)
+        var step = SpeedOut * Time.deltaTime;
+
+        var startPosition = notification.GameObj.GetComponent<RectTransform>().localPosition;
+        var endPosition = new Vector3(0f, 30f, 0f);
+        var newPosition = Vector3.Lerp(startPosition, endPosition, step);
+
+        var startAlpha = notification.GameObj.GetComponentInChildren<Text>().color.a;
+        var newAlpha = Mathf.Lerp(startAlpha, 0f, step);
+
+        if (newPosition.y >= 29f)
         {
             notification.State = Notification.Mode.Destroy;
             ToDestroy.Add(notification.GameObj);
         }
+
+        notification.GameObj.GetComponent<RectTransform>().localPosition = newPosition;
+        var c = notification.GameObj.GetComponentInChildren<Text>().color;
+        notification.GameObj.GetComponentInChildren<Text>().color = new Color(c.r, c.g, c.b, newAlpha);
+        if (notification.HasSprite) notification.GameObj.GetComponentInChildren<Image>().color = new Color(1f, 1f, 1f, newAlpha);
     }
 
     public static void Add(string spriteName, string message)
@@ -104,7 +128,8 @@ public class NotificationFeedController : MonoBehaviour
         {
             State = Notification.Mode.Wait,
             GameObj = GameObjectFactory.Noticifaction(spriteName, message, _this),
-            ShowDuration = _showDuration
+            ShowDuration = ShowDuration,
+            HasSprite = !string.IsNullOrEmpty(spriteName)
         });
     }
 
