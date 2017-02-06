@@ -433,7 +433,7 @@ namespace Assets.Scripts.Views
             }
             
             //====== Do Work!
-            _construction[elevation] -= (Time.deltaTime*workSpeed);
+            _construction[elevation] -= DebugController.InstaBuild ? float.MaxValue : (Time.deltaTime*workSpeed);
             var currentValue = Math.Abs(_construction[elevation]);
             var color = state.Value ? Color.blue : Color.red;
             WorkProgressController.UpdateWork(currentValue, maxTime, color);

@@ -287,119 +287,162 @@ namespace Assets.Scripts.Controllers
         }
 
         #region INTEGRITY CHECK
+
+        #region AIR CHECK
         private static SimpleTile[,] _airMap;
-        private enum SimpleTile
+
+        private class SimpleTile
         {
-            Empty,
-            Floor, 
-            Wall,
-            FloodedFloor,
-            PressurizedFloor,
-            NotPressurizedFloor
+            public int SelfX { get; set; }
+            public int SelfY { get; set; }
+            public SimpleTileType Type { get; set; }
+            public int FloodGroup { get; set; }
+            public bool HasAir { get; set; }
+            public Vector2 AirLossDir { get; set; }
         }
 
-        //Check which areas are fully enclosed and pressurized
+        private enum SimpleTileType
+        {
+            Empty,
+            Floor,
+            Wall,
+        }
+
+        //Check which areas are fully enclosed and have air
         private static void EscapePodPressureCheck()
         {
             //Create simplified map
             _airMap = new SimpleTile[EscapePodView.Columns, EscapePodView.Rows];
-            var firstFloorX = -1;
-            var firstFloorY = -1;
-
             for (var x = 0; x < EscapePodView.Columns; x++)
             {
                 for (var y = 0; y < EscapePodView.Rows; y++)
                 {
                     var ssv = EscapePodView.GetStructureSlotView(x, y);
                     var groundItem = ssv.GetItem(StructureElevation.Ground);
-                    if (groundItem == null)
+                    if (groundItem != null && groundItem.ItemId == ItemId.Floor)
                     {
-                        _airMap[x, y] = SimpleTile.Empty;
+                        _airMap[x, y] = new SimpleTile() {SelfX = x, SelfY = y, Type = SimpleTileType.Floor};
                     }
-                    else
+                    else if (groundItem != null && groundItem.ItemId == ItemId.Wall)
                     {
-                        if (groundItem.ItemId == ItemId.Floor)
-                        {
-                            _airMap[x, y] = SimpleTile.Floor;
-
-                            //Set 1st floor
-                            if (firstFloorX != -1 || firstFloorY != -1) continue;
-                            firstFloorX = x;
-                            firstFloorY = y;
-                        }
-                        else if (groundItem.ItemId == ItemId.Wall)
-                        {
-                            _airMap[x, y] = SimpleTile.Wall;
-                        }
-                        else
-                        {
-                            _airMap[x, y] = SimpleTile.Empty;
-                        }
+                        _airMap[x, y] = new SimpleTile() {SelfX = x, SelfY = y, Type = SimpleTileType.Wall};
+                    }
+                    else if (groundItem == null || groundItem.ItemId == ItemId.None)
+                    {
+                        _airMap[x, y] = new SimpleTile() {SelfX = x, SelfY = y, Type = SimpleTileType.Empty};
                     }
                 }
             }
 
-            //Floor flood
-            FloorFlood(firstFloorX, firstFloorY);
-            
+            //Go through all tiles and  flood them
+            var floodGroup = 1;
+            for (var x = 0; x < EscapePodView.Columns; x++)
+            {
+                for (var y = 0; y < EscapePodView.Rows; y++)
+                {
+                    var t = _airMap[x, y];
+                    if (t.FloodGroup == 0 && t.Type == SimpleTileType.Floor)
+                    {
+                        FloorFlood(x, y, floodGroup, SimpleTileType.Floor);
+                        floodGroup++;
+                    }
+                }
+            }
+
+            //Group floods
+            var groups = new List<List<SimpleTile>>();
+            for (var floodGroupIndex = 1; floodGroupIndex < floodGroup; floodGroupIndex++)
+            {
+                var g = new List<SimpleTile>();
+                var groupHasAir = true;
+                for (var x = 0; x < EscapePodView.Columns; x++)
+                {
+                    for (var y = 0; y < EscapePodView.Rows; y++)
+                    {
+                        if (_airMap[x, y].FloodGroup == floodGroupIndex)
+                        {
+                            var airLossDir = PressureCheck(x, y, floodGroupIndex);
+                            _airMap[x, y].AirLossDir = airLossDir;
+                            _airMap[x, y].HasAir = (airLossDir == Vector2.zero);
+                            if (groupHasAir && airLossDir != Vector2.zero) groupHasAir = false;
+                            g.Add(_airMap[x, y]);
+                        }
+                    }
+                }
+
+                //If group lost air mark all tiles
+                if (groupHasAir == false)
+                {
+                    foreach (var simpleTile in g)
+                    {
+                        simpleTile.HasAir = false;
+                    }
+                }
+            }
+
             //Debug output
             for (var x = 0; x < EscapePodView.Columns; x++)
             {
                 for (var y = 0; y < EscapePodView.Rows; y++)
                 {
-                    var v = _airMap[x, y];
-                    var color = Color.white;
-                    switch (v)
+                    var t = _airMap[x, y];
+
+                    //Tile
+                    var tileColor = Color.clear;
+                    switch (t.Type)
                     {
-                        case SimpleTile.Empty:
-                            color = Color.clear;
+                        case SimpleTileType.Empty:
+                            tileColor = Color.white;
                             break;
-
-                        case SimpleTile.Floor:
-                            color = Color.yellow;
+                        case SimpleTileType.Floor:
+                            tileColor = Color.grey;
                             break;
-
-                        case SimpleTile.Wall:
-                            color = Color.gray;
+                        case SimpleTileType.Wall:
+                            tileColor = Color.black;
                             break;
-
-                        case SimpleTile.FloodedFloor:
-                            color = Color.magenta;
-                            break;
-
-                        case SimpleTile.PressurizedFloor:
-                            color = Color.green;
-                            break;
-
-                        case SimpleTile.NotPressurizedFloor:
-                            color = Color.red;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
                     }
+                    SetBuildOverlayColor(x, y, tileColor, "square");
 
-                    SetBuildOverlayColor(x, y, color, "square");
+                    //Flood
+                    if (_airMap[x, y].FloodGroup > 0)
+                    {
+                        if (!_airMap[x, y].HasAir)
+                        {
+                            Log.Info(string.Format("AirLossDir [{0},{1}] = {2}", x, y, _airMap[x, y].AirLossDir));
+                            SetBuildDebugOverlayColor(x, y, Color.red);
+                            SetBuildDebugArrow(x, y, _airMap[x, y].AirLossDir);
+                        }
+                        else
+                        {
+                            SetBuildDebugOverlayColor(x, y, Color.green);
+                            SetBuildDebugArrow(x, y, Vector2.zero);} 
+
+                    }
+                    else
+                    {
+                        SetBuildDebugOverlayColor(x, y, Color.clear);
+                        SetBuildDebugArrow(x, y, Vector2.zero);
+                    }
                 }
             }
         }
 
-        private static void FloorFlood(int x, int y)
+        private static void FloorFlood(int x, int y, int fillWith, SimpleTileType searchFor)
         {
             if (x < 0 || x >= EscapePodView.Columns) return;
             if (y < 0 || y >= EscapePodView.Rows) return;
 
-            if (_airMap[x, y] == SimpleTile.Floor)
+            if (_airMap[x, y].Type == searchFor && _airMap[x, y].FloodGroup == 0)
             {
-                _airMap[x, y] = NeighborsCheck(x,y) ? SimpleTile.PressurizedFloor : SimpleTile.NotPressurizedFloor;
-                FloorFlood(x, y);
-                FloorFlood(x + 1, y);
-                FloorFlood(x, y + 1);
-                FloorFlood(x - 1, y);
-                FloorFlood(x, y - 1);
+                _airMap[x, y].FloodGroup = fillWith;
+                FloorFlood(x + 1, y, fillWith, searchFor);
+                FloorFlood(x, y + 1, fillWith, searchFor);
+                FloorFlood(x - 1, y, fillWith, searchFor);
+                FloorFlood(x, y - 1, fillWith, searchFor);
             }
         }
 
-        private static bool NeighborsCheck(int x, int y)
+        private static Vector2 PressureCheck(int x, int y, int floodGroup)
         {
             for (var nX = x - 1; nX <= x + 1; nX++)
             {
@@ -408,20 +451,43 @@ namespace Assets.Scripts.Controllers
                     if (nX == x && nY == y) continue;
                     if (nX < 0 || nX > EscapePodView.Columns - 1 || nY < 0 || nY > EscapePodView.Rows - 1) continue;
 
-                    if (_airMap[nX, nY] != SimpleTile.Floor
-                        && _airMap[nX, nY] != SimpleTile.Wall
-                        && _airMap[nX, nY] != SimpleTile.PressurizedFloor)
+                    if (_airMap[nX, nY].FloodGroup != floodGroup
+                        && _airMap[nX, nY].Type != SimpleTileType.Floor
+                        && _airMap[nX, nY].Type != SimpleTileType.Wall)
                     {
-                        return false;
+                        return new Vector2(nX - x, nY - y);
                     }
                 }
             }
 
-            return true;
+            return Vector2.zero;
         }
-        
 
+        private static void SetBuildDebugOverlayColor(int x, int y, Color color)
+        {
+            var go = EscapePodView.StructureSlots[x, y];
+            var marker = go.transform.FindChild("DebugMarker");
+            marker.GetComponent<SpriteRenderer>().color = color;
+        }
 
+        private static void SetBuildDebugArrow(int x, int y, Vector2 dirVector2)
+        {
+            var go = EscapePodView.StructureSlots[x, y];
+            var marker = go.transform.FindChild("DebugArrow");
+
+            if (dirVector2 == Vector2.zero)
+            {
+                marker.GetComponent<SpriteRenderer>().color = Color.clear;
+                return;
+            }
+            
+            marker.GetComponent<SpriteRenderer>().color = Color.blue;
+            var dir = MathHelper.Vector2Angle(dirVector2);
+            marker.rotation = Quaternion.AngleAxis(dir, Vector3.back);
+        }
+        #endregion
+
+        #region FRACTURE CHECK
         //Check if EscapePod is as ONE Structure and it's not "in pieces"
         //Pass through x/y of possible new "gap" 
         private static int[,] _map;
@@ -502,6 +568,8 @@ namespace Assets.Scripts.Controllers
                 Flood(x, y - 1, fillWith, searchFor);
             }
         }
+
+        #endregion
 
         #endregion
     }

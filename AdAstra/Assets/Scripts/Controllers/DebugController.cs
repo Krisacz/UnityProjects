@@ -8,6 +8,7 @@ namespace Assets.Scripts.Controllers
     public class DebugController : MonoBehaviour
     {
         public static bool InfiniteItems = true;
+        public static bool InstaBuild = true;
 
         public GameObject InventoryController;
         public GameObject CraftingController;
@@ -30,10 +31,8 @@ namespace Assets.Scripts.Controllers
         // Use this for initialization
         void Start()
         {
-            if (InfiniteItems)
-            {
-                Log.Warn("DebugController", "Start", "Warning! Infinite items are ENABLED!");
-            } 
+            if (InfiniteItems)  Log.Warn("DebugController", "Start", "Warning! InfiniteItems ENABLED!");
+            if (InstaBuild)     Log.Warn("DebugController", "Start", "Warning! InstaBuild ENABLED!");
         }
 
         // Update is called once per frame
