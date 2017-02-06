@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Controllers;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using UnityEngine;
@@ -56,6 +57,8 @@ namespace Assets.Scripts.Views
 
         public void UpdateStackCount(int count)
         {
+            if(DebugController.InfiniteItems) return;
+
             _itemStack.Count += count;
 
             if (_itemStack.Count < 0)

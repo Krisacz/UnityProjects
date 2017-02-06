@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using UnityEngine;
@@ -87,9 +88,29 @@ namespace Assets.Scripts.Views
             return StructureSlots[x, y].GetComponent<StructureSlotView>();
         }
 
-        // Update is called once per frame
-        void Update()
+        public void RemoveStructure(int x, int y, StructureElevation elevation)
         {
+            var structureSlotGo = StructureSlots[x, y];
+            var structureSlotView = structureSlotGo.GetComponent<StructureSlotView>();
+            structureSlotView.RemoveStructure(elevation);
+        }
+
+        //TODO Do we need this?
+        public List<GameObject> GetNeighbors(int x, int y)
+        {
+            var list = new List<GameObject>();
+            for (var nX = x - 1; nX <= x + 1; nX++)
+            {
+                for (var nY = y - 1; nY <= y + 1; nY++)
+                {
+                    //Skip if same tile or out of bounds
+                    if(nX == x && nY == y) continue;
+                    if(nX < 0 || nX >= Columns || nY < 0 || nY >= Rows) continue;
+                    list.Add(StructureSlots[nX, nY]);
+                }
+            }
+
+            return list;
         }
     }
 }

@@ -6,8 +6,6 @@ public class StarfieldTexUvScrollController : MonoBehaviour
 {
     private FlightController _flightController;
     public float BackgroundOffsetSpeed = 0.5f;
-    private float _x = 0f;
-    private float _y = 0f;
 
     private void Start()
     {

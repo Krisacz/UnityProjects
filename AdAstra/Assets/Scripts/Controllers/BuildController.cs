@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
@@ -13,6 +15,7 @@ namespace Assets.Scripts.Controllers
     {
         public static GameObject EscapePod;
         private static EscapePodView EscapePodView;
+        private static InventoryController PlayerInventory;
 
         private static readonly Color AllowedColor = new Color32(0x00, 0xFF, 0x00, 0x40);
         private static readonly Color NotAllowedColor = new Color32(0xFF, 0x00, 0x00, 0x40);
@@ -24,15 +27,26 @@ namespace Assets.Scripts.Controllers
         public void Start()
         {
             EscapePodView = EscapePod.GetComponent<EscapePodView>();
+            PlayerInventory = GameObject.Find("PlayerInventoryController").GetComponent<InventoryController>();
         }
 
         public void Update()
         {
             BuildModeToggle();
             DebugModeToggle();
+
+            if (Input.GetKeyDown(KeyCode.End))
+            {
+                EscapePodStructureCheck(null, null, true);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Delete))
+            {
+                EscapePodPressureCheck();
+            }
         }
 
-        private void BuildModeToggle()
+        private static void BuildModeToggle()
         {
             if (!Input.GetKeyDown(KeyCode.Space)) return;
 
@@ -46,7 +60,7 @@ namespace Assets.Scripts.Controllers
             }
         }
 
-        private void DebugModeToggle()
+        private static void DebugModeToggle()
         {
             if (!Input.GetKeyDown(KeyCode.Backspace)) return;
             DebugShowBuilableArea();
@@ -62,41 +76,45 @@ namespace Assets.Scripts.Controllers
         public static void BuildModeOn()
         {
             _isOn = true;
-            RefreshBuildOverlay();
+            RefreshBuildOverlay(false);
         }
 
-        public static void RefreshBuildOverlay()
+        public static void BuildModeOff()
         {
-            var blank = SpritesDatabase.Get("square");
+            _isOn = false;
+            RefreshBuildOverlay(true);
+        }
 
+        public static void RefreshBuildOverlay(bool showOnlyNotConstructedObj)
+        {
             for (var x = 0; x < EscapePodView.Columns; x++)
             {
                 for (var y = 0; y < EscapePodView.Rows; y++)
                 {
-                    var go = EscapePodView.StructureSlots[x, y];
-                    var marker = go.transform.FindChild("Marker");
-                    marker.GetComponent<SpriteRenderer>().sprite = blank;
-
                     var c = CanBuildInStructureSlot(x, y);
                     switch (c)
                     {
                         case -1:
-                            SetBuildOverlayColor(x, y, BlankColor);
+                            SetBuildOverlayColor(x, y, BlankColor, "square");
                             break;
 
                         case 0:
-                            SetBuildOverlayColor(x, y, NotAllowedColor);
+                            SetBuildOverlayColor(x, y, showOnlyNotConstructedObj ? BlankColor : NotAllowedColor, "square");
                             break;
 
                         case 1:
-                            SetBuildOverlayColor(x, y, AllowedColor);
+                            SetBuildOverlayColor(x, y, showOnlyNotConstructedObj ? BlankColor : AllowedColor, "square");
+                            break;
+
+                        case 2:
+                            SetBuildOverlayColor(x, y, NotConstructed, "not_constructed");
                             break;
                     }
                 }
             }
         }
 
-        //Return: -1 -> BLANK, 0 - NOT ALLOWED, 1 - ALLOWED
+        //Return: -1 -> BLANK, 0 - NOT ALLOWED TO BUILD, 1 - ALLOWED, 2 - THERE IS UNCONSTRUCTED OBJ
         public static int CanBuildInStructureSlot(int x, int y)
         {
             var currentItem = ItemSelectionController.GetItem();
@@ -105,11 +123,15 @@ namespace Assets.Scripts.Controllers
             if (currentItem == null 
                 || !currentItem.FunctionProperties.ContainsKey(FunctionProperty.Elevation))
             {
+                //If X/Y slot has any unconstructed structures
+                if (EscapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 2;
+
+                //If has not - check if there is adjecent structure
                 return HasAdjecentStructure(x, y) ? 0 : -1;
             }
 
             //If X/Y slot has any unconstructed structures
-            if (EscapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 0;
+            if (EscapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 2;
 
             //Get selected "structure" item elevation property
             var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
@@ -175,38 +197,13 @@ namespace Assets.Scripts.Controllers
             return EscapePodView.GetStructureSlotView(x, y).GetItem(elevation);
         }
 
-        public static void RefreshNotContructedStructuresOverlay()
-        {
-            var empty = SpritesDatabase.Get("square");
-            var notConstructed = SpritesDatabase.Get("not_constructed");
-
-            for (var x = 0; x < EscapePodView.Columns; x++)
-            {
-                for (var y = 0; y < EscapePodView.Rows; y++)
-                {
-                    var go = EscapePodView.StructureSlots[x, y];
-                    var ssv = go.GetComponent<StructureSlotView>();
-                    var isNotConstructed = ssv.IsNotConstructed();
-                    var marker = go.transform.FindChild("Marker");
-                    var sprite = isNotConstructed ? notConstructed : empty;
-
-                    marker.GetComponent<SpriteRenderer>().sprite = sprite;
-                    SetBuildOverlayColor(x, y, isNotConstructed ? NotConstructed : BlankColor);
-                }
-            }
-        }
-
-        private static void SetBuildOverlayColor(int x, int y, Color color)
+        private static void SetBuildOverlayColor(int x, int y, Color color, string sprite)
         {
             var go = EscapePodView.StructureSlots[x,y];
             var marker = go.transform.FindChild("Marker");
-            marker.GetComponent<SpriteRenderer>().color = color;
-        }
-
-        public static void BuildModeOff()
-        {
-            _isOn = false;
-            RefreshNotContructedStructuresOverlay();
+            var sr = marker.GetComponent<SpriteRenderer>();
+            sr.color = color;
+            sr.sprite = SpritesDatabase.Get(sprite);
         }
 
         public static void Build(int x, int y)
@@ -228,7 +225,7 @@ namespace Assets.Scripts.Controllers
             if (success)
             {
                 ItemSelectionController.GetItemStackView().UpdateStackCount(-1);
-                RefreshBuildOverlay();
+                RefreshBuildOverlay(false);
             }
             else
             {
@@ -238,6 +235,45 @@ namespace Assets.Scripts.Controllers
                                   "build in here! [X:{0},Y:{1}]!", x, y));
             }
         }
+        
+        public static bool CanRemove(int x, int y, Item item, bool ignoreStructureCheck)
+        {
+            var spaceInInventory = PlayerInventory
+                .CheckAddItem(new Dictionary<ItemId, int>() { { item.ItemId, 1 } }).Count == 0;
+
+            //Check if we have space in the inventory...
+            if (spaceInInventory == false)
+            {
+                //Player doesn't have enough space in the inventory
+                NotificationFeedController.Add(Icons.Error, "Not enough space in the inventory.");
+                return false;
+            }
+
+            //If we are ignoring structure check we can bail out here
+            if (ignoreStructureCheck) return true;
+
+            //... and removing this structure will not "fracture" Escape Pod
+            if (EscapePodStructureCheck(x, y, false) == false)
+            {
+                //Player doesn't have enough space in the inventory
+                NotificationFeedController.Add(Icons.Error, "You can not remove this object.");
+                return false;
+            }
+
+            //Otherwise we are ok to remove it
+            return true;
+        }
+
+        public static void Remove(int x, int y, StructureElevation elevation, Item item)
+        {
+            //Check if we can return this item to player's inventory
+            //We can ignore structure check if we are removing obj above "BelowGround"
+            //(as there still will be foundation below)
+            if (!CanRemove(x, y, item, elevation > StructureElevation.BelowGround)) return;
+            EscapePodView.RemoveStructure(x, y, elevation);
+            PlayerInventory.AddItem(item.ItemId, 1);
+            RefreshBuildOverlay(false);
+        }
 
         private static void DebugShowBuilableArea()
         {
@@ -245,9 +281,228 @@ namespace Assets.Scripts.Controllers
             {
                 for (var y = 0; y < EscapePodView.Rows; y++)
                 {
-                    SetBuildOverlayColor(x, y, BuildableArea);
+                    SetBuildOverlayColor(x, y, BuildableArea, "square");
                 }
             }
         }
+
+        #region INTEGRITY CHECK
+        private static SimpleTile[,] _airMap;
+        private enum SimpleTile
+        {
+            Empty,
+            Floor, 
+            Wall,
+            FloodedFloor,
+            PressurizedFloor,
+            NotPressurizedFloor
+        }
+
+        //Check which areas are fully enclosed and pressurized
+        private static void EscapePodPressureCheck()
+        {
+            //Create simplified map
+            _airMap = new SimpleTile[EscapePodView.Columns, EscapePodView.Rows];
+            var firstFloorX = -1;
+            var firstFloorY = -1;
+
+            for (var x = 0; x < EscapePodView.Columns; x++)
+            {
+                for (var y = 0; y < EscapePodView.Rows; y++)
+                {
+                    var ssv = EscapePodView.GetStructureSlotView(x, y);
+                    var groundItem = ssv.GetItem(StructureElevation.Ground);
+                    if (groundItem == null)
+                    {
+                        _airMap[x, y] = SimpleTile.Empty;
+                    }
+                    else
+                    {
+                        if (groundItem.ItemId == ItemId.Floor)
+                        {
+                            _airMap[x, y] = SimpleTile.Floor;
+
+                            //Set 1st floor
+                            if (firstFloorX != -1 || firstFloorY != -1) continue;
+                            firstFloorX = x;
+                            firstFloorY = y;
+                        }
+                        else if (groundItem.ItemId == ItemId.Wall)
+                        {
+                            _airMap[x, y] = SimpleTile.Wall;
+                        }
+                        else
+                        {
+                            _airMap[x, y] = SimpleTile.Empty;
+                        }
+                    }
+                }
+            }
+
+            //Floor flood
+            FloorFlood(firstFloorX, firstFloorY);
+            
+            //Debug output
+            for (var x = 0; x < EscapePodView.Columns; x++)
+            {
+                for (var y = 0; y < EscapePodView.Rows; y++)
+                {
+                    var v = _airMap[x, y];
+                    var color = Color.white;
+                    switch (v)
+                    {
+                        case SimpleTile.Empty:
+                            color = Color.clear;
+                            break;
+
+                        case SimpleTile.Floor:
+                            color = Color.yellow;
+                            break;
+
+                        case SimpleTile.Wall:
+                            color = Color.gray;
+                            break;
+
+                        case SimpleTile.FloodedFloor:
+                            color = Color.magenta;
+                            break;
+
+                        case SimpleTile.PressurizedFloor:
+                            color = Color.green;
+                            break;
+
+                        case SimpleTile.NotPressurizedFloor:
+                            color = Color.red;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    SetBuildOverlayColor(x, y, color, "square");
+                }
+            }
+        }
+
+        private static void FloorFlood(int x, int y)
+        {
+            if (x < 0 || x >= EscapePodView.Columns) return;
+            if (y < 0 || y >= EscapePodView.Rows) return;
+
+            if (_airMap[x, y] == SimpleTile.Floor)
+            {
+                _airMap[x, y] = NeighborsCheck(x,y) ? SimpleTile.PressurizedFloor : SimpleTile.NotPressurizedFloor;
+                FloorFlood(x, y);
+                FloorFlood(x + 1, y);
+                FloorFlood(x, y + 1);
+                FloorFlood(x - 1, y);
+                FloorFlood(x, y - 1);
+            }
+        }
+
+        private static bool NeighborsCheck(int x, int y)
+        {
+            for (var nX = x - 1; nX <= x + 1; nX++)
+            {
+                for (var nY = y - 1; nY <= y + 1; nY++)
+                {
+                    if (nX == x && nY == y) continue;
+                    if (nX < 0 || nX > EscapePodView.Columns - 1 || nY < 0 || nY > EscapePodView.Rows - 1) continue;
+
+                    if (_airMap[nX, nY] != SimpleTile.Floor
+                        && _airMap[nX, nY] != SimpleTile.Wall
+                        && _airMap[nX, nY] != SimpleTile.PressurizedFloor)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+        
+
+
+        //Check if EscapePod is as ONE Structure and it's not "in pieces"
+        //Pass through x/y of possible new "gap" 
+        private static int[,] _map;
+
+        private static bool EscapePodStructureCheck(int? virtualX, int? virtualY, bool debugMode)
+        {
+            //Create simplified map
+            _map = new int[EscapePodView.Columns, EscapePodView.Rows];
+            var firstNotEmptyX = -1;
+            var firstNotEmptyY = -1;
+
+            for (var x = 0; x < EscapePodView.Columns; x++)
+            {
+                for (var y = 0; y < EscapePodView.Rows; y++)
+                {
+                    var isEmpty = EscapePodView.GetStructureSlotView(x, y).IsEmpty(StructureElevation.BelowGround);
+                    _map[x, y] = isEmpty ? 0 : 1;
+
+                    //Set 1st non empty position
+                    if (!isEmpty && firstNotEmptyX == -1 && firstNotEmptyY == -1)
+                    {
+                        firstNotEmptyX = x;
+                        firstNotEmptyY = y;
+                    }
+                }
+            }
+
+            //Add the one tile we are testing
+            if (virtualX.HasValue && virtualY.HasValue)
+            {
+                _map[virtualX.Value, virtualY.Value] = 0;
+            }
+
+            //Flood - flood with [-1] and go through only tiles with value [1]
+            Flood(firstNotEmptyX, firstNotEmptyY, -1, 1);
+
+            //Are there any non-flooded non-empty tiles left?
+            var allCorrect = true;
+            for (var x = 0; x < EscapePodView.Columns; x++)
+            {
+                for (var y = 0; y < EscapePodView.Rows; y++)
+                {
+                    var v = _map[x, y];
+
+                    //In debug mode we will go through all tiles 
+                    if (debugMode)
+                    {
+                        var color = Color.white;
+                        if (v == -1) color = Color.magenta; //Flooded
+                        if (v == 0) color = Color.white; //Empty
+                        if (v == 1) color = Color.blue; //Incorrect!
+                        SetBuildOverlayColor(x, y, color, "square");
+                        if (v == 1) allCorrect = false;
+                    }
+                    //In normal mode we will return if we found first incorrect tile
+                    else
+                    {
+                        if (v == 1) return false;
+                    }
+                }
+            }
+
+            Log.Info("EscapePod status: " + (allCorrect ? "All OK" : "FRACTURED!!!"));
+            return allCorrect;
+        }
+
+        private static void Flood(int x, int y, int fillWith, int searchFor)
+        {
+            if (x < 0 || x >= EscapePodView.Columns) return;
+            if (y < 0 || y >= EscapePodView.Rows) return;
+
+            if (_map[x, y] == searchFor)
+            {
+                _map[x, y] = fillWith;
+                Flood(x + 1, y, fillWith, searchFor);
+                Flood(x, y + 1, fillWith, searchFor);
+                Flood(x - 1, y, fillWith, searchFor);
+                Flood(x, y - 1, fillWith, searchFor);
+            }
+        }
+
+        #endregion
     }
 }

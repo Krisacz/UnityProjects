@@ -14,7 +14,6 @@ public class NotificationFeedController : MonoBehaviour
     private const float SpeedIn = 4f;
     private const float SpeedOut = 6f;
     private const float ShowDuration = 0.5f;
-    public static NotificationFeedController This;
 
     private static readonly List<Notification> Notifications = new List<Notification>();
     private static readonly List<GameObject> ToDestroy = new List<GameObject>();
@@ -24,7 +23,6 @@ public class NotificationFeedController : MonoBehaviour
     public void Start()
     {
         _this = this.transform;
-        This = this;
     }
 
     void Update ()

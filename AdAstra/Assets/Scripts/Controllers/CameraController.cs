@@ -16,6 +16,9 @@ namespace Assets.Scripts.Controllers
         {
             _targetOrtho = Camera.main.orthographicSize;
             SetCamera();
+
+            iTween.CameraFadeAdd();
+            iTween.CameraFadeFrom(1, 1f);
         }
 	
         void Update ()

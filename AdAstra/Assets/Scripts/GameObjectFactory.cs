@@ -121,7 +121,7 @@ namespace Assets.Scripts
             var gameObjectName = string.Format("Structure ID[{0}]", item.ItemId);
             go.name = gameObjectName;
 
-            go.transform.position = transform.position;
+            go.transform.position =  new Vector3(transform.position.x, transform.position.y, 0f);
             go.transform.parent = transform;
             var spriteRenderer = go.GetComponent<SpriteRenderer>();
             spriteRenderer.sprite = SpritesDatabase.Get(item.SpriteName);

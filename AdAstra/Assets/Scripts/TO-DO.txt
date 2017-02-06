@@ -1,7 +1,7 @@
 ﻿//TODO LIST
 
-1. Removing unconstructed structures
-2. Removing already constructed structures
-3. Custom crafting UI for player/machines
-4. Message feed 
+Custom crafting UI for player/machines 
+Sequencer
+Recursive crafting
+Notification Feed - stop adding new messages if it's in a short time and it is same message (maybe we need groups for msgs?)
 ...

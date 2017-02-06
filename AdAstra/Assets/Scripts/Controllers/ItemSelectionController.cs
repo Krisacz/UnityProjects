@@ -18,18 +18,11 @@ namespace Assets.Scripts.Controllers
             //UpdateSelection(_curentlySelectedIndex);
         }
 
-        public void Update()
+        public static void SelectSlot(int index)
         {
-            if (Input.GetKey(KeyCode.LeftShift)) return;
-            var scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll > 0.0000000001f)
-            {
-                PreviousSlot();
-            }
-            else if (scroll < -0.0000000001f)
-            {
-                NextSlot();
-            }
+            var slots = _slotsPanel.GetComponentsInChildren<ItemStackView>();
+            if (index >= slots.Length) return;
+            UpdateSelection(index);
         }
 
         public static void UpdateSelection(int index)
@@ -46,11 +39,11 @@ namespace Assets.Scripts.Controllers
             _selection.position = slots[index].transform.position;
             _curentlySelectedIndex = index;
 
-            //If build mode is one - update build overlay
-            if(BuildController.IsOn()) BuildController.RefreshBuildOverlay();
+            //Update build overlay
+            BuildController.RefreshBuildOverlay(!BuildController.IsOn());
         }
 
-        private static void NextSlot()
+        public static void NextSlot()
         {
             var slots = _slotsPanel.GetComponentsInChildren<ItemStackView>();
             _curentlySelectedIndex++;
@@ -59,7 +52,7 @@ namespace Assets.Scripts.Controllers
             UpdateSelection(_curentlySelectedIndex);
         }
 
-        private static void PreviousSlot()
+        public static void PreviousSlot()
         {
             var slots = _slotsPanel.GetComponentsInChildren<ItemStackView>();
             _curentlySelectedIndex--;

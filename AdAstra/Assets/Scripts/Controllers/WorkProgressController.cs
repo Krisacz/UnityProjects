@@ -18,12 +18,15 @@ namespace Assets.Scripts.Controllers
             Off();
         }
 
-        public static void UpdateWork(float current, float max)
+        public static void UpdateWork(float current, float max, Color color)
         {
+            _image.color = new Color(color.r, color.g, color.b, 0.5f);
             if(current > 0.0f && !_go.activeSelf) On();
-            var progress = current/max;
+            var currentFixed = max - current;
+            var progress = currentFixed/max;
             _image.fillAmount = progress;
-            _text.text = string.Format("{0}s", current.ToString("F1"));
+            var perc = (int) (progress*100);
+            _text.text = string.Format("{0}%", perc);
         }
 
         public static void Off()

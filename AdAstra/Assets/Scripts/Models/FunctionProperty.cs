@@ -10,13 +10,13 @@ namespace Assets.Scripts.Models
         //=== STRUCTURE
         IsBlocking,
         Elevation,
-        ConstructionTime,
+        ConstructionTime,   //same time for deconstruction
 
         //==== RESOURCE
         Rarity,
 
         //==== MACHINE
-        AssemblyTime,
+        AssemblyTime,       //same time for disassembly
 
         //==== TOOL
         ConstructionSpeed,
