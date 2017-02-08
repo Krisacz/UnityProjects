@@ -26,7 +26,39 @@ namespace Assets.Scripts.Controllers
         public ItemId ItemToRemove;
         public int RemoveCount;
         public int InventoryToRemoveFrom = -1;
-    
+
+        void OnGUI()
+        {
+            if (GUI.Button(new Rect(10, 200, 150, 50), "Do stuff"))
+            {
+
+                //GameObject.Find("Circle1").transform.position = pos[0];
+                //GameObject.Find("Circle2").transform.position = pos[1];
+                //GameObject.Find("Circle3").transform.position = pos[2];
+                //GameObject.Find("Circle4").transform.position = pos[3];
+
+                var go = GameObject.Find("asteroids_27");
+                var polygon = go.GetComponent<PolygonCollider2D>();
+                var bounds = polygon.bounds;
+
+                var square = GameObject.Find("Square");
+
+                var allInside = false;
+
+                do
+                {
+                    var rndPoint = new Vector2( Random.Range(bounds.min.x, bounds.max.x),
+                                                Random.Range(bounds.min.y, bounds.max.y));
+                    square.transform.position = rndPoint;
+                    var corners = MathHelper.GetSquareCorners(square.GetComponent<SpriteRenderer>().bounds);
+                    allInside = MathHelper.PointsInsidePolygon(corners, polygon);
+                }
+                while (!allInside);
+
+
+            }
+        }
+
 
         // Use this for initialization
         void Start()

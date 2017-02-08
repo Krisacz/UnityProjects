@@ -130,6 +130,26 @@ namespace Assets.Scripts
         }
         #endregion
 
+        #region ASTEROID
+        public static GameObject Asteroid(float scale, int id)
+        {
+            var go = FromPrefab("Asteroid");
+            var spriteName = string.Format("asteroids_{0}", id);
+            go.GetComponent<SpriteRenderer>().sprite = SpritesDatabase.Get(spriteName);
+            go.transform.localScale = new Vector3(scale, scale, 1f);
+            go.AddComponent<PolygonCollider2D>();
+            return go;
+        }
+        #endregion
+
+        #region ORE NODE
+        public static GameObject OreNode()
+        {
+            var go = FromPrefab("OreNode");
+            return go;
+        }
+        #endregion
+
         #region NOTIFICATION
         public static GameObject Noticifaction(string spriteName, string message, Transform parent)
         {

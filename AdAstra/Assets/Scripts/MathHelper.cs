@@ -38,5 +38,25 @@ namespace Assets.Scripts
         {
             return a * Mathf.Deg2Rad;
         }
+
+        public static bool PointsInsidePolygon(IEnumerable<Vector2> points, PolygonCollider2D polygonCollider)
+        {
+            foreach (var point in points)
+            {
+                var inside = polygonCollider.OverlapPoint(point);
+                if (!inside) return false;
+            }
+            return true;
+        }
+
+        public static Vector2[] GetSquareCorners(Bounds bounds)
+        {
+            var topLeft = new Vector2(bounds.min.x, bounds.min.y);
+            var topRight = new Vector2(bounds.min.x + bounds.size.x, bounds.min.y);
+            var bottomLeft = new Vector2(bounds.min.x, bounds.min.y + bounds.size.y);
+            var bottomRight = new Vector2(bounds.min.x + bounds.size.x, bounds.min.y + bounds.size.y);
+            return new[] {topLeft, topRight, bottomLeft, bottomRight};
+        }
+   
     }
 }
