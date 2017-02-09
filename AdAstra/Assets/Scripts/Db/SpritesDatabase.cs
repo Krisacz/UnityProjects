@@ -16,5 +16,22 @@ namespace Assets.Scripts.Db
             Sprites.Add(spriteName, sprite);
             return sprite;
         }
+
+        //Get existing or load and add to database - load only once!
+        public static Sprite Get(string spritesheetName, int index)
+        {
+            var fullName = string.Format("{0}_{1}", spritesheetName, index);
+            if (Sprites.ContainsKey(fullName)) return Sprites[fullName];
+            var spritePath = string.Format("{0}/{1}", "Sprites", spritesheetName);
+            var spriteSheet = Resources.LoadAll(spritePath);
+            for (int i = 0; i < spriteSheet.Length; i++)
+            {
+                var sprite = spriteSheet[i] as Sprite;
+                var name = string.Format("{0}_{1}", spritesheetName, i);
+                Sprites.Add(name, sprite);
+            }
+
+            return Sprites[fullName];
+        }
     }
 }

@@ -27,6 +27,7 @@ namespace Assets.Scripts.Controllers
         public int RemoveCount;
         public int InventoryToRemoveFrom = -1;
 
+        /*
         void OnGUI()
         {
             if (GUI.Button(new Rect(10, 200, 150, 50), "Do stuff"))
@@ -58,7 +59,7 @@ namespace Assets.Scripts.Controllers
 
             }
         }
-
+        */
 
         // Use this for initialization
         void Start()
