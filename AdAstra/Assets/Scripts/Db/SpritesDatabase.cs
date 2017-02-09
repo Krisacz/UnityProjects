@@ -20,18 +20,21 @@ namespace Assets.Scripts.Db
         //Get existing or load and add to database - load only once!
         public static Sprite Get(string spritesheetName, int index)
         {
-            var fullName = string.Format("{0}_{1}", spritesheetName, index);
+            var indexP1 = index + 1;
+            var fullName = string.Format("{0}_{1}", spritesheetName, indexP1);
             if (Sprites.ContainsKey(fullName)) return Sprites[fullName];
             var spritePath = string.Format("{0}/{1}", "Sprites", spritesheetName);
             var spriteSheet = Resources.LoadAll(spritePath);
-            for (int i = 0; i < spriteSheet.Length; i++)
+            for (var i = 1; i < spriteSheet.Length; i++)
             {
                 var sprite = spriteSheet[i] as Sprite;
                 var name = string.Format("{0}_{1}", spritesheetName, i);
                 Sprites.Add(name, sprite);
             }
 
-            return Sprites[fullName];
+            var r = Sprites[fullName];
+            Log.Error("SpriteDatabse", "Get",  "SpriteSheet: " + spritesheetName + " Index: " + indexP1 + " is NULL!");
+            return r;
         }
     }
 }
