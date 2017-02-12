@@ -20,5 +20,7 @@ namespace Assets.Scripts.Models
         ModuleNonBlocking       = 9,
         Player                  = 10,
         UITop                   = 11,
+        Floats                  = 12,
+
     }
 }

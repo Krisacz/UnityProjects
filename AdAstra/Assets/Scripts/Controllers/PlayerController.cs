@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using Assets.Scripts.Models;
+using UnityEngine;
 
 namespace Assets.Scripts.Controllers
 {
@@ -9,6 +11,7 @@ namespace Assets.Scripts.Controllers
         public GameObject CraftingUI;
 
         private Rigidbody2D _rigidbody2D;
+        private FixedJoint2D _joint;
         private bool _inventoryVisible;
         private bool _craftingVisible;
         private static CircleCollider2D _playerCollider;
@@ -19,6 +22,9 @@ namespace Assets.Scripts.Controllers
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _playerCollider = GetComponent<CircleCollider2D>();
             _lineController = GetComponentInChildren<LineController>();
+
+            _joint = this.GetComponent<FixedJoint2D>();
+            _joint.enabled = false;
         }
 
         void FixedUpdate()
@@ -32,10 +38,12 @@ namespace Assets.Scripts.Controllers
             ToggleInventory();
             ToggleCrafting();
             SelectInventorySlot();
+            GravityBoots();
         }
-
+        
         private void Movement()
         {
+            if(_gravityBootsActive) return;
             _rigidbody2D.velocity = new Vector2(
                 Mathf.Lerp(0, Input.GetAxis("Horizontal") * Speed, 0.8f),
                 Mathf.Lerp(0, Input.GetAxis("Vertical") * Speed, 0.8f));
@@ -43,10 +51,12 @@ namespace Assets.Scripts.Controllers
 
         private void LookAtMouse()
         {
+            //if (_gravityBootsActive) return;
             var objectPos = Camera.main.WorldToScreenPoint(transform.position);
             var dir = Input.mousePosition - objectPos;
             var angle = (Mathf.Atan2(dir.y, dir.x)*Mathf.Rad2Deg) - 90f;
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+            transform.FindChild("Circle").transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+            //transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
         }
 
         private void ToggleInventory()
@@ -90,6 +100,53 @@ namespace Assets.Scripts.Controllers
             {
                 ItemSelectionController.NextSlot();
             }
+        }
+
+        private bool _gravityBootsActive = false;
+        private void GravityBoots()
+        {
+            if (!_gravityBootsActive && Input.GetKeyDown(KeyCode.F))
+            {
+                //Check if player is toching asteroid (and it's center is "inside" asteroid bounds)
+                var touching = Physics2D.RaycastAll(this.transform.position, Vector2.zero);
+                var isTouching = touching.Any(x => x.transform.gameObject.layer == (int)Layer.Floats);
+                if (!isTouching)
+                {
+                    NotificationFeedController.Add(Icons.Error, "You are not over Asteroid.");
+                    return;
+                }
+
+                //Check if player is not "covered" by escape pod parts
+                var notAllowed = touching.Any(x => 
+                    x.transform.gameObject.layer == (int)Layer.ModuleBlocking
+                    || x.transform.gameObject.layer == (int)Layer.ModuleNonBlocking);
+                if (notAllowed)
+                {
+                    NotificationFeedController.Add(Icons.Error, "You are not over Asteroid (directly).");
+                    return;
+                }
+
+                //If all ok - attach!
+                var asteroid = touching.First(x => 
+                    x.transform.gameObject.layer == (int)Layer.Floats).transform;
+                _joint.connectedBody = asteroid.GetComponent<Rigidbody2D>();
+                _gravityBootsActive = true;
+                _joint.enabled = true;
+            }
+            else if (_gravityBootsActive && Input.GetKeyDown(KeyCode.F))
+            {
+                _joint.connectedBody = null;
+                _gravityBootsActive = false;
+                _joint.enabled = false;
+            }
+        }
+
+        void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (!_gravityBootsActive) return;
+            _joint.connectedBody = null;
+            _gravityBootsActive = false;
+            _joint.enabled = false;
         }
 
         public static Bounds GetBounds()

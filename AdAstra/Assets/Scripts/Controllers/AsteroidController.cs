@@ -13,13 +13,22 @@ namespace Assets.Scripts.Controllers
         public List<AsteroidSizeToOreNodes> SizeToOreNodes { get; set; }
     }
 
-    public class Asteroid
+    public class Asteroid: IComparable<Asteroid>
     {
         public GameObject GameObject { get; set; }
         public int SpriteId { get; set; }
         public AsteroidSize AsteroidSize { get; set; }
         public float Scale { get; set; }
         public int NodesCount { get; set; }
+        public int InitialDistance { get; set; }
+
+        public int CompareTo(Asteroid other)
+        {
+            if (InitialDistance == other.InitialDistance) return  0;
+            if (InitialDistance <  other.InitialDistance) return -1;
+            if (InitialDistance >  other.InitialDistance) return  1;
+            return -1;
+        }
     }
     
     public class AsteroidSizeToOreNodes
@@ -109,6 +118,8 @@ namespace Assets.Scripts.Controllers
 
         void OnGUI()
         {
+            return;
+
             //Min slider
             GUI.Label(new Rect(5, 255, 250, 20), "Angle: [" + _angle + "]");
             _angle = (int)GUI.HorizontalSlider(new Rect(5, 275, 360, 30), _angle, 0.0f, 359.0f);
@@ -250,7 +261,6 @@ namespace Assets.Scripts.Controllers
             var actualDistance = baseVector * (35f + 15f); 
             this.transform.position = actualDistance;
             var radious = this.transform.GetComponent<SpriteRenderer>().bounds.extents.x;
-            const float speed = 10f;
             var rotationChance  = new float[] {  5f,  3f,  1f,  3f, 1f };
             var rotation        = new float[] { 15f, 20f, 25f, 10f, 5f };
             var asteroidsCollection = GameObject.Find("AsteroidsCollection").transform;
@@ -261,21 +271,41 @@ namespace Assets.Scripts.Controllers
                 var rndPoint = MathHelper.RandomInCircle(this.transform.position, radious);
                 var asteroid = asteroids[i];
                 asteroid.GameObject.transform.position = rndPoint;
-                var speedMod = SpeedModFromSize(asteroid.AsteroidSize, asteroid.Scale);
                 var component = asteroid.GameObject.GetComponent<Rigidbody2D>();
                 var rotationSpeed = rotation[MathHelper.RandomRange(rotationChance)];
                 var rotationDir = MathHelper.RandomBool() ? 1 : -1; 
                 component.angularVelocity = rotationSpeed * rotationDir;
                 asteroid.GameObject.transform.SetParent(asteroidsCollection);
+                asteroid.InitialDistance = (int)Vector2.Distance(Vector2.zero,
+                    asteroid.GameObject.transform.position);
             }
 
-            //Collect distances
-            //TODO
+            //Sort by distance
+            asteroids.Sort();
+
+            //"Start" them in order
+            var delay = 1.0f;
+            const float speed = 10f;
+            foreach (var asteroid in asteroids)
+            {
+                var speedMod = SpeedModFromSize(asteroid.AsteroidSize, asteroid.Scale);
+                var rigitbody = asteroid.GameObject.GetComponent<Rigidbody2D>();
+                SequenceController.Instance.AddSingleTimeLink(
+                    delay,
+                    () =>
+                    {
+                        rigitbody.velocity = new Vector2(
+                        Mathf.Lerp(0, speed * speedMod * baseVector.x * -1, 0.8f),
+                        Mathf.Lerp(0, speed * speedMod * baseVector.y * -1, 0.8f));
+                    });
+                delay += 1.0f;
+            }
+
 
             Log.Info(log);
 
-            //Chain it infinitely
-            SequenceController.Instance.AddSingleTimeLink(20f, SpawnAsteroids);
+            //Chain it infinitely with 20 sec delay between
+            SequenceController.Instance.AddSingleTimeLink(2f, SpawnAsteroids);
         }
 
         private static float SpeedModFromSize(AsteroidSize asteroidSize, float scale)

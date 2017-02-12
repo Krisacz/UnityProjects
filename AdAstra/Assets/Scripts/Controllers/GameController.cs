@@ -39,7 +39,7 @@ namespace Assets.Scripts.Controllers
 
         void Start ()
         {
-            
+            GameObject.Find("AsteroidController").GetComponent<AsteroidController>().SpawnAsteroids();
         }
         
         void Update ()
