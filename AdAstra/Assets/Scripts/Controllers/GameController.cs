@@ -13,14 +13,14 @@ namespace Assets.Scripts.Controllers
         {
             ItemsDatabase.Init();
             BlueprintsDatabase.Init();
-            //var ep = GameObjectFactory.EscapePod();
-            //BuildController.EscapePod = ep;
-            //var player = GameObjectFactory.Player(0,0);
+            var ep = GameObjectFactory.EscapePod();
+            BuildController.EscapePod = ep;
+            var player = GameObjectFactory.Player(0, 0);
             //var player = GameObject.Find("Player"); //If already placed in the scene for debug/test
-            //player.GetComponent<PlayerController>().InventoryUI = PlayerInventory;
-            //player.GetComponent<PlayerController>().CraftingUI = PlayerCrafting;
-            //Camera.main.GetComponent<CameraController>().FollowThis = player;
-            
+            player.GetComponent<PlayerController>().InventoryUI = PlayerInventory;
+            player.GetComponent<PlayerController>().CraftingUI = PlayerCrafting;
+            Camera.main.GetComponent<CameraController>().FollowThis = player;
+
             //======================TODO just for debug 
             var playerInventoryController = GameObject.Find("PlayerInventoryController")
                 .GetComponent<InventoryController>();

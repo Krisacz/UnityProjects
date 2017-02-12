@@ -9,6 +9,7 @@ namespace Assets.Scripts.Controllers
     public class SequenceController : MonoBehaviour
     {
         private readonly List<SChain> _chains = new List<SChain>();
+        private readonly List<SChain> _toAdd = new List<SChain>();
         private bool _isProcessing = false;
         public static SequenceController Instance;
 
@@ -27,7 +28,14 @@ namespace Assets.Scripts.Controllers
         private void UpdateAll(float deltaTime)
         {
             if(_isProcessing) return;
-            
+
+            //Add anything new
+            if (_toAdd.Count > 0)
+            {
+                _chains.AddRange(_toAdd);
+                _toAdd.Clear();
+            }
+
             //Nothing to process
             if (!_chains.Any()) return;
 
@@ -67,13 +75,13 @@ namespace Assets.Scripts.Controllers
         //Add chain containing 1 to many links
         public void AddChain(params Link[] links)
         {
-            _chains.Add(new SChain(links));
+            _toAdd.Add(new SChain(links));
         }
 
         //Add one stand-along links with it's own chain
         public void AddSingleLink(Link link)
         {
-            _chains.Add(new SChain(link));
+            _toAdd.Add(new SChain(link));
         }
 
         //Create and return time-delayed link (NEEDS TO BE ADDED TO A CHAIN TO BE PROCESSED!)
@@ -102,7 +110,7 @@ namespace Assets.Scripts.Controllers
 
         public void AddSingleTimeLink(float time, Action action)
         {
-            _chains.Add(new SChain(AddTimeLink(time, action)));
+            _toAdd.Add(new SChain(AddTimeLink(time, action)));
         }
         #endregion
 
@@ -135,7 +143,7 @@ namespace Assets.Scripts.Controllers
             //Enqueue final link
             chain.Links.Enqueue(finalLink);
 
-            _chains.Add(chain);
+            _toAdd.Add(chain);
         }
 
         public void OnTweenCompleted(TweenLink link)

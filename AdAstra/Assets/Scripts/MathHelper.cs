@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
 {
@@ -57,6 +58,42 @@ namespace Assets.Scripts
             var bottomRight = new Vector2(bounds.min.x + bounds.size.x, bounds.min.y + bounds.size.y);
             return new[] {topLeft, topRight, bottomLeft, bottomRight};
         }
-   
+
+        public static int RandomRange(float[] probs)
+        {
+            var total = 0.0f;
+            foreach (var elem in probs) total += elem;
+            var randomPoint = Random.value * total;
+            for (var i = 0; i < probs.Length; i++)
+            {
+                if (randomPoint < probs[i]) return i;
+                randomPoint -= probs[i];
+            }
+            return probs.Length - 1;
+        }
+
+        public static bool PointsInsideRect(IEnumerable<Vector2> points, Bounds rect)
+        {
+            foreach (var point in points)
+            {
+                var inside = rect.Contains(point);
+                if (!inside) return false;
+            }
+            return true;
+        }
+
+        public static Vector3 RandomPointInBounds(Bounds bounds)
+        {
+            var center = bounds.center;
+            var x = Random.Range(center.x - bounds.extents.x, center.x + bounds.extents.x);
+            var y = Random.Range(center.y - bounds.extents.y, center.y + bounds.extents.y);
+            return new Vector3(x, y, 0f);
+        }
+
+        public static Vector2 RandomInCircle(Vector2 center, float radious)
+        {
+            var rnd = Random.insideUnitCircle * radious;
+            return new Vector2(center.x + rnd.x, center.y + rnd.y);
+        }
     }
 }

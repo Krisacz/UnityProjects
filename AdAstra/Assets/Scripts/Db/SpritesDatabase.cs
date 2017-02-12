@@ -20,20 +20,20 @@ namespace Assets.Scripts.Db
         //Get existing or load and add to database - load only once!
         public static Sprite Get(string spritesheetName, int index)
         {
-            var indexP1 = index + 1;
-            var fullName = string.Format("{0}_{1}", spritesheetName, indexP1);
+            var fullName = string.Format("{0}_{1}", spritesheetName, index);
             if (Sprites.ContainsKey(fullName)) return Sprites[fullName];
             var spritePath = string.Format("{0}/{1}", "Sprites", spritesheetName);
             var spriteSheet = Resources.LoadAll(spritePath);
+            //Index 0 is the whole big texture itself thats why i'm starting from 1 - first "frame"
             for (var i = 1; i < spriteSheet.Length; i++)
             {
                 var sprite = spriteSheet[i] as Sprite;
-                var name = string.Format("{0}_{1}", spritesheetName, i);
-                Sprites.Add(name, sprite);
+                if (sprite != null) Sprites.Add(sprite.name, sprite);
             }
 
             var r = Sprites[fullName];
-            Log.Error("SpriteDatabse", "Get",  "SpriteSheet: " + spritesheetName + " Index: " + indexP1 + " is NULL!");
+            if(r == null) Log.Error("SpriteDatabse", "Get",  
+                "SpriteSheet: " + spritesheetName + " Index: " + index + " is NULL!");
             return r;
         }
     }
