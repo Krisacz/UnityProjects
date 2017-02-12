@@ -38,8 +38,8 @@ public class StarfieldParticlesController : MonoBehaviour
             //Particles Velocity direction (angle)
             var newV2 = MathHelper.Angle2Vector(dir).normalized;
             var velOverTime = _particleSystem.velocityOverLifetime;
-            var newVelOverTimeX = new ParticleSystem.MinMaxCurve() {constantMax = newV2.x*_speedModifier};
-            var newVelOverTimeY = new ParticleSystem.MinMaxCurve() {constantMax = newV2.y*_speedModifier};
+            var newVelOverTimeX = new ParticleSystem.MinMaxCurve() { constantMax = newV2.x * _speedModifier };
+            var newVelOverTimeY = new ParticleSystem.MinMaxCurve() { constantMax = newV2.y * _speedModifier };
             velOverTime.x = newVelOverTimeX;
             velOverTime.y = newVelOverTimeY;
 

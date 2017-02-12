@@ -216,20 +216,20 @@ namespace Assets.Scripts.Controllers
             var astNod  = new List<int>();
             while (nodes > 0)
             {
-                var r = Random.Range(1, Mathf.Min(nodes + 1, 8));
+                var r = Mathf.Min(nodes, Random.Range(4, 8));
                 astNod.Add(r);
                 nodes -= r;
             }
             log += " # Split into " + astNod.Count + " asteroids";
 
-            var asteroids = new List<GameObject>();
+            var asteroids = new List<Asteroid>();
 
             //Get all asteroids with nodes
             foreach (var count in astNod)
             {
                 var asteroidInfo = GetRandomAsteroidInfoFromOreNodeCount(count);
-                var asteroidGo = GetRandomAsteroidFromAsteroidsInfo(asteroidInfo);
-                asteroids.Add(asteroidGo);
+                var asteroid = GetRandomAsteroidFromAsteroidsInfo(asteroidInfo);
+                asteroids.Add(asteroid);
             }
 
             //And those without nodes
@@ -237,56 +237,71 @@ namespace Assets.Scripts.Controllers
             for (var i = 1; i <= emptyAsteroids; i++)
             {
                 var asteroidInfo = GetRandomAsteroidInfoFromOreNodeCount(0);
-                var asteroidGo = GetRandomAsteroidFromAsteroidsInfo(asteroidInfo);
-                asteroids.Add(asteroidGo);
+                var asteroid = GetRandomAsteroidFromAsteroidsInfo(asteroidInfo);
+                asteroids.Add(asteroid);
             }
             log += " # Additional " + emptyAsteroids + " empty asteroids.";
 
             //World Placement
             var baseAngle = _flightController.DirectionAngle;
-            var modifiedAngle = baseAngle + Random.Range(-10f, 10f);
+            var modifiedAngle = baseAngle + Random.Range(-45f, 45f);
             var baseVector = MathHelper.Angle2Vector(modifiedAngle);
             //35f for particles emmiter distance + 15f spawner circle radious
             var actualDistance = baseVector * (35f + 15f); 
             this.transform.position = actualDistance;
             var radious = this.transform.GetComponent<SpriteRenderer>().bounds.extents.x;
-            var speed = 0.5f;
-            var rotationChance  = new float[] { 5f, 3f, 3f,  1f,   1f };
-            var rotation        = new float[] { 5f, 8f, 2f, 12f, 0.5f };
+            const float speed = 10f;
+            var rotationChance  = new float[] {  5f,  3f,  1f,  3f, 1f };
+            var rotation        = new float[] { 15f, 20f, 25f, 10f, 5f };
+            var asteroidsCollection = GameObject.Find("AsteroidsCollection").transform;
 
-            //TODO Consider also checking if spwaned asteroid is not overlapping exsiting asteroids
+            //TODO Consider also checking if spwaned asteroid is not overlapping existing asteroids
             for (var i = 0; i < asteroids.Count; i++)
             {
                 var rndPoint = MathHelper.RandomInCircle(this.transform.position, radious);
-                asteroids[i].transform.position = rndPoint;
-                var speedMod = Random.Range(0.5f, 1f);
-                var component = asteroids[i].GetComponent<Rigidbody2D>();
-                component.velocity = new Vector2(
-                Mathf.Lerp(0, baseVector.x * speed * speedMod * -1, 0.8f),
-                Mathf.Lerp(0, baseVector.y * speed * speedMod * -1, 0.8f));
+                var asteroid = asteroids[i];
+                asteroid.GameObject.transform.position = rndPoint;
+                var speedMod = SpeedModFromSize(asteroid.AsteroidSize, asteroid.Scale);
+                var component = asteroid.GameObject.GetComponent<Rigidbody2D>();
                 var rotationSpeed = rotation[MathHelper.RandomRange(rotationChance)];
-                var rotationDir = Random.Range(1, 11) >= 6 ? 1 : -1; 
+                var rotationDir = MathHelper.RandomBool() ? 1 : -1; 
                 component.angularVelocity = rotationSpeed * rotationDir;
+                asteroid.GameObject.transform.SetParent(asteroidsCollection);
             }
 
+            //Collect distances
+            //TODO
+
             Log.Info(log);
+
+            //Chain it infinitely
+            SequenceController.Instance.AddSingleTimeLink(20f, SpawnAsteroids);
+        }
+
+        private static float SpeedModFromSize(AsteroidSize asteroidSize, float scale)
+        {
+            switch (asteroidSize)
+            {
+                case AsteroidSize.Tiny:     return 0.650f / scale;
+                case AsteroidSize.Small:    return 0.550f / scale;
+                case AsteroidSize.Medium:   return 0.600f / scale;
+                case AsteroidSize.Large:    return 0.500f / scale;
+                default:                    throw new ArgumentOutOfRangeException("asteroidSize", asteroidSize, null);
+            }
         }
 
         private AsteroidInfo GetRandomAsteroidInfoFromOreNodeCount(int count)
         {
             if (count < 0 || count > 8)
             {
-                Log.Error("AsteroidController", 
-                    "GetRandomAsteroidInfoFromOreNodeCount",
-                    "Count needs to be between 0 and 8, provided: " + count);
+                Log.Error("AsteroidController", "GetRandomAsteroidInfoFromOreNodeCount", "Count needs to be between 0 and 8, provided: " + count);
                 return null;
             }
-            
+
             var available = GetAsteroidsInfoForOreNodeCount(count);
-            
+
             //In case we've somehow got no results
-            if (available.Count == 0) Log.Error("AsteroidController",
-                "GetRandomAsteroidInfoFromOreNodeCount", "No results?!?! Count: " + count);
+            if (available.Count == 0) Log.Error("AsteroidController", "GetRandomAsteroidInfoFromOreNodeCount", "No results?!?! Count: " + count);
 
             //Randomize index from available asteroids
             var rndIndex = Random.Range(0, available.Count);
@@ -297,50 +312,42 @@ namespace Assets.Scripts.Controllers
 
         private List<AsteroidInfo> GetAsteroidsInfoForOreNodeCount(int count)
         {
-            if (count < 0 || count > 8) Log.Error("AsteroidController",
-                "GetAsteroidsInfoForOreNodeCount",
-                "Count needs to be between 0 and 8, provided: " + count);
-            
+            if (count < 0 || count > 8) Log.Error("AsteroidController", "GetAsteroidsInfoForOreNodeCount", "Count needs to be between 0 and 8, provided: " + count);
+
             var list = new List<AsteroidInfo>();
 
             //Loop through all data and find those asterids which fits our criteria
             foreach (var asteroidInfo in _infos)
             {
                 var ai = new AsteroidInfo
-                {
-                    AsteroidSize = asteroidInfo.AsteroidSize,
-                    SpriteIds = asteroidInfo.SpriteIds,
-                    SizeToOreNodes = new List<AsteroidSizeToOreNodes>()
-                };
-                
+                         {
+                             AsteroidSize = asteroidInfo.AsteroidSize, SpriteIds = asteroidInfo.SpriteIds, SizeToOreNodes = new List<AsteroidSizeToOreNodes>()
+                         };
+
                 foreach (var a in asteroidInfo.SizeToOreNodes.Where(a => a.MaxOreNodes == count))
                 {
                     ai.SizeToOreNodes.Add(a);
                 }
 
-                if(ai.SizeToOreNodes.Count > 0) list.Add(ai);
+                if (ai.SizeToOreNodes.Count > 0) list.Add(ai);
             }
 
             return list;
         }
 
-        private GameObject GetRandomAsteroidFromAsteroidsInfo(AsteroidInfo ai)
+        private Asteroid GetRandomAsteroidFromAsteroidsInfo(AsteroidInfo ai)
         {
             var randomSpriteId = ai.SpriteIds[Random.Range(0, ai.SpriteIds.Count)];
             var randomSizeToOreNodes = ai.SizeToOreNodes[Random.Range(0, ai.SizeToOreNodes.Count)];
             var randomScale = Random.Range(randomSizeToOreNodes.MinScale, randomSizeToOreNodes.MaxScale);
             var asteroidGo = GameObjectFactory.Asteroid(randomSpriteId, randomScale, this.transform);
             var asteroid = new Asteroid()
-            {
-                SpriteId = randomSpriteId,
-                Scale = randomScale,
-                GameObject = asteroidGo,
-                NodesCount = randomSizeToOreNodes.MaxOreNodes,
-                AsteroidSize = ai.AsteroidSize
-            };
+                           {
+                               SpriteId = randomSpriteId, Scale = randomScale, GameObject = asteroidGo, NodesCount = randomSizeToOreNodes.MaxOreNodes, AsteroidSize = ai.AsteroidSize
+                           };
 
             PlaceRandomOreNodesInsideAsteroid(asteroidGo, randomSizeToOreNodes.MaxOreNodes);
-            return asteroidGo;
+            return asteroid;
         }
 
         private void PlaceRandomOreNodesInsideAsteroid(GameObject asteroidGo, int maxOreNodes)
@@ -354,8 +361,7 @@ namespace Assets.Scripts.Controllers
             }
         }
 
-        private void PlaceOreNodeInsideAsteroid(GameObject asteroid, 
-            GameObject oreNode, List<GameObject> oreNodesGo)
+        private void PlaceOreNodeInsideAsteroid(GameObject asteroid, GameObject oreNode, List<GameObject> oreNodesGo)
         {
             var polygon = asteroid.GetComponent<PolygonCollider2D>();
             var astBounds = polygon.bounds;
@@ -367,10 +373,9 @@ namespace Assets.Scripts.Controllers
             do
             {
                 emergencyBreak--;
-                if(emergencyBreak <= 0) break;
+                if (emergencyBreak <= 0) break;
 
-                rndPoint = new Vector2(Random.Range(astBounds.min.x, astBounds.max.x),
-                    Random.Range(astBounds.min.y, astBounds.max.y));
+                rndPoint = new Vector2(Random.Range(astBounds.min.x, astBounds.max.x), Random.Range(astBounds.min.y, astBounds.max.y));
                 oreNodeBounds.center = rndPoint;
                 var corners = MathHelper.GetSquareCorners(oreNodeBounds);
                 isOreNodeInside = MathHelper.PointsInsidePolygon(corners, polygon);
@@ -386,8 +391,7 @@ namespace Assets.Scripts.Controllers
                         break;
                     }
                 }
-            }
-            while (!isOreNodeInside);
+            } while (!isOreNodeInside);
 
             oreNodeSr.transform.position = rndPoint;
         }

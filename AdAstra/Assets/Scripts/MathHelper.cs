@@ -95,5 +95,11 @@ namespace Assets.Scripts
             var rnd = Random.insideUnitCircle * radious;
             return new Vector2(center.x + rnd.x, center.y + rnd.y);
         }
+
+        public static bool RandomBool()
+        {
+            return Random.Range(1, 101) > 51;
+        }
+
     }
 }
