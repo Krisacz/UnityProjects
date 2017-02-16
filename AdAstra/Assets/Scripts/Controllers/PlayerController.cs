@@ -143,20 +143,27 @@ namespace Assets.Scripts.Controllers
 
         void OnCollisionEnter2D(Collision2D collision)
         {
+            //TODO Why this doesnt work?
+            //TODO when player is hitting escape pod he should de-attach from asteroid
             if (!_gravityBootsActive) return;
             _joint.connectedBody = null;
             _gravityBootsActive = false;
             _joint.enabled = false;
         }
 
-        public static Bounds GetBounds()
+        public Bounds GetBounds()
         {
             return _playerCollider.bounds;
         }
 
-        public static LineController GetLineController()
+        public LineController GetLineController()
         {
             return _lineController;
+        }
+
+        public bool GravityBootsActive()
+        {
+            return _gravityBootsActive;
         }
     }
 }

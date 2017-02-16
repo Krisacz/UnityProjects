@@ -24,12 +24,13 @@ namespace Assets.Scripts.Controllers
             //======================TODO just for debug 
             var playerInventoryController = GameObject.Find("PlayerInventoryController")
                 .GetComponent<InventoryController>();
-            playerInventoryController.AddItem(ItemId.Assembler, 1, 1);
-            playerInventoryController.AddItem(ItemId.Printer3D, 1, 1);
-            playerInventoryController.AddItem(ItemId.Foundation, 5, 0);
-            playerInventoryController.AddItem(ItemId.Floor, 5, 0);
-            playerInventoryController.AddItem(ItemId.Wall, 5, 0);
-            playerInventoryController.AddItem(ItemId.Constructor, 1, 0);
+            playerInventoryController.AddItem(ItemId.OreScanner, 1, 0);
+            //playerInventoryController.AddItem(ItemId.Assembler, 1, 1);
+            //playerInventoryController.AddItem(ItemId.Printer3D, 1, 1);
+            //playerInventoryController.AddItem(ItemId.Foundation, 5, 0);
+            //playerInventoryController.AddItem(ItemId.Floor, 5, 0);
+            //playerInventoryController.AddItem(ItemId.Wall, 5, 0);
+            //playerInventoryController.AddItem(ItemId.Constructor, 1, 0);
         }
 
         //Before any Start - init any objects, refs etc
@@ -39,7 +40,7 @@ namespace Assets.Scripts.Controllers
 
         void Start ()
         {
-            GameObject.Find("AsteroidController").GetComponent<AsteroidController>().SpawnAsteroids();
+            GameObject.Find("AsteroidsController").GetComponent<AsteroidsController>().SpawnAsteroids();
         }
         
         void Update ()

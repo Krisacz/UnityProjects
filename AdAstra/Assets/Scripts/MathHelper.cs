@@ -40,6 +40,11 @@ namespace Assets.Scripts
             return a * Mathf.Deg2Rad;
         }
 
+        public static bool PointInsidePolygon(Vector2 point, PolygonCollider2D polygonCollider)
+        {
+            return polygonCollider.OverlapPoint(point);
+        }
+
         public static bool PointsInsidePolygon(IEnumerable<Vector2> points, PolygonCollider2D polygonCollider)
         {
             foreach (var point in points)

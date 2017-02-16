@@ -23,6 +23,15 @@ namespace Assets.Scripts.Views
 
         private WorkState _workState = WorkState.None;
 
+        private PlayerController _player;
+
+        #region START
+        private void Start()
+        {
+            _player = GameObject.Find("Player").GetComponent<PlayerController>();
+        }
+        #endregion
+
         #region ADD STRUCTURE
         //Returns TRUE is succesfully added, false if it already has a structure on this elevation
         public bool AddStructure(StructureElevation elevation, ItemId itemId, bool instaBuild)
@@ -130,7 +139,7 @@ namespace Assets.Scripts.Views
                 //Stop the process / visuals
                 _workState = WorkState.None;
                 WorkProgressController.Off();
-                PlayerController.GetLineController().HideLine();
+                _player.GetLineController().HideLine();
                 return;
             }
 
@@ -260,7 +269,7 @@ namespace Assets.Scripts.Views
 
             //Stop the process / visuals
             WorkProgressController.Off();
-            PlayerController.GetLineController().HideLine();
+            _player.GetLineController().HideLine();
 
             switch (_workState)
             {
@@ -324,7 +333,7 @@ namespace Assets.Scripts.Views
         private bool CheckDistanceCollisionLoS()
         {
             //Check if distance is ok
-            var p = PlayerController.GetBounds().center;
+            var p = _player.GetBounds().center;
             var s = this.GetComponent<BoxCollider2D>().bounds.center;
             var distance = Vector2.Distance(p, s);
 
@@ -335,7 +344,7 @@ namespace Assets.Scripts.Views
             }
 
             //Check if player is not standing on building structure
-            if (PlayerController.GetBounds().Intersects(GetComponent<BoxCollider2D>().bounds))
+            if (_player.GetBounds().Intersects(GetComponent<BoxCollider2D>().bounds))
             {
                 Log.Info("StructureSlotView", "OnPointerDown", "Player is too close to build!");
                 return false;
@@ -390,7 +399,7 @@ namespace Assets.Scripts.Views
                 //Stop the process / visuals
                 _workState = WorkState.None;
                 WorkProgressController.Off();
-                PlayerController.GetLineController().HideLine();
+                _player.GetLineController().HideLine();
                 
                 Log.Warn("StructureSlotView", "Update", string.Format("Stopped contruction/assembling! Reason: {0}|{1}",
                     checkEquippedItem == false ? "Equipped Item" : string.Empty, 
@@ -437,7 +446,7 @@ namespace Assets.Scripts.Views
             var currentValue = Math.Abs(_construction[elevation]);
             var color = state.Value ? Color.blue : Color.red;
             WorkProgressController.UpdateWork(currentValue, maxTime, color);
-            PlayerController.GetLineController().ShowLine(_gameObjects[elevation].transform.position, color);
+            _player.GetLineController().ShowLine(_gameObjects[elevation].transform.position, color);
             var newAlpha = GetAlphaFromProgress(currentValue, maxTime, state.Value);
             var go = _gameObjects[elevation];
             go.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, newAlpha);
@@ -449,7 +458,7 @@ namespace Assets.Scripts.Views
                 //Stop the process / visuals
                 _workState = WorkState.None;
                 WorkProgressController.Off();
-                PlayerController.GetLineController().HideLine();
+                _player.GetLineController().HideLine();
 
                 //Get item
                 var item = _items[elevation];
