@@ -77,6 +77,11 @@ namespace Assets.Scripts
             return probs.Length - 1;
         }
 
+        public static bool PointInsideCircle(Vector2 position, CircleCollider2D circle)
+        {
+            return circle.OverlapPoint(position);
+        }
+
         public static bool PointsInsideRect(IEnumerable<Vector2> points, Bounds rect)
         {
             foreach (var point in points)
@@ -106,5 +111,12 @@ namespace Assets.Scripts
             return Random.Range(1, 101) > 51;
         }
 
+        public static Vector3 GetMouseToWorldPosition()
+        {
+            var input = Input.mousePosition;
+            var worldPosition = Camera.main.ScreenToWorldPoint(input);
+            worldPosition.z = 0f;
+            return worldPosition;
+        }
     }
 }

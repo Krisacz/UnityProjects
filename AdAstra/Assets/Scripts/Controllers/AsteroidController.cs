@@ -5,6 +5,7 @@ using System.Text;
 using Assets.Scripts.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.Controllers
 {
@@ -18,12 +19,11 @@ namespace Assets.Scripts.Controllers
         private float _scanProgress;
         
         private PlayerController _player;
-        private GameObject _oreScanEffect;
+        private static GameObject _oreScanEffect;
 
         private void Start()
         {
             _player = GameObject.Find("Player").GetComponent<PlayerController>();
-            _oreScanEffect = GameObject.Find("OreScanEffect");
         }
         
         private void Update()
@@ -37,11 +37,9 @@ namespace Assets.Scripts.Controllers
         private void Scanning(float deltaTime)
         {
             if(!_isScanning) return;
-
-            var position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
+            
             //Re-Check if scan is still valid
-            if (!CanScan(position))
+            if (!CanScan())
             {
                 DisableOreScan();
                 return;
@@ -52,7 +50,7 @@ namespace Assets.Scripts.Controllers
             var func = item.FunctionProperties;
 
             //Update
-            _scanProgress -= deltaTime;
+            _scanProgress += deltaTime;
             var scanSpeed = func.AsFloat(FunctionProperty.ScanSpeed);
             var progressPerc = _scanProgress/scanSpeed;
 
@@ -61,14 +59,30 @@ namespace Assets.Scripts.Controllers
             var rangeF = SizeFromRange(range);
             var scale = rangeF*progressPerc;
             _oreScanEffect.transform.localScale = new Vector3(scale, scale, 1f);
-
-            var scanSuccess = func.AsFloat(FunctionProperty.ScanSuccess);
-            var scanLevel = func.AsFloat(FunctionProperty.ScanLevel);
-
-
-            if (_scanProgress <= 0f)
+            
+            if (_scanProgress >= rangeF)
             {
+                var scanSuccess = func.AsFloat(FunctionProperty.ScanSuccess);
+                var scanLevel = func.AsInt(FunctionProperty.ScanLevel);
+                if (ScanSuccesful(scanSuccess)) RevealNodes(scanLevel, rangeF);
                 DisableOreScan();
+            }
+        }
+
+        private static bool ScanSuccesful(float scanSuccess)
+        {
+            var random = Random.Range(0.0f, 1.0f);
+            return (random <= scanSuccess);
+        }
+
+        private void RevealNodes(int scanLevel, float rangeF)
+        {
+            //Check if ore scan effect overlaps ore node
+            var scanPos = _oreScanEffect.transform.position;
+            var overlaps = Physics2D.OverlapCircleAll(scanPos, rangeF);
+            foreach (var node in overlaps.Where(x=>x.name.Equals("OreNode")))
+            {
+                node.gameObject.GetComponent<NodeController>().Reveal(scanLevel);
             }
         }
 
@@ -78,15 +92,17 @@ namespace Assets.Scripts.Controllers
             switch (range)
             {
                 case ScanRange.VeryShort:   return 0.50f;
-                case ScanRange.Short:       return 1.00f;
-                case ScanRange.Medium:      return 2.00f;
-                case ScanRange.Far:         return 3.00f;
-                case ScanRange.VeryFar:     return 4.00f;
+                case ScanRange.Short:       return 0.75f;
+                case ScanRange.Medium:      return 1.00f;
+                case ScanRange.Far:         return 1.25f;
+                case ScanRange.VeryFar:     return 1.50f;
                 default:                    throw new ArgumentOutOfRangeException("range", range, null);
             }
         }
         #endregion
 
+        //TODO Attach script only on asteroids with ore nodes and separate auto-destruct script
+        //TODO All asteroid will have simple auto destruct but only those with nodes will have this
         #region AUTO DESTRUCT
 
         private void AutoDestruct(float deltaTime)
@@ -113,9 +129,8 @@ namespace Assets.Scripts.Controllers
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            var position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (CanScan(position) == false) return;
-            EnableOreScan(position);
+            if (CanScan() == false) return;
+            EnableOreScan();
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -127,14 +142,14 @@ namespace Assets.Scripts.Controllers
 
         #region ENABLE / DISABLE ORE SCAN
 
-        private void EnableOreScan(Vector3 position)
+        private void EnableOreScan()
         {
+            var position = MathHelper.GetMouseToWorldPosition();
             _isScanning = true;
-            var item = ItemSelectionController.GetItem();
-            var func = item.FunctionProperties;
-            _scanProgress = func.AsFloat(FunctionProperty.ScanSpeed);
+            _scanProgress = 0.0f;
+            if (_oreScanEffect == null) _oreScanEffect = GameObjectFactory.OreScanEffect();
             _oreScanEffect.SetActive(true);
-            _oreScanEffect.transform.localPosition = position;
+            _oreScanEffect.transform.position = position;
             _oreScanEffect.transform.SetParent(this.transform);
         }
 
@@ -151,7 +166,7 @@ namespace Assets.Scripts.Controllers
 
         #region CAN SCAN
 
-        private bool CanScan(Vector3 position)
+        private bool CanScan()
         {
             //Is player attached?
             if (!_player.GravityBootsActive())
@@ -169,6 +184,7 @@ namespace Assets.Scripts.Controllers
             }
 
             //Is pointer cursor inside asteroid bounds?
+            var position = MathHelper.GetMouseToWorldPosition();
             var polygon = this.GetComponent<PolygonCollider2D>();
             if (!MathHelper.PointInsidePolygon(position, polygon))
             {

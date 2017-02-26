@@ -27,6 +27,19 @@ namespace Assets.Scripts.Controllers
         public int RemoveCount;
         public int InventoryToRemoveFrom = -1;
 
+        private Vector2 _mouseScreenXY = Vector2.zero;
+        private Vector2 _mouseWorldXY = Vector2.zero;
+        void OnGUI()
+        {
+            GUI.Label(new Rect(5, 250, 200, 20), 
+                "Mouse Screen X[" + _mouseScreenXY.x.ToString("F1") + "]" +
+                            " Y[" + _mouseScreenXY.y.ToString("F1") + "]");
+
+            GUI.Label(new Rect(5, 300, 200, 20), 
+                "Mouse World  X[" + _mouseWorldXY.x.ToString("F1") + "]" +
+                            " Y[" + _mouseWorldXY.y.ToString("F1") + "]");
+        }
+
         /*
         void OnGUI()
         {
@@ -71,6 +84,9 @@ namespace Assets.Scripts.Controllers
         // Update is called once per frame
         void Update()
         {
+            _mouseScreenXY = Input.mousePosition;
+            _mouseWorldXY = Camera.main.ScreenToWorldPoint(_mouseScreenXY);
+
             AddItemsControl();
             ItemsToCheck();
             ItemsToRemove();

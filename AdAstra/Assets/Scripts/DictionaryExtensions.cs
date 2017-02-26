@@ -8,6 +8,17 @@ namespace Assets.Scripts
 {
     public static class DictionaryExtensions
     {
+        public static string AsString(this Dictionary<FunctionProperty, string> d, FunctionProperty key)
+        {
+            if (!d.ContainsKey(key))
+            {
+                Log.Error("DictionaryExtensions", "AsString",
+                    string.Format("Item FunctionProperties does not contain key: {0}", key));
+            }
+
+            return d[key];
+        }
+
         public static float AsFloat(this Dictionary<FunctionProperty, string> d, FunctionProperty key)
         {
             if (!d.ContainsKey(key))
@@ -17,6 +28,17 @@ namespace Assets.Scripts
             }
 
             return float.Parse(d[key]);
+        }
+
+        public static int AsInt(this Dictionary<FunctionProperty, string> d, FunctionProperty key)
+        {
+            if (!d.ContainsKey(key))
+            {
+                Log.Error("DictionaryExtensions", "AsInt",
+                    string.Format("Item FunctionProperties does not contain key: {0}", key));
+            }
+
+            return int.Parse(d[key]);
         }
 
         public static bool AsBool(this Dictionary<FunctionProperty, string> d, FunctionProperty key)

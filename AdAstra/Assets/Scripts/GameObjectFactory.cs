@@ -144,10 +144,20 @@ namespace Assets.Scripts
         }
         #endregion
 
+        #region ORE SCAN EFFECT
+        public static GameObject OreScanEffect()
+        {
+            var go = FromPrefab("OreScanEffect");
+            go.SetActive(false);
+            return go;
+        }
+        #endregion
+
         #region ORE NODE
         public static GameObject OreNode(Transform asteroidParent)
         {
             var go = FromPrefab("OreNode");
+            go.GetComponent<NodeController>().Init();
             go.transform.SetParent(asteroidParent);
             go.name = "OreNode";
             return go;

@@ -96,7 +96,7 @@
 		"MaxStackSize": 1,
 		"SpriteName": "mining_drill",
 		"Function": "Tool",
-		"Properties": { "DrillSpeed": "3.0", "ExtractionYield": "2-4", "BurstExtractionChance": "0.05", "Reliability": "0.9", "Range": "Medium", "DrillHeadLevel": "1" }
+		"Properties": { "DrillSpeed": "3.0", "ExtractionYieldMin": "2", "ExtractionYieldMax": "4", "BurstExtractionChance": "0.05", "Reliability": "0.9", "Range": "Medium", "DrillHeadLevel": "1" }
 	},
 	
 	{

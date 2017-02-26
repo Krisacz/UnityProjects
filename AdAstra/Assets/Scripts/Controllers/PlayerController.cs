@@ -165,5 +165,10 @@ namespace Assets.Scripts.Controllers
         {
             return _gravityBootsActive;
         }
+
+        public Transform GetTransform()
+        {
+            return this.transform;
+        }
     }
 }

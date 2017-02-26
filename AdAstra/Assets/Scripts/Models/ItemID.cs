@@ -5,8 +5,17 @@ namespace Assets.Scripts.Models
         None,
 
         //===== ORE
+        Ice,
+        PlasteelOre,
         IronOre,
+        CopperOre,
+        TinOre,
         GoldOre,
+        PlatiniumOre,
+        TitaniumOre,
+        CrystalOre,
+        DiamondOre,
+
 
         //===== MACHINE
         Printer3D,
