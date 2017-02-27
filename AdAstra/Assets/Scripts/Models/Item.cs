@@ -11,11 +11,11 @@ namespace Assets.Scripts.Models
         public string Description { get; private set; }
         public int MaxStackSize { get; private set; }
         public string SpriteName { get; private set; }
-        public Function Function { get; private set; }
+        public ItemFunction ItemFunction { get; private set; }
         public Dictionary<FunctionProperty, string> FunctionProperties { get; private set; }
         
         public Item(ItemId itemId, string title, string description, int maxStackSize, string sprite,
-            Function function, Dictionary<FunctionProperty, string> functionProperties)
+            ItemFunction itemFunction, Dictionary<FunctionProperty, string> functionProperties)
         {
             ItemId = itemId;
             Title = title;
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Models
             MaxStackSize = maxStackSize;
             SpriteName = sprite;
 
-            Function = function;
+            ItemFunction = itemFunction;
             FunctionProperties = functionProperties;
         }
     }

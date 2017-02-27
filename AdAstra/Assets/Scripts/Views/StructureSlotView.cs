@@ -47,7 +47,7 @@ namespace Assets.Scripts.Views
             var item = ItemsDatabase.Get(itemId);
             var isBlocking = item.FunctionProperties.AsBool(FunctionProperty.IsBlocking);
             var go = GameObjectFactory.StructureItem(item, isBlocking, elevation, this.transform);
-            var isStructure = item.Function == Function.Structure;
+            var isStructure = item.ItemFunction == ItemFunction.Structure;
             var cTime = item.FunctionProperties.AsFloat(isStructure ? FunctionProperty.ConstructionTime : FunctionProperty.AssemblyTime);
 
             if (!instaBuild)
@@ -221,17 +221,17 @@ namespace Assets.Scripts.Views
                 var objFunction = GetTopMostConstructedObjectFunction();
                 switch (objFunction)
                 {
-                    case Function.None:
-                    case Function.Resource:
-                    case Function.Tool:
+                    case ItemFunction.None:
+                    case ItemFunction.Resource:
+                    case ItemFunction.Tool:
                         Log.Error("StructureSlotView", "OnPointerDown", "Not implemented!");
                         break;
 
-                    case Function.Structure:
+                    case ItemFunction.Structure:
                         _workState = WorkState.Deconstructing;
                         break;
 
-                    case Function.Machine:
+                    case ItemFunction.Machine:
                         _workState = WorkState.Disassembling;
                         break;
 
@@ -244,17 +244,17 @@ namespace Assets.Scripts.Views
                 var objFunction = GetNotConstructedObjectFunction();
                 switch (objFunction)
                 {
-                    case Function.None:
-                    case Function.Resource:
-                    case Function.Tool:
+                    case ItemFunction.None:
+                    case ItemFunction.Resource:
+                    case ItemFunction.Tool:
                         Log.Error("StructureSlotView", "OnPointerDown", "Not implemented!");
                         break;
 
-                    case Function.Structure:
+                    case ItemFunction.Structure:
                         _workState = WorkState.Constructing;
                         break;
 
-                    case Function.Machine:
+                    case ItemFunction.Machine:
                         _workState = WorkState.Assembling;
                         break;
 
@@ -305,7 +305,7 @@ namespace Assets.Scripts.Views
             }
 
             var item = selectedItem.GetItemStack().Item;
-            var isTool = item.Function == Function.Tool;
+            var isTool = item.ItemFunction == ItemFunction.Tool;
             if (!isTool)
             {
                 Log.Info("StructureSlotView", "OnPointerDown", "Appropriate tool needs to be equipped!");
@@ -314,14 +314,14 @@ namespace Assets.Scripts.Views
 
             //If constructing object is a STRUCTURE, player needs to have equiped "Constructor"
             var objFunc = GetNotConstructedObjectFunction();
-            if (objFunc == Function.Structure && item.ItemId != ItemId.Constructor)
+            if (objFunc == ItemFunction.Structure && item.ItemId != ItemId.Constructor)
             {
                 Log.Info("StructureSlotView", "OnPointerDown", "Constructor not equipped!");
                 return false;
             }
 
             //If constructing object is a MACHINE, player needs to have equiped "Assembler"
-            if (objFunc == Function.Machine && item.ItemId != ItemId.Assembler)
+            if (objFunc == ItemFunction.Machine && item.ItemId != ItemId.Assembler)
             {
                 Log.Info("StructureSlotView", "OnPointerDown", "Assembler tool not equipped!");
                 return false;
@@ -423,24 +423,32 @@ namespace Assets.Scripts.Views
             var workSpeed = float.MaxValue;
             var maxTime = float.MaxValue;
 
-            //Check the work type
-            if (_workState == WorkState.Constructing || _workState == WorkState.Deconstructing)
+            //Check the work type and get work speed & required work
+            if (_workState == WorkState.Constructing)
             {
-                //Get construction speed
                 workSpeed = selectedItem.FunctionProperties.AsFloat(FunctionProperty.ConstructionSpeed);
                 maxTime = _items[elevation].FunctionProperties.AsFloat(FunctionProperty.ConstructionTime);
             }
-            else if (_workState == WorkState.Assembling || _workState == WorkState.Disassembling)
+            else if (_workState == WorkState.Deconstructing)
             {
-                //Get assembling speed
+                workSpeed = selectedItem.FunctionProperties.AsFloat(FunctionProperty.DeconstructionSpeed);
+                maxTime = _items[elevation].FunctionProperties.AsFloat(FunctionProperty.ConstructionTime);
+            }
+            else if (_workState == WorkState.Assembling)
+            {
                 workSpeed = selectedItem.FunctionProperties.AsFloat(FunctionProperty.AssemblySpeed);
+                maxTime = _items[elevation].FunctionProperties.AsFloat(FunctionProperty.AssemblyTime);
+            }
+            else if (_workState == WorkState.Disassembling)
+            {
+                workSpeed = selectedItem.FunctionProperties.AsFloat(FunctionProperty.DisassemblySpeed);
                 maxTime = _items[elevation].FunctionProperties.AsFloat(FunctionProperty.AssemblyTime);
             }
             else
             {
                 Log.Error("StructureSlotView", "Update", "Not Implemented!");
             }
-            
+
             //====== Do Work!
             _construction[elevation] -= DebugController.InstaBuild ? float.MaxValue : (Time.deltaTime*workSpeed);
             var currentValue = Math.Abs(_construction[elevation]);
@@ -538,10 +546,10 @@ namespace Assets.Scripts.Views
             return elevation;
         }
 
-        private Function GetNotConstructedObjectFunction()
+        private ItemFunction GetNotConstructedObjectFunction()
         {
             var elevation = GetNotConstructedObjectElevation();
-            return elevation == StructureElevation.None ? Function.None : _items[elevation].Function;
+            return elevation == StructureElevation.None ? ItemFunction.None : _items[elevation].ItemFunction;
         }
 
         private StructureElevation GetTopMostConstructedObjectElevation()
@@ -549,10 +557,10 @@ namespace Assets.Scripts.Views
             return _construction.Where(w => w.Value <= 0f).Max(e => e.Key);
         }
 
-        private Function GetTopMostConstructedObjectFunction()
+        private ItemFunction GetTopMostConstructedObjectFunction()
         {
             var elevation = GetTopMostConstructedObjectElevation();
-            return elevation == StructureElevation.None ? Function.None : _items[elevation].Function;
+            return elevation == StructureElevation.None ? ItemFunction.None : _items[elevation].ItemFunction;
         }
         #endregion
     }

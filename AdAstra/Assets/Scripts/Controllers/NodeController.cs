@@ -140,7 +140,7 @@ namespace Assets.Scripts.Controllers
 
             //Is mining drill selected?
             var item = ItemSelectionController.GetItem();
-            if (item == null || item.Function != Function.Tool || item.ItemId != ItemId.MinningDrill)
+            if (item == null || item.ItemFunction != ItemFunction.Tool || item.ItemId != ItemId.MinningDrill)
             {
                 NotificationFeedController.Add(Icons.Error, "Minning Drill not equipped.");
                 return false;

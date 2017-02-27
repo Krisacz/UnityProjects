@@ -11,7 +11,7 @@ namespace Assets.Scripts
     public static class GameObjectFactory
     {
         #region BLUEPRINTS STUFF
-        public static void BlueprintGroup(BlueprintGroup group, Transform parent)
+        public static void BlueprintGroup(ItemFunction group, Transform parent)
         {
             var go = FromPrefab("BlueprintGroup");
 

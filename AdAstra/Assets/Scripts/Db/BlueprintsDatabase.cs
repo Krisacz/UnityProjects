@@ -12,7 +12,7 @@ namespace Assets.Scripts.Db
     {
         //TODO Consider using list instead of dic to support multiple recipies for one item
         private static readonly Dictionary<ItemId, Blueprint> BlueprintsDb = new Dictionary<ItemId, Blueprint>();
-        private static readonly Dictionary<BlueprintGroup, List<Blueprint>> BlueprintsGroupDb = new Dictionary<BlueprintGroup, List<Blueprint>>();
+        private static readonly Dictionary<ItemFunction, List<Blueprint>> BlueprintsGroupDb = new Dictionary<ItemFunction, List<Blueprint>>();
         
         public static void Init()
         {
@@ -49,16 +49,16 @@ namespace Assets.Scripts.Db
             return null;
         }
 
-        public static List<Blueprint> GetGroupBlueprints(BlueprintGroup group)
+        public static List<Blueprint> GetGroupBlueprints(ItemFunction itemFunction)
         {
-            if (BlueprintsGroupDb.ContainsKey(group)) return BlueprintsGroupDb[group];
-            Log.Error("BlueprintsDatabase", "GetGroupBlueprints", string.Format("BlueprintGroup = {0} doesn't exist in blueprints databse.", group));
+            if (BlueprintsGroupDb.ContainsKey(itemFunction)) return BlueprintsGroupDb[itemFunction];
+            Log.Error("BlueprintsDatabase", "GetGroupBlueprints", string.Format("BlueprintGroup = {0} doesn't exist in blueprints databse.", itemFunction));
             return new List<Blueprint>();
         }
 
         private static Blueprint MapJsonObjectToBlueprint(JsonData json)
         {
-            var group = JHelper.AsEnum<BlueprintGroup>(json["BlueprintGroup"]);
+            var group = JHelper.AsEnum<ItemFunction>(json["BlueprintFunction"]);
             var resultItemId = JHelper.AsEnum<ItemId>(json["ResultItemId"]);
             var resultItemCount = JHelper.AsInt(json["ResultItemCount"]);
             var craftingTime = JHelper.AsFloat(json["CraftingTime"]);

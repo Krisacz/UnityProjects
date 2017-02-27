@@ -177,7 +177,7 @@ namespace Assets.Scripts.Controllers
 
             //Is scanner selected?
             var item = ItemSelectionController.GetItem();
-            if (item == null || item.Function != Function.Tool || item.ItemId != ItemId.OreScanner)
+            if (item == null || item.ItemFunction != ItemFunction.Tool || item.ItemId != ItemId.OreScanner)
             {
                 NotificationFeedController.Add(Icons.Error, "Ore Scanner not equipped.");
                 return false;

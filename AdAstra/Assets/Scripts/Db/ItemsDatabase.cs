@@ -39,7 +39,7 @@ namespace Assets.Scripts.Db
             var description = JHelper.AsString(json["Description"]);
             var maxStackSize = JHelper.AsInt(json["MaxStackSize"]);
             var spriteName = JHelper.AsString(json["SpriteName"]);
-            var function = JHelper.AsEnum<Function>(json["Function"]);
+            var function = JHelper.AsEnum<ItemFunction>(json["ItemFunction"]);
             var properties = JHelper.AsFuncProperty(json["Properties"].ToJson());
             
             return new Item(itemId, title, description, maxStackSize, spriteName, 

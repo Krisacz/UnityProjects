@@ -19,8 +19,8 @@ namespace Assets.Scripts.Controllers
         [Range(0,10)]
         public int MaxQueuedBlueprints = 2;
 
-        private Dictionary<BlueprintGroup, List<Blueprint>> _blueprints;
-        private BlueprintGroup _selectedGroup = BlueprintGroup.None;
+        private Dictionary<ItemFunction, List<Blueprint>> _blueprints;
+        private ItemFunction _selectedGroup = ItemFunction.None;
         private List<GameObject> _selectedGroupBlueprints;
         private Blueprint _selectedBlueprint = null;
         private List<GameObject> _selectedBlueprintRequirements;
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Controllers
         #region START
         void Start ()
         {
-            _blueprints = new Dictionary<BlueprintGroup, List<Blueprint>>();
+            _blueprints = new Dictionary<ItemFunction, List<Blueprint>>();
             _selectedGroupBlueprints = new List<GameObject>();
             _selectedBlueprintRequirements = new List<GameObject>();
             _craftingTimerController = CraftingCurrentPanel.transform.FindChild("CraftingTimer")
@@ -41,16 +41,16 @@ namespace Assets.Scripts.Controllers
             _outputInventory = CraftingCurrentPanel.GetComponent<InventoryController>();
 
             //TODO Debug init with example blueprints
-            var oreBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Ores);
+            var oreBlueprints = BlueprintsDatabase.GetGroupBlueprints(ItemFunction.Resource);
             foreach (var blueprint in oreBlueprints) AddItemBlueprint(blueprint);
 
-            var structuresBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Structures);
+            var structuresBlueprints = BlueprintsDatabase.GetGroupBlueprints(ItemFunction.Structure);
             foreach (var blueprint in structuresBlueprints) AddItemBlueprint(blueprint);
 
-            var toolsBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Tools);
+            var toolsBlueprints = BlueprintsDatabase.GetGroupBlueprints(ItemFunction.Tool);
             foreach (var blueprint in toolsBlueprints) AddItemBlueprint(blueprint);
 
-            var machinesBlueprints = BlueprintsDatabase.GetGroupBlueprints(BlueprintGroup.Machines);
+            var machinesBlueprints = BlueprintsDatabase.GetGroupBlueprints(ItemFunction.Machine);
             foreach (var blueprint in machinesBlueprints) AddItemBlueprint(blueprint);
 
 
@@ -61,7 +61,7 @@ namespace Assets.Scripts.Controllers
 
         #region BLUEPRINT GROUP
         //Add only "model"
-        private void AddBlueprintGroup(BlueprintGroup group)
+        private void AddBlueprintGroup(ItemFunction group)
         {
             if (_blueprints.ContainsKey(group))
             {
@@ -90,13 +90,13 @@ namespace Assets.Scripts.Controllers
             }
         }
 
-        public void OnBlueprintGroupSelected(BlueprintGroup blueprintGroup)
+        public void OnBlueprintGroupSelected(ItemFunction blueprintFunction)
         {
             //If  this group is already selected ignore...
-            if (_selectedGroup == blueprintGroup) return;
+            if (_selectedGroup == blueprintFunction) return;
 
             //Set currently selected group
-            _selectedGroup = blueprintGroup;
+            _selectedGroup = blueprintFunction;
 
             //First lets remove existing blueprints from view 
             foreach (var go in _selectedGroupBlueprints)
@@ -111,10 +111,10 @@ namespace Assets.Scripts.Controllers
             ClearSelectedBlueprintPanel();
 
             //If newly selected group is NONE - stop here
-            if (blueprintGroup == BlueprintGroup.None) return;
+            if (blueprintFunction == ItemFunction.None) return;
 
             //Add blueprints for current group
-            foreach (var blueprint in _blueprints[blueprintGroup])
+            foreach (var blueprint in _blueprints[blueprintFunction])
             {
                 var go = GameObjectFactory.ItemBlueprint(blueprint, ItemBlueprintsPanel.transform
                     , ItemBlueprintController.BlueprintOnClick.Select);

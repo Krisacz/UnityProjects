@@ -154,7 +154,7 @@ namespace Assets.Scripts.Controllers
             var structureBelowIsBuilt = IsEmpty(x, y, elevation - 1) == false;
 
             //If item function is MACHINE - it needs to be build on the FLOOR
-            if (currentItem.Function == Function.Machine)
+            if (currentItem.ItemFunction == ItemFunction.Machine)
             {
                 var itemBelow = GetStuctureItemFromElevation(x, y, elevation - 1);
                 if (itemBelow == null) return 0;

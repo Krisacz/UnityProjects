@@ -5,7 +5,7 @@
 		"Description": "One of the most common ores.",
 		"MaxStackSize": 5,
 		"SpriteName": "iron_ore",
-		"Function": "Resource",
+		"ItemFunction": "Resource",
 		"Properties": { "Rarity": "10" }
 	},
 	
@@ -15,7 +15,7 @@
 		"Description": "Quite rare, amazing conductor!",
 		"MaxStackSize": 3,
 		"SpriteName": "gold_ore",
-		"Function": "Resource",
+		"ItemFunction": "Resource",
 		"Properties": { "Rarity": "100" }
 	},
 		
@@ -25,7 +25,7 @@
 		"Description": "Base structure used to expand your ship.",
 		"MaxStackSize": 10,
 		"SpriteName": "foundation",
-		"Function": "Structure",
+		"ItemFunction": "Structure",
 		"Properties": { "IsBlocking": "false", "Elevation": "BelowGround", "ConstructionTime": "0.75" }
 	},
 	
@@ -35,7 +35,7 @@
 		"Description": "Basic floow - standard walking speed.",
 		"MaxStackSize": 10,
 		"SpriteName": "floor",
-		"Function": "Structure",
+		"ItemFunction": "Structure",
 		"Properties": { "IsBlocking": "false", "Elevation": "Ground", "ConstructionTime": "1.5" }
 	},
 	
@@ -45,7 +45,7 @@
 		"Description": "Basic wall - will resist most of small rocks.",
 		"MaxStackSize": 10,
 		"SpriteName": "wall",
-		"Function": "Structure",
+		"ItemFunction": "Structure",
 		"Properties": { "IsBlocking": "true", "Elevation": "Ground", "ConstructionTime": "2.5" }
 	},
 	
@@ -55,7 +55,7 @@
 		"Description": "Used to manufacture some of the tools and small parts.",
 		"MaxStackSize": 1,
 		"SpriteName": "printer3d",
-		"Function": "Machine",
+		"ItemFunction": "Machine",
 		"Properties": { "IsBlocking": "true", "Elevation": "OnGround", "AssemblyTime": "5.5" }
 	},
 	
@@ -65,7 +65,7 @@
 		"Description": "Tool used to construct and deconstruct structures.",
 		"MaxStackSize": 1,
 		"SpriteName": "constructor",
-		"Function": "Tool",
+		"ItemFunction": "Tool",
 		"Properties": { "ConstructionSpeed": "1.0", "DeconstructionSpeed": "1.0", "Reliability": "0.9", "Range": "Medium" }
 	},
 	
@@ -75,7 +75,7 @@
 		"Description": "Tool used to assemble and disassemle machines and other internal object.",
 		"MaxStackSize": 1,
 		"SpriteName": "assembler",
-		"Function": "Tool",
+		"ItemFunction": "Tool",
 		"Properties": { "AssemblySpeed": "1.0", "DisassemblySpeed": "1.0", "Reliability": "0.9", "Range": "Medium" }
 	},
 	
@@ -85,7 +85,7 @@
 		"Description": "Tool used to repair damaged structures.",
 		"MaxStackSize": 1,
 		"SpriteName": "welder",
-		"Function": "Tool",
+		"ItemFunction": "Tool",
 		"Properties": { "RepairSpeed": "1.0", "RepairEfficiency": "5-10", "Reliability": "0.9", "Range": "Medium" }
 	},
 	
@@ -95,7 +95,7 @@
 		"Description": "Tool used to drill and extraction of ore from asteroids.",
 		"MaxStackSize": 1,
 		"SpriteName": "mining_drill",
-		"Function": "Tool",
+		"ItemFunction": "Tool",
 		"Properties": { "DrillSpeed": "3.0", "ExtractionYieldMin": "2", "ExtractionYieldMax": "4", "BurstExtractionChance": "0.05", "Reliability": "0.9", "Range": "Medium", "DrillHeadLevel": "1" }
 	},
 	
@@ -105,7 +105,7 @@
 		"Description": "Tool used to scan of asteroids and reveal hiden ore nodes.",
 		"MaxStackSize": 1,
 		"SpriteName": "scanner",
-		"Function": "Tool",
+		"ItemFunction": "Tool",
 		"Properties": { "ScanSpeed": "3.0", "ScanSuccess": "0.9", "Range": "Medium", "ScanLevel": "1" }
 	}
 ]

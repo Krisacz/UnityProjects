@@ -5,12 +5,13 @@ using System.Text;
 
 namespace Assets.Scripts.Models
 {
-    public enum Function
+    public enum ItemFunction
     {
         None,
         Resource,
         Tool,
         Structure,
-        Machine
+        Machine,
+        Drone
     }
 }
