@@ -1,0 +1,6 @@
+ImageName,Text,TextSize,TxtColor,Width,Height,BgColor,Format
+test_file1,Text Example 1,20,ff0000,128,128,00ff00,png
+test_file2,Text Example 2,25,ff0000,256,256,00ff00,png
+test_file3,Text Example 3,30,ff0000,256,128,00ff00,png
+test_file4,Text Example 4,15,ff0000,128,256,00ff00,png
+test_file5,Text Example 5,10,ff0000,64,128,00ff00,png

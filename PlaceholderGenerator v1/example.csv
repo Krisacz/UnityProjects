@@ -1,0 +1,5 @@
+ImageName (no ext),Text,TextSize (font size),TxtColor (ffffff),Width  (int),Height (int),BgColor (ffffff),Format (png)
+iron_ore,Iron Ore,30,00ff00,128,128,999999,png
+silicon_ore,Silicon Ore,30,00ff00,128,128,999999,png
+dirty_ice,Dirty Ice,30,00ff00,128,128,999999,png
+copper_ore,Copper Ore,30,00ff00,128,128,999999,png

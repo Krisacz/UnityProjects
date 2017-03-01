@@ -1,0 +1,6 @@
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\bin\Debug\PlaceholderGenerator.exe.config
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\bin\Debug\PlaceholderGenerator.exe
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\bin\Debug\PlaceholderGenerator.pdb
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\obj\Debug\PlaceholderGenerator.csprojResolveAssemblyReference.cache
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\obj\Debug\PlaceholderGenerator.exe
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\obj\Debug\PlaceholderGenerator.pdb

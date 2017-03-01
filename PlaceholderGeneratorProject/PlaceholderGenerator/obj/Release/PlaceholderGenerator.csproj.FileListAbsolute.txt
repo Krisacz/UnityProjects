@@ -1,0 +1,5 @@
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\bin\Release\PlaceholderGenerator.exe.config
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\bin\Release\PlaceholderGenerator.exe
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\bin\Release\PlaceholderGenerator.pdb
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\obj\Release\PlaceholderGenerator.exe
+C:\Users\Public\Documents\Unity Projects\PlaceholderGenerator\PlaceholderGenerator\obj\Release\PlaceholderGenerator.pdb
