@@ -1,0 +1,9 @@
+ImageName,Text,TextSize,TxtColor,Width,Height,BgColor,Format
+dirty_ice,Dirty Ice,35,000000,128,128,9cc2d4,png
+silicon_ore,Silicon Ore,35,000000,128,128,9cc2d4,png
+iron_ore,Iron Ore,35,000000,128,128,9cc2d4,png
+copper_ore,Copper Ore,35,000000,128,128,9cc2d4,png
+ice,Ice,35,000000,128,128,9cc2d4,png
+silicon_ingot,Silicon Ingot,35,000000,128,128,9cc2d4,png
+iron_ingot,Iron Ingot,35,000000,128,128,9cc2d4,png
+water,Water,35,000000,128,128,9cc2d4,png
