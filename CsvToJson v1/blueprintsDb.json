@@ -1,0 +1,260 @@
+[
+	{
+		"ResultItemId":	"Ice",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"DirtyIce":	"3"
+		}
+	},
+	{
+		"ResultItemId":	"SiliconIngot",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"SiliconOre":	"3"
+		}
+	},
+	{
+		"ResultItemId":	"IronIngot",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"IronOre":	"3"
+		}
+	},
+	{
+		"ResultItemId":	"CopperIngot",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"CopperOre":	"3"
+		}
+	},
+	{
+		"ResultItemId":	"Water",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"Ice":	"1"
+		}
+	},
+	{
+		"ResultItemId":	"OxygenUnit",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"Water":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"HydrogenUnit",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"Water":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"OxygenTankFull",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"OxygenTankEmpty":	"1",
+			"OxygenUnit":	"5"
+		}
+	},
+	{
+		"ResultItemId":	"OxygenTankEmpty",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"SiliconIngot":	"1",
+			"AluminiumIngot":	"1"
+		}
+	},
+	{
+		"ResultItemId":	"CopperWire",
+		"ResultItemCount":	"5",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"SiliconIngot":	"2",
+			"CopperIngot":	"1"
+		}
+	},
+	{
+		"ResultItemId":	"ElectronicCircuit",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"SiliconIngot":	"1",
+			"CopperWire":	"3"
+		}
+	},
+	{
+		"ResultItemId":	"ProcessorUnit",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"SiliconIngot":	"2",
+			"ElectronicCircuit":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"PowerCell",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"AluminiumIngot":	"1",
+			"CopperWire":	"2",
+			"ElectronicCircuit":	"1"
+		}
+	},
+	{
+		"ResultItemId":	"BasicFoundation",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"IronIngot":	"1",
+			"AluminiumIngot":	"1"
+		}
+	},
+	{
+		"ResultItemId":	"BasicFloor",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"IronIngot":	"1",
+			"AluminiumIngot":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"BasicWall",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"IronIngot":	"2",
+			"AluminiumIngot":	"1"
+		}
+	},
+	{
+		"ResultItemId":	"Constructor",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"PowerCell":	"1",
+			"ProcessorUnit":	"1",
+			"ElectronicCircuit":	"1",
+			"SiliconIngot":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"Assembler",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"PowerCell":	"1",
+			"ProcessorUnit":	"1",
+			"ElectronicCircuit":	"1",
+			"AluminiumIngot":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"Welder",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"PowerCell":	"1",
+			"ProcessorUnit":	"1",
+			"ElectronicCircuit":	"1",
+			"CopperIngot":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"MinningDrill",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"PowerCell":	"1",
+			"ProcessorUnit":	"1",
+			"ElectronicCircuit":	"1",
+			"IronIngot":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"OreScanner",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"PowerCell":	"1",
+			"ProcessorUnit":	"2",
+			"ElectronicCircuit":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"Printer3D",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"AluminiumIngot":	"3",
+			"ProcessorUnit":	"3",
+			"ElectronicCircuit":	"2",
+			"SiliconIngot":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"OreCrusher",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"IronIngot":	"5",
+			"ProcessorUnit":	"1",
+			"ElectronicCircuit":	"1",
+			"CopperWire":	"5"
+		}
+	},
+	{
+		"ResultItemId":	"PurificationChamber ",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"AluminiumIngot":	"5",
+			"ProcessorUnit":	"1",
+			"ElectronicCircuit":	"1",
+			"CopperWire":	"5"
+		}
+	},
+	{
+		"ResultItemId":	"EnergizedSmelter ",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"IronIngot":	"5",
+			"ProcessorUnit":	"2",
+			"ElectronicCircuit":	"3",
+			"CopperWire":	"5"
+		}
+	},
+	{
+		"ResultItemId":	"Pressuriser",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"AluminiumIngot":	"3",
+			"ProcessorUnit":	"1",
+			"ElectronicCircuit":	"1",
+			"SiliconIngot":	"2"
+		}
+	},
+	{
+		"ResultItemId":	"Hydroponics",
+		"ResultItemCount":	"1",
+		"CraftingTime":	"3.0",
+		"Requirements":	{
+			"AluminiumIngot":	"4",
+			"ProcessorUnit":	"1",
+			"SiliconIngot":	"2",
+			"CopperWire":	"4"
+		}
+	}
+]

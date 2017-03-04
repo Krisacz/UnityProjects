@@ -3,7 +3,30 @@ dirty_ice,Dirty Ice,35,000000,128,128,9cc2d4,png
 silicon_ore,Silicon Ore,35,000000,128,128,9cc2d4,png
 iron_ore,Iron Ore,35,000000,128,128,9cc2d4,png
 copper_ore,Copper Ore,35,000000,128,128,9cc2d4,png
+aluminium_ore,Aluminium Ore,35,000000,128,128,9cc2d4,png
 ice,Ice,35,000000,128,128,9cc2d4,png
 silicon_ingot,Silicon Ingot,35,000000,128,128,9cc2d4,png
 iron_ingot,Iron Ingot,35,000000,128,128,9cc2d4,png
+copper_ingot,Copper Ingot,35,000000,128,128,9cc2d4,png
+aluminium_ingot,Aluminium Ingot,35,000000,128,128,9cc2d4,png
 water,Water,35,000000,128,128,9cc2d4,png
+oxygen_tank_empty,Oxygen Tank Empty,35,000000,128,128,9cc2d4,png
+oxygen_tank_full,Oxygen Tank Full,35,000000,128,128,9cc2d4,png
+oxygen,Oxygen,35,000000,128,128,9cc2d4,png
+hydrogen,Hydrogen,35,000000,128,128,9cc2d4,png
+copper_wire,Copper Wire,35,000000,128,128,9cc2d4,png
+electronic_circuit,Electronic Circuit,35,000000,128,128,9cc2d4,png
+processor_unit,Processor Unit,35,000000,128,128,9cc2d4,png
+power_cell,Power Cell,35,000000,128,128,9cc2d4,png
+basic_foundation,Basic Foundation,35,000000,128,128,9cc2d4,png
+basic_floor,Basic Floor,35,000000,128,128,9cc2d4,png
+basic_wall,Basic Wall,35,000000,128,128,9cc2d4,png
+constructor,Nano-Constructor,35,000000,128,128,9cc2d4,png
+assembler,Atomic-Assembler,35,000000,128,128,9cc2d4,png
+welder,Plasma-Torch,35,000000,128,128,9cc2d4,png
+minning_drill,T-500 Dragon Head,35,000000,128,128,9cc2d4,png
+ore_scanner,Ping-Master 2000,35,000000,128,128,9cc2d4,png
+printer_3d,3D Printer ,35,000000,128,128,9cc2d4,png
+energized_smelter ,Energized Smelter ,35,000000,128,128,9cc2d4,png
+pressuriser,Pressuriser,35,000000,128,128,9cc2d4,png
+hydroponics,Hydroponics,35,000000,128,128,9cc2d4,png

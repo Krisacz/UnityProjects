@@ -1,0 +1,6 @@
+C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\bin\Debug\CsvToJson.exe.config
+C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\bin\Debug\CsvToJson.exe
+C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\bin\Debug\CsvToJson.pdb
+C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\obj\Debug\CsvToJson.csprojResolveAssemblyReference.cache
+C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\obj\Debug\CsvToJson.exe
+C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\obj\Debug\CsvToJson.pdb

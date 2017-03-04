@@ -16,7 +16,7 @@ namespace Assets.Scripts.Db
         
         public static void Init()
         {
-            var path = string.Format("{0}/StreamingAssets/blueprintsDb.jason", Application.dataPath);
+            var path = string.Format("{0}/StreamingAssets/blueprintsDb.json", Application.dataPath);
             var fileContent = File.ReadAllText(path);
             var jasonData = JsonMapper.ToObject(fileContent);
             for (var i = 0; i < jasonData.Count; i++)
