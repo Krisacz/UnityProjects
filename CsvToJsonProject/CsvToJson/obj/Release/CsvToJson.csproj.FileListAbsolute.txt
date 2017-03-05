@@ -3,3 +3,9 @@ C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\bin\Release\CsvToJs
 C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\bin\Release\CsvToJson.pdb
 C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\obj\Release\CsvToJson.exe
 C:\Users\Public\Documents\Unity Projects\CsvToJson\CsvToJson\obj\Release\CsvToJson.pdb
+C:\Users\Public\Documents\Unity Projects\CsvToJsonProject\CsvToJson\bin\Release\CsvToJson.exe.config
+C:\Users\Public\Documents\Unity Projects\CsvToJsonProject\CsvToJson\obj\Release\CsvToJson.exe
+C:\Users\Public\Documents\Unity Projects\CsvToJsonProject\CsvToJson\obj\Release\CsvToJson.pdb
+C:\Users\Public\Documents\Unity Projects\CsvToJsonProject\CsvToJson\bin\Release\CsvToJson.exe
+C:\Users\Public\Documents\Unity Projects\CsvToJsonProject\CsvToJson\bin\Release\CsvToJson.pdb
+C:\Users\Public\Documents\Unity Projects\CsvToJsonProject\CsvToJson\obj\Release\CsvToJson.csprojResolveAssemblyReference.cache

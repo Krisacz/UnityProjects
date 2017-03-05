@@ -42,7 +42,7 @@ namespace Assets.Scripts.Models
 
 		//========== Machine
 		Printer3D,
-		EnergizedSmelter,
+		EnergizedSmelter ,
 		Pressuriser,
 		Hydroponics,
 

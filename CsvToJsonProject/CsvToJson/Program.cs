@@ -23,8 +23,18 @@ namespace CsvToJson
                 foreach (var line in itemsCsvContent.Skip(1)) itemsList.Add(new Item(line));
                 var itemsJson = javaScriptSerializer.Serialize(itemsList);
                 var formattedItemsJson = JsonFormatter.Format(itemsJson);
-                File.WriteAllText("itemsDb.json", formattedItemsJson);
+                File.WriteAllText("..\\AdAstra\\Assets\\StreamingAssets\\itemsDb.json", formattedItemsJson);
                 Console.WriteLine("Completed!");
+
+
+                //Items enum cs file (I know doesn't really fit here but I can kill 2 birds with 1 stone :)
+                Console.Write("Creating ItemId.cs...");
+                var allItems = new Dictionary<string, string>();//ItemId-ItemFunction
+                foreach (var line in itemsCsvContent.Skip(1)) allItems.Add(line.Split(',')[0], line.Split(',')[5]);
+                var csFileContent = GetCsFileContent(allItems);
+                File.WriteAllText("..\\AdAstra\\Assets\\Scripts\\Models\\ItemId.cs", csFileContent);
+                Console.WriteLine("Completed!");
+
 
                 //Blueprints
                 Console.Write("Creating blueprintsDb.json...");
@@ -33,7 +43,7 @@ namespace CsvToJson
                 foreach (var line in blueprintsCsvContent.Skip(1)) blueprintsList.Add(new Blueprint(line));
                 var blueprintsJson = javaScriptSerializer.Serialize(blueprintsList);
                 var formattedBlueprintsJson = JsonFormatter.Format(blueprintsJson);
-                File.WriteAllText("blueprintsDb.json", formattedBlueprintsJson);
+                File.WriteAllText("..\\AdAstra\\Assets\\StreamingAssets\\blueprintsDb.json", formattedBlueprintsJson);
                 Console.WriteLine("Completed!");
             }
             catch (Exception ex)
@@ -80,6 +90,38 @@ namespace CsvToJson
                     FunctionProperties.Add(prop, value);
                 }
             }
+        }
+
+        private static string GetCsFileContent(Dictionary<string, string> allItems)
+        {
+            //ItemFunction - List of ItemId
+            var grouped = allItems.GroupBy(r => r.Value).ToDictionary(t => t.Key, t => t.Select(r => r.Key).ToList());
+
+            //Create all CS file content
+            var sb = new StringBuilder();
+
+            sb.AppendLine("namespace Assets.Scripts.Models");
+            sb.AppendLine("{");
+            sb.AppendLine("\tpublic enum ItemId");
+            sb.AppendLine("\t{");
+            sb.AppendLine("\t\tNone,");
+            sb.AppendLine();
+
+            foreach (var gr in grouped)
+            {
+                sb.AppendLine($"\t\t//========== {gr.Key}");
+                foreach (var item in gr.Value)
+                {
+                    sb.AppendLine($"\t\t{item},");
+                }
+                sb.AppendLine();
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("\t}");
+            sb.AppendLine("}");
+
+            return sb.ToString();
         }
         #endregion
 

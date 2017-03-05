@@ -1,0 +1,15 @@
+In "Unity Projects" there are few additional projects:
+---------------------------------------------------------------
+[PlaceholderGeneratorProject]		- VS project to create sprite placeholder files from CSV data file.
+[PlaceholderGeneratorProject v1]	- Release version of above project - the one we are using for active proj
+
+[CsvToJsonProject]			- VS project to create JSON file from CSV files. Also created ItemsId.cs 					for AdAstra project  (enum values); Keeping everything in sync.
+[CsvToJsonProject v1]			- Release version of above project - the one we are using for active proj
+
+
+
+In AdAstra root folder:
+---------------------------------------------------------------
+Items-Blueprints.xlsm			- excel file with items, blueprints and other data. Has VBA buttons with 						scripts to create Items/Blueprints CSV files
+					(for placeholders, JSON and CS)
+					All CSV files are created straight in appropriate folders.
