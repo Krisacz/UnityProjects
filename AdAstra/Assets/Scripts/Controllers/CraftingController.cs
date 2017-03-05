@@ -9,6 +9,8 @@ namespace Assets.Scripts.Controllers
 {
     public class CraftingController : MonoBehaviour
     {
+        private static int _uniqueId = 0;
+
         public GameObject BlueprintsGroupsPanel;
         public GameObject ItemBlueprintsPanel;
         public GameObject SelectedBlueprint;
@@ -19,8 +21,8 @@ namespace Assets.Scripts.Controllers
         [Range(0,10)]
         public int MaxQueuedBlueprints = 2;
 
-        private Dictionary<ItemFunction, List<Blueprint>> _blueprints;
-        private ItemFunction _selectedGroup = ItemFunction.None;
+        private Dictionary<string, List<Blueprint>> _blueprints;
+        private string _selectedGroup = string.Empty;
         private List<GameObject> _selectedGroupBlueprints;
         private Blueprint _selectedBlueprint = null;
         private List<GameObject> _selectedBlueprintRequirements;
@@ -33,7 +35,7 @@ namespace Assets.Scripts.Controllers
         #region START
         void Start ()
         {
-            _blueprints = new Dictionary<ItemFunction, List<Blueprint>>();
+            _blueprints = new Dictionary<string, List<Blueprint>>();
             _selectedGroupBlueprints = new List<GameObject>();
             _selectedBlueprintRequirements = new List<GameObject>();
             _craftingTimerController = CraftingCurrentPanel.transform.FindChild("CraftingTimer")
@@ -41,38 +43,25 @@ namespace Assets.Scripts.Controllers
             _outputInventory = CraftingCurrentPanel.GetComponent<InventoryController>();
 
             //TODO Debug init with example blueprints
-            var oreBlueprints = BlueprintsDatabase.GetGroupBlueprints(ItemFunction.Resource);
-            foreach (var blueprint in oreBlueprints) AddItemBlueprint(blueprint);
-
-            var structuresBlueprints = BlueprintsDatabase.GetGroupBlueprints(ItemFunction.Structure);
-            foreach (var blueprint in structuresBlueprints) AddItemBlueprint(blueprint);
-
-            var toolsBlueprints = BlueprintsDatabase.GetGroupBlueprints(ItemFunction.Tool);
-            foreach (var blueprint in toolsBlueprints) AddItemBlueprint(blueprint);
-
-            var machinesBlueprints = BlueprintsDatabase.GetGroupBlueprints(ItemFunction.Machine);
-            foreach (var blueprint in machinesBlueprints) AddItemBlueprint(blueprint);
-
+            //foreach (var blueprint in machinesBlueprints) AddItemBlueprint(blueprint);
+            //AddBlueprintGroup();
 
             UpdateBlueprintGroupsViews();
             ClearSelectedBlueprintPanel();
         }
         #endregion
 
-        #region BLUEPRINT GROUP
-        //Add only "model"
-        private void AddBlueprintGroup(ItemFunction group)
+        #region INIT
+        public int Init()
         {
-            if (_blueprints.ContainsKey(group))
-            {
-                Log.Warn("CraftingController", "AddBlueprintGroup", 
-                    string.Format("Blueprints group = {0} already exist!", group));
-                return;
-            }
+            _uniqueId ++;
+            //TODO Init other stuff here e.g. max queue, stats of machine etc
 
-            _blueprints.Add(group, new List<Blueprint>());
+            return _uniqueId;
         }
+        #endregion
 
+        #region BLUEPRINT GROUP
         //Adds view (game objects)
         private void UpdateBlueprintGroupsViews()
         {
@@ -90,13 +79,13 @@ namespace Assets.Scripts.Controllers
             }
         }
 
-        public void OnBlueprintGroupSelected(ItemFunction blueprintFunction)
+        public void OnBlueprintGroupSelected(string blueprintGroup)
         {
             //If  this group is already selected ignore...
-            if (_selectedGroup == blueprintFunction) return;
+            if (_selectedGroup == blueprintGroup) return;
 
             //Set currently selected group
-            _selectedGroup = blueprintFunction;
+            _selectedGroup = blueprintGroup;
 
             //First lets remove existing blueprints from view 
             foreach (var go in _selectedGroupBlueprints)
@@ -110,29 +99,24 @@ namespace Assets.Scripts.Controllers
             //Side panel
             ClearSelectedBlueprintPanel();
 
-            //If newly selected group is NONE - stop here
-            if (blueprintFunction == ItemFunction.None) return;
-
             //Add blueprints for current group
-            foreach (var blueprint in _blueprints[blueprintFunction])
+            foreach (var blueprint in _blueprints[blueprintGroup])
             {
-                var go = GameObjectFactory.ItemBlueprint(blueprint, ItemBlueprintsPanel.transform
-                    , ItemBlueprintController.BlueprintOnClick.Select);
+                var go = GameObjectFactory.ItemBlueprint(blueprint, ItemBlueprintsPanel.transform,
+                    ItemBlueprintController.BlueprintOnClick.Select);
                 _selectedGroupBlueprints.Add(go);
             }
         }
         #endregion
 
         #region BLUEPRINT
-        //Add only "model"
-        private void AddItemBlueprint(Blueprint blueprint)
+        public void AddItemBlueprint(string blueprintGroup, Blueprint blueprint)
         {
             //Add blueprint group if doesn't exist already
-            if (!_blueprints.ContainsKey(blueprint.BlueprintGroup))
-                AddBlueprintGroup(blueprint.BlueprintGroup);
-            
-            //Add it to private dictionary
-            _blueprints[blueprint.BlueprintGroup].Add(blueprint);
+            if (!_blueprints.ContainsKey(blueprintGroup)) _blueprints.Add(blueprintGroup, new List<Blueprint>());
+
+            //Add it to dictionary
+            _blueprints[blueprintGroup].Add(blueprint);
         }
 
         public void OnBlueprintSelected(Blueprint blueprint)

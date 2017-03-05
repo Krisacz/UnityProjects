@@ -32,6 +32,17 @@ namespace Assets.Scripts.Db
             return null;
         }
 
+        public static List<ItemId> GetAllWithFunctionProperty(FunctionProperty functionProperty)
+        {
+            var list = new List<ItemId>();
+            foreach (var item in Database)
+            {
+                if (!item.Value.FunctionProperties.ContainsKey(functionProperty)) continue;
+                list.Add(item.Key);
+            }
+            return list;
+        }
+
         private static Item MapJsonObjectToItem(JsonData json)
         {
             var itemId = JHelper.AsEnum<ItemId>(json["ItemId"]);
@@ -40,7 +51,7 @@ namespace Assets.Scripts.Db
             var maxStackSize = JHelper.AsInt(json["MaxStackSize"]);
             var spriteName = JHelper.AsString(json["SpriteName"]);
             var function = JHelper.AsEnum<ItemFunction>(json["ItemFunction"]);
-            var properties = JHelper.AsFuncProperty(json["Properties"].ToJson());
+            var properties = JHelper.AsFuncProperty(json["FunctionProperties"].ToJson());
             
             return new Item(itemId, title, description, maxStackSize, spriteName, 
                 function, properties);

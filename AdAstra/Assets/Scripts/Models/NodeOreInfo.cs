@@ -4,16 +4,16 @@ using Assets.Scripts.Controllers;
 
 namespace Assets.Scripts.Models
 {
-    public class NodeInfo
+    public class NodeOreInfo
     {
-        public float Chance { get; set; }
+        public float Rarity { get; set; }
         public ItemId  ItemId  { get; set; }
         public int ScanLevelRequired { get; set; }
-        public List<NDensity> Density { get; set; }
+        public List<NodeDensity> Density { get; set; }
 
-        public NodeInfo(float chance, ItemId itemId, int scanLevelRequired, params NDensity[] density)
+        public NodeOreInfo(float rarity, ItemId itemId, int scanLevelRequired, params NodeDensity[] density)
         {
-            Chance = chance;
+            Rarity = rarity;
             ItemId = itemId;
             ScanLevelRequired = scanLevelRequired;
             Density = density.ToList();

@@ -87,10 +87,9 @@ namespace Assets.Scripts.Controllers
             _mouseScreenXY = Input.mousePosition;
             _mouseWorldXY = Camera.main.ScreenToWorldPoint(_mouseScreenXY);
 
-            AddItemsControl();
-            ItemsToCheck();
-            ItemsToRemove();
-            NotificationsControl();
+            //AddItemsControl();
+            //ItemsToRemove();
+            //NotificationsControl();
         }
 
         private void NotificationsControl()
@@ -103,35 +102,35 @@ namespace Assets.Scripts.Controllers
             //if (Input.GetKeyDown(KeyCode.Alpha0)) NotificationFeedController.Add(Icons.Error, "Some test error message");
         }
 
-        private void AddItemsControl()
-        {
-            var ic = InventoryController.GetComponent<InventoryController>();
-            if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                ic.AddItem(ItemId.IronOre, IronToInsert, InventoryToInsert);
-                CraftingController.GetComponent<CraftingController>().UpdateSelectedBlueprintRequirements();
-            }
+        //private void AddItemsControl()
+        //{
+        //    var ic = InventoryController.GetComponent<InventoryController>();
+        //    if (Input.GetKeyDown(KeyCode.Keypad1))
+        //    {
+        //        ic.AddItem(ItemId.IronOre, IronToInsert, InventoryToInsert);
+        //        CraftingController.GetComponent<CraftingController>().UpdateSelectedBlueprintRequirements();
+        //    }
 
-            if (Input.GetKeyDown(KeyCode.Keypad2))
-            {
-                ic.AddItem(ItemId.GoldOre, GoldToInsert, InventoryToInsert);
-                CraftingController.GetComponent<CraftingController>().UpdateSelectedBlueprintRequirements();
-            }
-        }
+        //    //if (Input.GetKeyDown(KeyCode.Keypad2))
+        //    //{
+        //    //    ic.AddItem(ItemId.GoldOre, GoldToInsert, InventoryToInsert);
+        //    //    CraftingController.GetComponent<CraftingController>().UpdateSelectedBlueprintRequirements();
+        //    //}
+        //}
 
-        private void ItemsToCheck()
-        {
-            var ic = InventoryController.GetComponent<InventoryController>();
-            var d = new Dictionary<ItemId, int> { { ItemId.IronOre, IronToCheck }, { ItemId.GoldOre, GoldToCheck }};
-            if (Input.GetKeyDown(KeyCode.I)) Log.Info(ic.Check(d).Count    == 0 ? "NULL" : "NOT NULL"); //All inv.
-            if (Input.GetKeyDown(KeyCode.O)) Log.Info(ic.Check(d, 0).Count == 0 ? "NULL" : "NOT NULL"); //Hotbar
-            if (Input.GetKeyDown(KeyCode.P)) Log.Info(ic.Check(d, 1).Count == 0 ? "NULL" : "NOT NULL"); //Inventory
-        }
+        //private void ItemsToCheck()
+        //{
+        //    var ic = InventoryController.GetComponent<InventoryController>();
+        //    var d = new Dictionary<ItemId, int> { { ItemId.IronOre, IronToCheck }, { ItemId.GoldOre, GoldToCheck }};
+        //    if (Input.GetKeyDown(KeyCode.I)) Log.Info(ic.Check(d).Count    == 0 ? "NULL" : "NOT NULL"); //All inv.
+        //    if (Input.GetKeyDown(KeyCode.O)) Log.Info(ic.Check(d, 0).Count == 0 ? "NULL" : "NOT NULL"); //Hotbar
+        //    if (Input.GetKeyDown(KeyCode.P)) Log.Info(ic.Check(d, 1).Count == 0 ? "NULL" : "NOT NULL"); //Inventory
+        //}
 
-        private void ItemsToRemove()
-        {
-            var ic = InventoryController.GetComponent<InventoryController>();
-            if (Input.GetKeyDown(KeyCode.X)) ic.RemoveItem(ItemToRemove, RemoveCount, InventoryToRemoveFrom);
-        }
+        //private void ItemsToRemove()
+        //{
+        //    var ic = InventoryController.GetComponent<InventoryController>();
+        //    if (Input.GetKeyDown(KeyCode.X)) ic.RemoveItem(ItemToRemove, RemoveCount, InventoryToRemoveFrom);
+        //}
     }
 }

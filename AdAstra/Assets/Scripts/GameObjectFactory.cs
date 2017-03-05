@@ -10,18 +10,31 @@ namespace Assets.Scripts
 {
     public static class GameObjectFactory
     {
+        #region CRAFTING
+        public static int CraftingUI()
+        {
+            var mainUI = GameObject.Find("UI");
+            var go = FromPrefab("Crafting");
+            var uniqueId = go.GetComponent<CraftingController>().Init();
+            go.transform.SetParent(mainUI.transform);
+            go.name = string.Format("CraftingUI_{0}", uniqueId);
+            return uniqueId;
+        }
+        #endregion
+
         #region BLUEPRINTS STUFF
-        public static void BlueprintGroup(ItemFunction group, Transform parent)
+        public static void BlueprintGroup(string groupName, Transform parent)
         {
             var go = FromPrefab("BlueprintGroup");
 
-            go.GetComponent<Image>().sprite = SpritesDatabase.Get(group.ToString());
-            go.transform.FindChild("GroupNameText").GetComponent<Text>().text = group.ToString();
-            go.GetComponent<BlueprintGroupController>().SetBlueprintGroup(group);
+            var spriteName = string.Format("{0}_blueprint_group", groupName.ToLower());
+            go.GetComponent<Image>().sprite = SpritesDatabase.Get(spriteName);
+            go.transform.FindChild("GroupNameText").GetComponent<Text>().text = groupName;
+            go.GetComponent<BlueprintGroupController>().SetBlueprintGroup(groupName);
             go.transform.SetParent(parent);
 
             //Set name for debuging
-            var gameObjectName = string.Format("BlueprintGroup [{0}]", group);
+            var gameObjectName = string.Format("BlueprintGroup [{0}]", groupName);
             go.name = gameObjectName;
         }
 

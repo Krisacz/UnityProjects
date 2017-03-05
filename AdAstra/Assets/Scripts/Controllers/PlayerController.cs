@@ -36,7 +36,6 @@ namespace Assets.Scripts.Controllers
         void Update()
         {
             ToggleInventory();
-            ToggleCrafting();
             SelectInventorySlot();
             GravityBoots();
         }
@@ -66,15 +65,7 @@ namespace Assets.Scripts.Controllers
             InventoryUI.SetActive(_inventoryVisible);
             //Log.Info("PlayerController", "ToggleInventory", string.Format("_inventoryVisible = {0}", _inventoryVisible));
         }
-
-        private void ToggleCrafting()
-        {
-            if (!Input.GetKeyDown(KeyCode.C)) return;
-            _craftingVisible = !_craftingVisible;
-            CraftingUI.SetActive(_craftingVisible);
-            //Log.Info("PlayerController", "ToggleCrafting", string.Format("_craftingVisible = {0}", _craftingVisible));
-        }
-
+        
         private void SelectInventorySlot()
         {
             //Hot keys

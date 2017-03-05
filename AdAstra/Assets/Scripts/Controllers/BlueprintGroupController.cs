@@ -5,22 +5,22 @@ namespace Assets.Scripts.Controllers
 {
     public class BlueprintGroupController : MonoBehaviour
     {
-        private ItemFunction _blueprintFunction;
+        private string _blueprintGroup;
 
-        public ItemFunction GetBlueprintGroup()
+        public string GetBlueprintGroup()
         {
-            return _blueprintFunction;
+            return _blueprintGroup;
         }
 
-        public void SetBlueprintGroup(ItemFunction blueprintFunction)
+        public void SetBlueprintGroup(string blueprintGroup)
         {
-            _blueprintFunction = blueprintFunction;
+            _blueprintGroup = blueprintGroup;
         }
 
         public void OnSelected()
         {
             var cc = GetComponentInParent<CraftingController>();
-            cc.OnBlueprintGroupSelected(_blueprintFunction);
+            cc.OnBlueprintGroupSelected(_blueprintGroup);
         }
     }
 }

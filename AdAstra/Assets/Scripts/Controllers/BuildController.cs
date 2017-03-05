@@ -158,7 +158,7 @@ namespace Assets.Scripts.Controllers
             {
                 var itemBelow = GetStuctureItemFromElevation(x, y, elevation - 1);
                 if (itemBelow == null) return 0;
-                return itemBelow.ItemId == ItemId.Floor ? 1 : 0;
+                return itemBelow.ItemId == ItemId.BasicFloor ? 1 : 0;
             }
 
             //If structure slot is not empty but SPECIFIC elevation in same slot is:
@@ -319,11 +319,11 @@ namespace Assets.Scripts.Controllers
                 {
                     var ssv = EscapePodView.GetStructureSlotView(x, y);
                     var groundItem = ssv.GetItem(StructureElevation.Ground);
-                    if (groundItem != null && groundItem.ItemId == ItemId.Floor)
+                    if (groundItem != null && groundItem.ItemId == ItemId.BasicFloor)
                     {
                         _airMap[x, y] = new SimpleTile() {SelfX = x, SelfY = y, Type = SimpleTileType.Floor};
                     }
-                    else if (groundItem != null && groundItem.ItemId == ItemId.Wall)
+                    else if (groundItem != null && groundItem.ItemId == ItemId.BasicWall)
                     {
                         _airMap[x, y] = new SimpleTile() {SelfX = x, SelfY = y, Type = SimpleTileType.Wall};
                     }

@@ -1,30 +1,41 @@
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 
 namespace Assets.Scripts.Controllers
 {
     public class NodeGenerator
     {
-        private static readonly List<NodeInfo> NodesData = new List<NodeInfo>()
+        private static List<NodeOreInfo>  _nodeOreInfo = new List<NodeOreInfo>();
+
+        public static void Init()
         {
-            new NodeInfo(20f, ItemId.Ice,          1, new NDensity(10f, 5), new NDensity(5f, 10), new NDensity(1f, 20)),
-            new NodeInfo(15f, ItemId.PlasteelOre,  1, new NDensity(10f, 3), new NDensity(5f,  5), new NDensity(1f,  7)),
-            new NodeInfo(10f, ItemId.IronOre,      1, new NDensity(10f, 3), new NDensity(5f,  5), new NDensity(1f,  7)),
-            new NodeInfo( 7f, ItemId.CopperOre,    2, new NDensity(10f, 3), new NDensity(5f,  5), new NDensity(1f,  7)),
-            new NodeInfo( 7f, ItemId.TinOre,       2, new NDensity(10f, 3), new NDensity(5f,  5), new NDensity(1f,  7)),
-            new NodeInfo( 5f, ItemId.GoldOre,      3, new NDensity(10f, 2), new NDensity(5f,  3), new NDensity(1f,  4)),
-            new NodeInfo( 5f, ItemId.PlatiniumOre, 3, new NDensity(10f, 2), new NDensity(5f,  3), new NDensity(1f,  4)),
-            new NodeInfo( 3f, ItemId.TitaniumOre,  4, new NDensity(10f, 2), new NDensity(5f,  3), new NDensity(1f,  4)),
-            new NodeInfo( 2f, ItemId.CrystalOre,   4, new NDensity(10f, 1), new NDensity(5f,  2), new NDensity(1f,  3)),
-            new NodeInfo( 1f, ItemId.DiamondOre,   5, new NDensity(10f, 1), new NDensity(5f,  2), new NDensity(1f,  3)),
-        };
+            var allOre = ItemsDatabase.GetAllWithFunctionProperty(FunctionProperty.OreRarity);
+            foreach (var itemId in allOre)
+            {
+                var item = ItemsDatabase.Get(itemId);
+
+                //We expect to have exactly 3 int numbers in density property each split by "|" pipe
+                var densityStr = item.FunctionProperties.AsString(FunctionProperty.OreDensity).Split('|');
+                
+                var nodeOreInfo = new NodeOreInfo(
+                    item.FunctionProperties.AsFloat(FunctionProperty.OreRarity),
+                    itemId,
+                    item.FunctionProperties.AsInt(FunctionProperty.ScanLevelRequired),
+                    new NodeDensity(10f, int.Parse(densityStr[0])),
+                    new NodeDensity( 5f, int.Parse(densityStr[1])),
+                    new NodeDensity( 1f, int.Parse(densityStr[2]))
+                    );
+                _nodeOreInfo.Add(nodeOreInfo);
+            }
+        }
 
         public static NodeData New()
         {
-            var nodeChances = NodesData.Select(ni => ni.Chance).ToArray();
+            var nodeChances = _nodeOreInfo.Select(ni => ni.Rarity).ToArray();
             var nodeIndex = MathHelper.RandomRange(nodeChances);
-            var nodeInfo = NodesData[nodeIndex];
+            var nodeInfo = _nodeOreInfo[nodeIndex];
             
             var densityChances = nodeInfo.Density.Select(d => d.Chance).ToArray();
             var densityIndex = MathHelper.RandomRange(densityChances);

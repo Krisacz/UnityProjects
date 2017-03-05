@@ -11,9 +11,8 @@ namespace Assets.Scripts.Db
     public static class BlueprintsDatabase
     {
         //TODO Consider using list instead of dic to support multiple recipies for one item
-        private static readonly Dictionary<ItemId, Blueprint> BlueprintsDb = new Dictionary<ItemId, Blueprint>();
-        private static readonly Dictionary<ItemFunction, List<Blueprint>> BlueprintsGroupDb = new Dictionary<ItemFunction, List<Blueprint>>();
-        
+        private static readonly List<Blueprint> BlueprintsDb = new List<Blueprint>();
+
         public static void Init()
         {
             var path = string.Format("{0}/StreamingAssets/blueprintsDb.json", Application.dataPath);
@@ -24,18 +23,7 @@ namespace Assets.Scripts.Db
                 var blueprint = MapJsonObjectToBlueprint(jasonData[i]);
 
                 //Blueprints DB
-                BlueprintsDb.Add(blueprint.ResultItemId, blueprint);
-
-                //Blueprints Groups DB
-                if (BlueprintsGroupDb.ContainsKey(blueprint.BlueprintGroup))
-                {
-                    BlueprintsGroupDb[blueprint.BlueprintGroup].Add(blueprint);
-                }
-                else
-                {
-                    var list = new List<Blueprint>() {blueprint};
-                    BlueprintsGroupDb.Add(blueprint.BlueprintGroup, list);
-                }
+                BlueprintsDb.Add(blueprint);
             }
 
             //Debug log
@@ -44,32 +32,34 @@ namespace Assets.Scripts.Db
 
         public static Blueprint GetBlueprint(ItemId itemId)
         {
-            if (BlueprintsDb.ContainsKey(itemId)) return BlueprintsDb[itemId];
+            var blueprint = BlueprintsDb.FirstOrDefault(x => x.ResultItemId == itemId);
+            if (blueprint != null && blueprint.ResultItemId != ItemId.None) return blueprint;
             Log.Error("BlueprintsDatabase", "GetBlueprint", string.Format("Blueprint for ItemId = {0} doesn't exist in blueprints databse.", itemId));
             return null;
         }
 
-        public static List<Blueprint> GetGroupBlueprints(ItemFunction itemFunction)
-        {
-            if (BlueprintsGroupDb.ContainsKey(itemFunction)) return BlueprintsGroupDb[itemFunction];
-            Log.Error("BlueprintsDatabase", "GetGroupBlueprints", string.Format("BlueprintGroup = {0} doesn't exist in blueprints databse.", itemFunction));
-            return new List<Blueprint>();
-        }
-
         private static Blueprint MapJsonObjectToBlueprint(JsonData json)
         {
-            var group = JHelper.AsEnum<ItemFunction>(json["BlueprintFunction"]);
-            var resultItemId = JHelper.AsEnum<ItemId>(json["ResultItemId"]);
-            var resultItemCount = JHelper.AsInt(json["ResultItemCount"]);
-            var craftingTime = JHelper.AsFloat(json["CraftingTime"]);
-            var dic = JHelper.AsDictionary<string, int>(json["Requirements"].ToJson());
-            var requirements = dic.ToDictionary(d => (ItemId) Enum.Parse(typeof (ItemId), d.Key), d => d.Value);
+            try
+            {
+                var resultItemId = JHelper.AsEnum<ItemId>(json["ResultItemId"]);
+                var resultItemCount = JHelper.AsInt(json["ResultItemCount"]);
+                var craftingTime = JHelper.AsFloat(json["CraftingTime"]);
+                var dicStr = JHelper.AsDictionary<string, string>(json["Requirements"].ToJson());
+                var requirements = dicStr.ToDictionary(d => (ItemId)Enum.Parse(typeof(ItemId), d.Key), d => int.Parse(d.Value));
 
-            if(requirements.Count > 8) Log.Warn("BlueprintsDatabase", "MapJsonObjectToBlueprint",
-                string.Format("ItemId = {0} requires {1} crafting components - will they fit on the screen??!?!?!",
-                resultItemId, requirements.Count));
+                if (requirements.Count > 8) Log.Warn("BlueprintsDatabase", "MapJsonObjectToBlueprint",
+                     string.Format("ItemId = {0} requires {1} crafting components - will they fit on the screen??!?!?!",
+                     resultItemId, requirements.Count));
 
-            return new Blueprint(group, resultItemId, resultItemCount, craftingTime, requirements);
+                return new Blueprint(resultItemId, resultItemCount, craftingTime, requirements);
+            }
+            catch (Exception ex)
+            {
+                var a = 1;
+            }
+
+            return null;
         }
     }
 }

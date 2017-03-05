@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Assets.Scripts.Models
+﻿namespace Assets.Scripts.Models
 {
     public enum FunctionProperty
     {
@@ -13,10 +8,14 @@ namespace Assets.Scripts.Models
         ConstructionTime,   //same time for deconstruction
 
         //==== RESOURCE
-        Rarity,
+        OreRarity,
+        ScanLevelRequired,
+        OreDensity,
+        OreProcessTime,
 
         //==== MACHINE
-        AssemblyTime,       //same time for disassembly
+        WorkSpeed,
+        AssemblyTime,
 
         //==== TOOL
         ConstructionSpeed,
@@ -26,7 +25,8 @@ namespace Assets.Scripts.Models
         AssemblySpeed,
         DisassemblySpeed,
         RepairSpeed,
-        RepairEfficiency,
+        RepairEfficiencyMin,
+        RepairEfficiencyMax,
         DrillSpeed,
         ExtractionYieldMin,
         ExtractionYieldMax,

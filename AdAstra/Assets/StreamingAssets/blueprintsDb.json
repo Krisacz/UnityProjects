@@ -203,28 +203,6 @@
 		}
 	},
 	{
-		"ResultItemId":	"OreCrusher",
-		"ResultItemCount":	"1",
-		"CraftingTime":	"3.0",
-		"Requirements":	{
-			"IronIngot":	"5",
-			"ProcessorUnit":	"1",
-			"ElectronicCircuit":	"1",
-			"CopperWire":	"5"
-		}
-	},
-	{
-		"ResultItemId":	"PurificationChamber ",
-		"ResultItemCount":	"1",
-		"CraftingTime":	"3.0",
-		"Requirements":	{
-			"AluminiumIngot":	"5",
-			"ProcessorUnit":	"1",
-			"ElectronicCircuit":	"1",
-			"CopperWire":	"5"
-		}
-	},
-	{
 		"ResultItemId":	"EnergizedSmelter",
 		"ResultItemCount":	"1",
 		"CraftingTime":	"3.0",

@@ -42,7 +42,7 @@ namespace Assets.Scripts.Views
                     //Foundation
                     if (x >= 12 && x <= 18 && y >= 12 && y <= 18)
                     {
-                        AddStructure(x, y, ItemId.Foundation, true);
+                        AddStructure(x, y, ItemId.BasicFoundation, true);
 
                         //Walls
                         if (x == 12 || x == 18 || y == 12 || y == 18)
@@ -50,15 +50,15 @@ namespace Assets.Scripts.Views
                             //Except this one...
                             if (x == 15 && y == 12)
                             {
-                                AddStructure(x, y, ItemId.Floor, true);
+                                AddStructure(x, y, ItemId.BasicFloor, true);
                                 continue;
                             }
 
-                            AddStructure(x, y, ItemId.Wall, true);
+                            AddStructure(x, y, ItemId.BasicWall, true);
                         }
                         else
                         {
-                            AddStructure(x, y, ItemId.Floor, true);
+                            AddStructure(x, y, ItemId.BasicFloor, true);
                         }
                     }
                 }

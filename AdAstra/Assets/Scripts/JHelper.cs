@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Assets.Scripts.Models;
 using LitJson;
-using UnityEngine;
-using UnityEngine.Networking;
 
 namespace Assets.Scripts
 {
@@ -53,7 +49,7 @@ namespace Assets.Scripts
             var result = new Dictionary<FunctionProperty, string>();
             foreach (var kv in dic)
             {
-                var fp = (FunctionProperty) Enum.Parse(typeof (FunctionProperty), kv.Key);
+                var fp = (FunctionProperty)Enum.Parse(typeof(FunctionProperty), kv.Key);
                 result.Add(fp, kv.Value);
             }
 

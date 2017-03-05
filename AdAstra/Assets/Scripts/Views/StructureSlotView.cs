@@ -153,7 +153,12 @@ namespace Assets.Scripts.Views
         public void OnPointerClick(PointerEventData eventData)
         {
             //Check if we are in building mode
-            if (!BuildController.IsOn()) return;
+            if (!BuildController.IsOn())
+            {
+                //TODO Check if there is special "usage" on that structure e.g. crafting UI
+                //666
+                return;
+            }
 
             //Check if we already have "not constructed" object here
             //And if we are clicking on it again - we are cancelling build 

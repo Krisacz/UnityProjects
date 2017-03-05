@@ -13,6 +13,8 @@ namespace Assets.Scripts.Controllers
         {
             ItemsDatabase.Init();
             BlueprintsDatabase.Init();
+            NodeGenerator.Init();
+
             var ep = GameObjectFactory.EscapePod();
             BuildController.EscapePod = ep;
             var player = GameObjectFactory.Player(0, 0);
@@ -27,7 +29,7 @@ namespace Assets.Scripts.Controllers
             playerInventoryController.AddItem(ItemId.OreScanner, 1, 0);
             playerInventoryController.AddItem(ItemId.MinningDrill, 1, 0);
             playerInventoryController.AddItem(ItemId.IronOre, 1, 0);
-            playerInventoryController.AddItem(ItemId.GoldOre, 1, 0);
+
             //playerInventoryController.AddItem(ItemId.Assembler, 1, 1);
             //playerInventoryController.AddItem(ItemId.Printer3D, 1, 1);
             //playerInventoryController.AddItem(ItemId.Foundation, 5, 0);
