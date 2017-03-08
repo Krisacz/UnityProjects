@@ -16,6 +16,7 @@
         //==== MACHINE
         WorkSpeed,
         AssemblyTime,
+        InteractUIType,
 
         //==== TOOL
         ConstructionSpeed,

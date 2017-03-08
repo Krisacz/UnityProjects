@@ -7,8 +7,8 @@ namespace Assets.Scripts.Controllers
     //[ExecuteInEditMode]
     public class DebugController : MonoBehaviour
     {
-        public static bool InfiniteItems = true;
-        public static bool InstaBuild = true;
+        public static bool InfiniteItems = false;
+        public static bool InstaBuild = false;
 
         public GameObject InventoryController;
         public GameObject CraftingController;

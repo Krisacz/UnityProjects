@@ -76,10 +76,19 @@ namespace Assets.Scripts.Views
                 return false;
             }
 
-            var e = item.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
+            //Elevation and position
+            var elevation = item.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
             var structureSlotGo = StructureSlots[x, y];
             var structureSlotView = structureSlotGo.GetComponent<StructureSlotView>();
-            return structureSlotView.AddStructure(e, itemId, instaBuild);
+
+            //Interact UI Type
+            var interactUIType = InteractUIType.None;
+            if (item.ItemFunction == ItemFunction.Machine)
+            {
+                interactUIType = item.FunctionProperties.AsEnum<InteractUIType>(FunctionProperty.InteractUIType);
+            }
+
+            return structureSlotView.AddStructure(elevation, itemId, interactUIType, instaBuild);
         }
 
         public StructureSlotView GetStructureSlotView(int x, int y)

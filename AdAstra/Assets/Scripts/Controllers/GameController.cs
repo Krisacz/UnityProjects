@@ -26,9 +26,12 @@ namespace Assets.Scripts.Controllers
             //======================TODO just for debug 
             var playerInventoryController = GameObject.Find("PlayerInventoryController")
                 .GetComponent<InventoryController>();
-            playerInventoryController.AddItem(ItemId.OreScanner, 1, 0);
-            playerInventoryController.AddItem(ItemId.MinningDrill, 1, 0);
-            playerInventoryController.AddItem(ItemId.IronOre, 1, 0);
+            playerInventoryController.AddItem(ItemId.Assembler, 1, 0);
+            playerInventoryController.AddItem(ItemId.Printer3D, 1, 0);
+            playerInventoryController.AddItem(ItemId.Printer3D, 1, 0);
+            playerInventoryController.AddItem(ItemId.Printer3D, 1, 0);
+            //playerInventoryController.AddItem(ItemId.BasicFoundation, 1, 0);
+            //playerInventoryController.AddItem(ItemId.BasicWall, 1, 0);
 
             //playerInventoryController.AddItem(ItemId.Assembler, 1, 1);
             //playerInventoryController.AddItem(ItemId.Printer3D, 1, 1);

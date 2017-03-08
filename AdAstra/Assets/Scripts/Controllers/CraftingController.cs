@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
@@ -9,8 +10,6 @@ namespace Assets.Scripts.Controllers
 {
     public class CraftingController : MonoBehaviour
     {
-        private static int _uniqueId = 0;
-
         public GameObject BlueprintsGroupsPanel;
         public GameObject ItemBlueprintsPanel;
         public GameObject SelectedBlueprint;
@@ -52,12 +51,10 @@ namespace Assets.Scripts.Controllers
         #endregion
 
         #region INIT
-        public int Init()
+        public void Init(InteractUIType uiType)
         {
-            _uniqueId ++;
-            //TODO Init other stuff here e.g. max queue, stats of machine etc
-
-            return _uniqueId;
+            //throw new NotImplementedException();
+            Log.Info("CraftingController >> UI Type" + uiType);
         }
         #endregion
 

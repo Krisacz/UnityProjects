@@ -11,14 +11,19 @@ namespace Assets.Scripts
     public static class GameObjectFactory
     {
         #region CRAFTING
-        public static int CraftingUI()
+        public static GameObject CraftingUI(InteractUIType uiType, int x, int y)
         {
+            if (uiType == InteractUIType.None) return null;
+
             var mainUI = GameObject.Find("UI");
             var go = FromPrefab("Crafting");
-            var uniqueId = go.GetComponent<CraftingController>().Init();
+            var cc = go.GetComponent<CraftingController>();
+            cc.Init(uiType);
             go.transform.SetParent(mainUI.transform);
-            go.name = string.Format("CraftingUI_{0}", uniqueId);
-            return uniqueId;
+            go.transform.position = Vector3.zero;
+            go.name = string.Format("InteractUI X[{0}]-Y[{1}]", x, y);
+            go.SetActive(false);
+            return go;
         }
         #endregion
 

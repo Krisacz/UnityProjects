@@ -17,6 +17,8 @@ namespace Assets.Scripts.Views
         private readonly Dictionary<StructureElevation, Item> _items = new Dictionary<StructureElevation, Item>();
         private readonly Dictionary<StructureElevation, GameObject> _gameObjects = new Dictionary<StructureElevation, GameObject>();
         private readonly Dictionary<StructureElevation, float> _construction = new Dictionary<StructureElevation, float>();
+
+        private GameObject _interactUI;
         
         private int _x = -1;
         private int _y = -1;
@@ -34,7 +36,8 @@ namespace Assets.Scripts.Views
 
         #region ADD STRUCTURE
         //Returns TRUE is succesfully added, false if it already has a structure on this elevation
-        public bool AddStructure(StructureElevation elevation, ItemId itemId, bool instaBuild)
+        public bool AddStructure(StructureElevation elevation, ItemId itemId, 
+            InteractUIType interactUIType, bool instaBuild)
         {
             //Item (structure) already exist
             if (_items.ContainsKey(elevation) && _items[elevation] != null)
@@ -68,6 +71,9 @@ namespace Assets.Scripts.Views
                 _gameObjects.Add(elevation, go);
                 _construction.Add(elevation, instaBuild ? 0.0f : cTime);
             }
+
+            //========== Interact UI
+            _interactUI = GameObjectFactory.CraftingUI(interactUIType, _x, _y);
 
             return true;
         }
@@ -155,8 +161,13 @@ namespace Assets.Scripts.Views
             //Check if we are in building mode
             if (!BuildController.IsOn())
             {
-                //TODO Check if there is special "usage" on that structure e.g. crafting UI
-                //666
+                //Check first - all objects are constructed here
+                //...and has interact UI
+                if (GetNotConstructedObjectElevation() == StructureElevation.None && _interactUI != null)
+                {
+                    _interactUI.SetActive(!_interactUI.activeSelf);
+                }
+                
                 return;
             }
 

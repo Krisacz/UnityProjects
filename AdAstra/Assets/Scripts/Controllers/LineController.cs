@@ -20,7 +20,7 @@ public class LineController : MonoBehaviour
     private float _hideTimeCur;
 
     private float _posRnd = 0.495f;
-
+    
     void Start ()
     {
         _playerHand = this.transform;
@@ -36,7 +36,7 @@ public class LineController : MonoBehaviour
 	{
         //TODO Alpha?
         //TODO Particles on the hand and on the hitpoiont
-        if(!_visible) return;
+        if (!_visible) return;
 	    UpdateLine(Time.deltaTime);
 	}
 

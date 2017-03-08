@@ -245,7 +245,7 @@
 		"ItemFunction":	"Structure",
 		"FunctionProperties":	{
 			"IsBlocking":	"False",
-			"Elevation":	"BelowGround",
+			"Elevation":	"Ground",
 			"ConstructionTime":	"1.5"
 		}
 	},
@@ -347,7 +347,8 @@
 			"IsBlocking":	"True",
 			"Elevation":	"OnGround",
 			"WorkSpeed":	"1.5",
-			"AssemblyTime":	"3.5"
+			"AssemblyTime":	"3.5",
+			"InteractUIType":	"Printer3D"
 		}
 	},
 	{
@@ -361,7 +362,8 @@
 			"IsBlocking":	"True",
 			"Elevation":	"OnGround",
 			"WorkSpeed":	"1.5",
-			"AssemblyTime":	"3.5"
+			"AssemblyTime":	"3.5",
+			"InteractUIType":	"Simple"
 		}
 	},
 	{
@@ -375,7 +377,8 @@
 			"IsBlocking":	"True",
 			"Elevation":	"OnGround",
 			"WorkSpeed":	"1.5",
-			"AssemblyTime":	"3.5"
+			"AssemblyTime":	"3.5",
+			"InteractUIType":	"Simple"
 		}
 	},
 	{
@@ -389,7 +392,8 @@
 			"IsBlocking":	"True",
 			"Elevation":	"OnGround",
 			"WorkSpeed":	"1.5",
-			"AssemblyTime":	"3.5"
+			"AssemblyTime":	"3.5",
+			"InteractUIType":	"Simple"
 		}
 	}
 ]
