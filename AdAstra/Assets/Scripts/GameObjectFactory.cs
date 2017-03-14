@@ -11,14 +11,14 @@ namespace Assets.Scripts
     public static class GameObjectFactory
     {
         #region CRAFTING
-        public static GameObject CraftingUI(InteractUIType uiType, int x, int y)
+        public static GameObject InteractUI(InteractUIType uiType, int x, int y)
         {
             if (uiType == InteractUIType.None) return null;
 
             var mainUI = GameObject.Find("UI");
-            var go = FromPrefab("Crafting");
+            var go = FromPrefab("InteractUI");
             var cc = go.GetComponent<CraftingController>();
-            cc.Init(uiType);
+            cc.Init("TEST TO-DO", "TEST2 TO-DO", uiType);
             go.transform.SetParent(mainUI.transform);
             go.transform.position = Vector3.zero;
             go.name = string.Format("InteractUI X[{0}]-Y[{1}]", x, y);

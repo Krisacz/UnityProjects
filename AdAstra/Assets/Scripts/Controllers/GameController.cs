@@ -20,7 +20,6 @@ namespace Assets.Scripts.Controllers
             var player = GameObjectFactory.Player(0, 0);
             //var player = GameObject.Find("Player"); //If already placed in the scene for debug/test
             player.GetComponent<PlayerController>().InventoryUI = PlayerInventory;
-            player.GetComponent<PlayerController>().CraftingUI = PlayerCrafting;
             Camera.main.GetComponent<CameraController>().FollowThis = player;
 
             //======================TODO just for debug 

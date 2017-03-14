@@ -73,7 +73,7 @@ namespace Assets.Scripts.Views
             }
 
             //========== Interact UI
-            _interactUI = GameObjectFactory.CraftingUI(interactUIType, _x, _y);
+            _interactUI = GameObjectFactory.InteractUI(interactUIType, _x, _y);
 
             return true;
         }

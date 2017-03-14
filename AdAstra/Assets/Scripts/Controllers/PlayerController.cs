@@ -8,12 +8,10 @@ namespace Assets.Scripts.Controllers
     {
         public float Speed;
         public GameObject InventoryUI;
-        public GameObject CraftingUI;
 
         private Rigidbody2D _rigidbody2D;
         private FixedJoint2D _joint;
         private bool _inventoryVisible;
-        private bool _craftingVisible;
         private static CircleCollider2D _playerCollider;
         private static LineController _lineController;
 
