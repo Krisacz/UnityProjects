@@ -10,18 +10,103 @@ namespace Assets.Scripts
 {
     public static class GameObjectFactory
     {
+        #region ASTEROIDS CONTROLLER
+        public static void AsteroidsController()
+        {
+            FromPrefab("AsteroidsController");
+        }
+        #endregion
+
+        #region BACKGROUND
+        public static void Background()
+        {
+            FromPrefab("Background");
+        }
+        #endregion
+
+        #region UI ELEMENTS
+        public static GameObject TooltipUI(bool visible)
+        {
+            var uiContainer = GameObject.Find("UIContainer");
+            var go = FromPrefab("TooltipUI");
+            go.name = "TooltipUI";
+            go.transform.SetParent(uiContainer.transform);
+            go.SetActive(visible);
+            return go;
+        }
+
+        public static GameObject NotificationFeedUI()
+        {
+            var uiContainer = GameObject.Find("UIContainer");
+            var go = FromPrefab("NotificationFeedUI");
+            go.name = "NotificationFeedUI";
+            go.transform.SetParent(uiContainer.transform);
+            return go;
+        }
+
+        public static GameObject StatsUI(bool visible)
+        {
+            var uiContainer = GameObject.Find("UIContainer");
+            var go = FromPrefab("StatsUI");
+            go.name = "StatsUI";
+            go.transform.SetParent(uiContainer.transform);
+            go.SetActive(visible);
+            return go;
+        }
+
+        public static GameObject InventoryBarUI(int initialSlots, bool visible)
+        {
+            var uiContainer = GameObject.Find("UIContainer");
+
+            var go = FromPrefab("InventoryBarUI");
+            var slotsPanel = go.transform.FindChild("InventoryBar");
+            for (var i = 1; i <= initialSlots; i++)
+            {
+                var inventorySlotPanel = FromPrefab("InventorySlotPanel");
+                inventorySlotPanel.name = string.Format("InventorySlotPanel_{0}", i);
+                inventorySlotPanel.transform.SetParent(slotsPanel);
+            }
+
+            go.name = "InventoryBarUI";
+            go.transform.SetParent(uiContainer.transform);
+            go.SetActive(visible);
+
+            return go;
+        }
+
+        public static GameObject InventoryUI(int initialSlots, bool visible)
+        {
+            var uiContainer = GameObject.Find("UIContainer");
+
+            var go = FromPrefab("InventoryUI");
+            var slotsPanel = go.transform.FindChild("Inventory").transform.FindChild("SlotsPanel");
+            for (var i = 1; i <= initialSlots; i++)
+            {
+                var inventorySlotPanel = FromPrefab("InventorySlotPanel");
+                inventorySlotPanel.name = string.Format("InventorySlotPanel_{0}", i);
+                inventorySlotPanel.transform.SetParent(slotsPanel);
+            }
+
+            go.name = "InventoryUI";
+            go.transform.SetParent(uiContainer.transform);
+            go.SetActive(visible);
+
+            return go;
+        }
+        #endregion
+
         #region CRAFTING
         public static GameObject InteractUI(InteractUIType uiType, int x, int y)
         {
             if (uiType == InteractUIType.None) return null;
 
-            var mainUI = GameObject.Find("UI");
+            var uiContainer = GameObject.Find("UIContainer");
             var go = FromPrefab("InteractUI");
             var cc = go.GetComponent<CraftingController>();
             cc.Init("TEST TO-DO", "TEST2 TO-DO", uiType);
-            go.transform.SetParent(mainUI.transform);
             go.transform.position = Vector3.zero;
             go.name = string.Format("InteractUI X[{0}]-Y[{1}]", x, y);
+            go.transform.SetParent(uiContainer.transform);
             go.SetActive(false);
             return go;
         }
@@ -183,6 +268,7 @@ namespace Assets.Scripts
         #endregion
 
         #region NOTIFICATION
+        //TODO move to directly to notification controller?
         public static GameObject Noticifaction(string spriteName, string message, Transform parent)
         {
             var go = FromPrefab("Notification");

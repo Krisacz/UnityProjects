@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Controllers
 {
-    public class InventorySlotController : Tooltip, IPointerDownHandler,
+    public class InventorySlotController : TooltipController, IPointerDownHandler,
         IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
     {
         //TODO Do caching of different objects here - like this.GetComponent<ItemStackView>();

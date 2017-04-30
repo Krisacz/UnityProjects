@@ -6,14 +6,22 @@ namespace Assets.Scripts.Controllers
 {
     public class PlayerController : MonoBehaviour
     {
-        public float Speed;
         public GameObject InventoryUI;
+        public GameObject InventoryBarUI;
+        public GameObject Stats;
+
+        public float Speed;
 
         private Rigidbody2D _rigidbody2D;
         private FixedJoint2D _joint;
-        private bool _inventoryVisible;
         private static CircleCollider2D _playerCollider;
         private static LineController _lineController;
+
+        private bool _inventoryVisible = false;
+        private bool _inventoryBarVisible = false;
+        private bool _statsVisible = false;
+
+        private bool _gravityBootsActive = false;
 
         void Start ()
         {
@@ -34,7 +42,10 @@ namespace Assets.Scripts.Controllers
         void Update()
         {
             ToggleInventory();
+            ToggleInventoryBar();
+            ToggleStats();
             SelectInventorySlot();
+
             GravityBoots();
         }
         
@@ -61,9 +72,22 @@ namespace Assets.Scripts.Controllers
             if (!Input.GetKeyDown(KeyCode.E)) return;
             _inventoryVisible = !_inventoryVisible;
             InventoryUI.SetActive(_inventoryVisible);
-            //Log.Info("PlayerController", "ToggleInventory", string.Format("_inventoryVisible = {0}", _inventoryVisible));
         }
-        
+
+        private void ToggleInventoryBar()
+        {
+            if (!Input.GetKeyDown(KeyCode.Tab)) return;
+            _inventoryBarVisible = !_inventoryBarVisible;
+            InventoryBarUI.SetActive(_inventoryBarVisible);
+        }
+
+        private void ToggleStats()
+        {
+            if (!Input.GetKeyDown(KeyCode.Z)) return;
+            _statsVisible = !_statsVisible;
+            Stats.SetActive(_statsVisible);
+        }
+
         private void SelectInventorySlot()
         {
             //Hot keys
@@ -91,7 +115,6 @@ namespace Assets.Scripts.Controllers
             }
         }
 
-        private bool _gravityBootsActive = false;
         private void GravityBoots()
         {
             if (!_gravityBootsActive && Input.GetKeyDown(KeyCode.F))

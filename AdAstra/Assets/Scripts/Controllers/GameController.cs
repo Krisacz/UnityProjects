@@ -6,53 +6,56 @@ namespace Assets.Scripts.Controllers
 {
     public class GameController : MonoBehaviour
     {
-        public GameObject PlayerInventory;
-        public GameObject PlayerCrafting;
-
         void OnEnable()
         {
+            //Initialize data
             ItemsDatabase.Init();
             BlueprintsDatabase.Init();
             NodeGenerator.Init();
 
+            //Create Escape Pod
             var ep = GameObjectFactory.EscapePod();
+
+            //Link Escape Pod to Build Controller
             BuildController.EscapePod = ep;
+
+            //Create UI Elements
+            var inventory = GameObjectFactory.InventoryUI(4, false);
+            var inventoryBar = GameObjectFactory.InventoryBarUI(4, true);
+            var playerStats = GameObjectFactory.StatsUI(false);
+            var notificationFeedUI = GameObjectFactory.NotificationFeedUI();
+            var toolTip = GameObjectFactory.TooltipUI(true);
+
+            //Link player inventories to InventoryController
+            var inventoryController = this.transform.GetComponent<InventoryController>();
+            inventoryController.Inventories = new[] { inventory, inventoryBar };
+
+            //Create Player
             var player = GameObjectFactory.Player(0, 0);
-            //var player = GameObject.Find("Player"); //If already placed in the scene for debug/test
-            player.GetComponent<PlayerController>().InventoryUI = PlayerInventory;
+            var playerController = player.GetComponent<PlayerController>();
+            playerController.InventoryUI = inventory;
+            playerController.InventoryBarUI = inventoryBar;
+            playerController.Stats = playerStats;
+
+            //TODO link anything else UI-related to player controller (if needs to be controlled by player)
+
+            //Set main Camera to follow Player
             Camera.main.GetComponent<CameraController>().FollowThis = player;
 
-            //======================TODO just for debug 
-            var playerInventoryController = GameObject.Find("PlayerInventoryController")
-                .GetComponent<InventoryController>();
-            playerInventoryController.AddItem(ItemId.Assembler, 1, 0);
-            playerInventoryController.AddItem(ItemId.Printer3D, 1, 0);
-            playerInventoryController.AddItem(ItemId.Printer3D, 1, 0);
-            playerInventoryController.AddItem(ItemId.Printer3D, 1, 0);
-            //playerInventoryController.AddItem(ItemId.BasicFoundation, 1, 0);
-            //playerInventoryController.AddItem(ItemId.BasicWall, 1, 0);
+            //TODO In Start?
+            //GameObject.Find("AsteroidsController").GetComponent<AsteroidsController>().SpawnAsteroids();
 
-            //playerInventoryController.AddItem(ItemId.Assembler, 1, 1);
-            //playerInventoryController.AddItem(ItemId.Printer3D, 1, 1);
-            //playerInventoryController.AddItem(ItemId.Foundation, 5, 0);
-            //playerInventoryController.AddItem(ItemId.Floor, 5, 0);
-            //playerInventoryController.AddItem(ItemId.Wall, 5, 0);
-            //playerInventoryController.AddItem(ItemId.Constructor, 1, 0);
+
+
+            //TODO ===================================
+            //TODO ========= DEBUG ADD ITEMS ========= 
+            //TODO ===================================
+            inventoryController.AddItem(ItemId.Printer3D, 1, 1);
+            inventoryController.AddItem(ItemId.Assembler, 1, 1);
         }
 
-        //Before any Start - init any objects, refs etc
-        void Awake()
-        {
-        }
-
-        void Start ()
-        {
-            GameObject.Find("AsteroidsController").GetComponent<AsteroidsController>().SpawnAsteroids();
-        }
-        
-        void Update ()
-        {
-	
-        }
+        void Awake() { }
+        void Start() { }
+        void Update () { }
     }
 }

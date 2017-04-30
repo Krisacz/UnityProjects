@@ -11,7 +11,7 @@ namespace Assets.Scripts.Controllers
     public class CraftingController : MonoBehaviour
     {
         //TODO Sort it in START same as other refs
-        private InventoryController _playerInventoryController;
+        private InventoryController _inventoryController;
         private GameObject _tileText;
         private GameObject _blueprintsGroupsPanel;
         private GameObject _itemBlueprintsPanel;
@@ -39,15 +39,17 @@ namespace Assets.Scripts.Controllers
         #region START
         void Start ()
         {
-            _playerInventoryController = transform.FindChild("Player")
-                .gameObject.GetComponent<InventoryController>();
+            _inventoryController = GameObject.FindGameObjectWithTag("GameControllerTag").transform.GetComponent<InventoryController>();
             _tileText = transform.FindChild("TitleText").gameObject;
             _blueprintsGroupsPanel = transform.FindChild("BlueprintGroups").gameObject;
             _itemBlueprintsPanel = transform.FindChild("ItemBlueprints").gameObject;
             _selectedBlueprintPanel = transform.FindChild("SelectedBlueprint").gameObject;
             _craftingCurrentPanel = transform.FindChild("CurrentPanel").gameObject;
             _craftingQueuePanel = transform.FindChild("Queue").gameObject;
-            _progressText = transform.FindChild("CraftingTime").gameObject;
+
+            _progressText = transform.FindChild("SelectedBlueprint").transform.FindChild("CraftingTime").gameObject;
+
+            //TODO Here are some erros sort it as above!
             _doWorkButton = transform.FindChild("CraftButton").gameObject;
 
             _blueprints = new Dictionary<string, List<Blueprint>>();
@@ -74,7 +76,6 @@ namespace Assets.Scripts.Controllers
             _doWorkButton.GetComponentInChildren<Text>().text = progressText;
             _interactUIType = uiType;
         }
-
         #endregion
 
         #region BLUEPRINT GROUP
@@ -245,7 +246,7 @@ namespace Assets.Scripts.Controllers
                 var ric = requirementGo.GetComponent<RequiredItemController>();
                 var itemId = ric.GetItemId();
                 var count = ric.GetCount();
-                var stock = _playerInventoryController.GetCount(itemId);
+                var stock = _inventoryController.GetCount(itemId);
                 ric.UpdateStackCountText(stock);
 
                 //Set flag if we can not craft current item (if we are missing any item)
@@ -315,7 +316,7 @@ namespace Assets.Scripts.Controllers
         {
             foreach (var r in _selectedBlueprint.Requirements)
             {
-                _playerInventoryController.RemoveItem(r.Key, r.Value);
+                _inventoryController.RemoveItem(r.Key, r.Value);
             }
         }
 
@@ -408,7 +409,7 @@ namespace Assets.Scripts.Controllers
         #region GET PLAYER INVENTORY CONTROLLER
         public InventoryController GetPlayerInventoryController()
         {
-            return _playerInventoryController;
+            return _inventoryController;
         }
         #endregion
     }

@@ -14,8 +14,9 @@ namespace Assets.Scripts.Controllers
     public class BuildController: MonoBehaviour
     {
         public static GameObject EscapePod;
-        private static EscapePodView EscapePodView;
-        private static InventoryController PlayerInventory;
+        public static InventoryController InventoryController;
+
+        private static EscapePodView _escapePodView;
 
         private static readonly Color AllowedColor = new Color32(0x00, 0xFF, 0x00, 0x40);
         private static readonly Color NotAllowedColor = new Color32(0xFF, 0x00, 0x00, 0x40);
@@ -26,8 +27,7 @@ namespace Assets.Scripts.Controllers
 
         public void Start()
         {
-            EscapePodView = EscapePod.GetComponent<EscapePodView>();
-            PlayerInventory = GameObject.Find("PlayerInventoryController").GetComponent<InventoryController>();
+            _escapePodView = EscapePod.GetComponent<EscapePodView>();
         }
 
         public void Update()
@@ -87,9 +87,9 @@ namespace Assets.Scripts.Controllers
 
         public static void RefreshBuildOverlay(bool showOnlyNotConstructedObj)
         {
-            for (var x = 0; x < EscapePodView.Columns; x++)
+            for (var x = 0; x < _escapePodView.Columns; x++)
             {
-                for (var y = 0; y < EscapePodView.Rows; y++)
+                for (var y = 0; y < _escapePodView.Rows; y++)
                 {
                     var c = CanBuildInStructureSlot(x, y);
                     switch (c)
@@ -124,14 +124,14 @@ namespace Assets.Scripts.Controllers
                 || !currentItem.FunctionProperties.ContainsKey(FunctionProperty.Elevation))
             {
                 //If X/Y slot has any unconstructed structures
-                if (EscapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 2;
+                if (_escapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 2;
 
                 //If has not - check if there is adjecent structure
                 return HasAdjecentStructure(x, y) ? 0 : -1;
             }
 
             //If X/Y slot has any unconstructed structures
-            if (EscapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 2;
+            if (_escapePodView.GetStructureSlotView(x, y).IsNotConstructed()) return 2;
 
             //Get selected "structure" item elevation property
             var elevation = currentItem.FunctionProperties.AsEnum<StructureElevation>(FunctionProperty.Elevation);
@@ -179,7 +179,7 @@ namespace Assets.Scripts.Controllers
                     if(cX == x + 1 && cY == y - 1) continue;
 
                     //Check other ones:
-                    var ss = EscapePodView.GetStructureSlotView(cX, cY);
+                    var ss = _escapePodView.GetStructureSlotView(cX, cY);
                     if (ss != null && !ss.IsEmpty()) return true;
                 }
             }
@@ -189,17 +189,17 @@ namespace Assets.Scripts.Controllers
         private static bool IsEmpty(int x, int y, 
             StructureElevation structureElevation = StructureElevation.None)
         {
-            return EscapePodView.GetStructureSlotView(x, y).IsEmpty(structureElevation);
+            return _escapePodView.GetStructureSlotView(x, y).IsEmpty(structureElevation);
         }
 
         private static Item GetStuctureItemFromElevation(int x, int y, StructureElevation elevation)
         {
-            return EscapePodView.GetStructureSlotView(x, y).GetItem(elevation);
+            return _escapePodView.GetStructureSlotView(x, y).GetItem(elevation);
         }
 
         private static void SetBuildOverlayColor(int x, int y, Color color, string sprite)
         {
-            var go = EscapePodView.StructureSlots[x,y];
+            var go = _escapePodView.StructureSlots[x,y];
             var marker = go.transform.FindChild("Marker");
             var sr = marker.GetComponent<SpriteRenderer>();
             sr.color = color;
@@ -221,7 +221,7 @@ namespace Assets.Scripts.Controllers
 
             //Build!
             var itemId = currentItem.ItemId;
-            var success = EscapePodView.AddStructure(x, y, itemId, false);
+            var success = _escapePodView.AddStructure(x, y, itemId, false);
             if (success)
             {
                 ItemSelectionController.GetItemStackView().UpdateStackCount(-1);
@@ -238,7 +238,7 @@ namespace Assets.Scripts.Controllers
         
         public static bool CanRemove(int x, int y, Item item, bool ignoreStructureCheck)
         {
-            var spaceInInventory = PlayerInventory
+            var spaceInInventory = InventoryController
                 .CheckAddItem(new Dictionary<ItemId, int>() { { item.ItemId, 1 } }).Count == 0;
 
             //Check if we have space in the inventory...
@@ -270,16 +270,16 @@ namespace Assets.Scripts.Controllers
             //We can ignore structure check if we are removing obj above "BelowGround"
             //(as there still will be foundation below)
             if (!CanRemove(x, y, item, elevation > StructureElevation.BelowGround)) return;
-            EscapePodView.RemoveStructure(x, y, elevation);
-            PlayerInventory.AddItem(item.ItemId, 1);
+            _escapePodView.RemoveStructure(x, y, elevation);
+            InventoryController.AddItem(item.ItemId, 1);
             RefreshBuildOverlay(false);
         }
 
         private static void DebugShowBuilableArea()
         {
-            for (var x = 0; x < EscapePodView.Columns; x++)
+            for (var x = 0; x < _escapePodView.Columns; x++)
             {
-                for (var y = 0; y < EscapePodView.Rows; y++)
+                for (var y = 0; y < _escapePodView.Rows; y++)
                 {
                     SetBuildOverlayColor(x, y, BuildableArea, "square");
                 }
@@ -312,12 +312,12 @@ namespace Assets.Scripts.Controllers
         private static void EscapePodPressureCheck()
         {
             //Create simplified map
-            _airMap = new SimpleTile[EscapePodView.Columns, EscapePodView.Rows];
-            for (var x = 0; x < EscapePodView.Columns; x++)
+            _airMap = new SimpleTile[_escapePodView.Columns, _escapePodView.Rows];
+            for (var x = 0; x < _escapePodView.Columns; x++)
             {
-                for (var y = 0; y < EscapePodView.Rows; y++)
+                for (var y = 0; y < _escapePodView.Rows; y++)
                 {
-                    var ssv = EscapePodView.GetStructureSlotView(x, y);
+                    var ssv = _escapePodView.GetStructureSlotView(x, y);
                     var groundItem = ssv.GetItem(StructureElevation.Ground);
                     if (groundItem != null && groundItem.ItemId == ItemId.BasicFloor)
                     {
@@ -336,9 +336,9 @@ namespace Assets.Scripts.Controllers
 
             //Go through all tiles and  flood them
             var floodGroup = 1;
-            for (var x = 0; x < EscapePodView.Columns; x++)
+            for (var x = 0; x < _escapePodView.Columns; x++)
             {
-                for (var y = 0; y < EscapePodView.Rows; y++)
+                for (var y = 0; y < _escapePodView.Rows; y++)
                 {
                     var t = _airMap[x, y];
                     if (t.FloodGroup == 0 && t.Type == SimpleTileType.Floor)
@@ -355,9 +355,9 @@ namespace Assets.Scripts.Controllers
             {
                 var g = new List<SimpleTile>();
                 var groupHasAir = true;
-                for (var x = 0; x < EscapePodView.Columns; x++)
+                for (var x = 0; x < _escapePodView.Columns; x++)
                 {
-                    for (var y = 0; y < EscapePodView.Rows; y++)
+                    for (var y = 0; y < _escapePodView.Rows; y++)
                     {
                         if (_airMap[x, y].FloodGroup == floodGroupIndex)
                         {
@@ -381,9 +381,9 @@ namespace Assets.Scripts.Controllers
             }
 
             //Debug output
-            for (var x = 0; x < EscapePodView.Columns; x++)
+            for (var x = 0; x < _escapePodView.Columns; x++)
             {
-                for (var y = 0; y < EscapePodView.Rows; y++)
+                for (var y = 0; y < _escapePodView.Rows; y++)
                 {
                     var t = _airMap[x, y];
 
@@ -429,8 +429,8 @@ namespace Assets.Scripts.Controllers
 
         private static void FloorFlood(int x, int y, int fillWith, SimpleTileType searchFor)
         {
-            if (x < 0 || x >= EscapePodView.Columns) return;
-            if (y < 0 || y >= EscapePodView.Rows) return;
+            if (x < 0 || x >= _escapePodView.Columns) return;
+            if (y < 0 || y >= _escapePodView.Rows) return;
 
             if (_airMap[x, y].Type == searchFor && _airMap[x, y].FloodGroup == 0)
             {
@@ -449,7 +449,7 @@ namespace Assets.Scripts.Controllers
                 for (var nY = y - 1; nY <= y + 1; nY++)
                 {
                     if (nX == x && nY == y) continue;
-                    if (nX < 0 || nX > EscapePodView.Columns - 1 || nY < 0 || nY > EscapePodView.Rows - 1) continue;
+                    if (nX < 0 || nX > _escapePodView.Columns - 1 || nY < 0 || nY > _escapePodView.Rows - 1) continue;
 
                     if (_airMap[nX, nY].FloodGroup != floodGroup
                         && _airMap[nX, nY].Type != SimpleTileType.Floor
@@ -465,14 +465,14 @@ namespace Assets.Scripts.Controllers
 
         private static void SetBuildDebugOverlayColor(int x, int y, Color color)
         {
-            var go = EscapePodView.StructureSlots[x, y];
+            var go = _escapePodView.StructureSlots[x, y];
             var marker = go.transform.FindChild("DebugMarker");
             marker.GetComponent<SpriteRenderer>().color = color;
         }
 
         private static void SetBuildDebugArrow(int x, int y, Vector2 dirVector2)
         {
-            var go = EscapePodView.StructureSlots[x, y];
+            var go = _escapePodView.StructureSlots[x, y];
             var marker = go.transform.FindChild("DebugArrow");
 
             if (dirVector2 == Vector2.zero)
@@ -495,15 +495,15 @@ namespace Assets.Scripts.Controllers
         private static bool EscapePodStructureCheck(int? virtualX, int? virtualY, bool debugMode)
         {
             //Create simplified map
-            _map = new int[EscapePodView.Columns, EscapePodView.Rows];
+            _map = new int[_escapePodView.Columns, _escapePodView.Rows];
             var firstNotEmptyX = -1;
             var firstNotEmptyY = -1;
 
-            for (var x = 0; x < EscapePodView.Columns; x++)
+            for (var x = 0; x < _escapePodView.Columns; x++)
             {
-                for (var y = 0; y < EscapePodView.Rows; y++)
+                for (var y = 0; y < _escapePodView.Rows; y++)
                 {
-                    var isEmpty = EscapePodView.GetStructureSlotView(x, y).IsEmpty(StructureElevation.BelowGround);
+                    var isEmpty = _escapePodView.GetStructureSlotView(x, y).IsEmpty(StructureElevation.BelowGround);
                     _map[x, y] = isEmpty ? 0 : 1;
 
                     //Set 1st non empty position
@@ -526,9 +526,9 @@ namespace Assets.Scripts.Controllers
 
             //Are there any non-flooded non-empty tiles left?
             var allCorrect = true;
-            for (var x = 0; x < EscapePodView.Columns; x++)
+            for (var x = 0; x < _escapePodView.Columns; x++)
             {
-                for (var y = 0; y < EscapePodView.Rows; y++)
+                for (var y = 0; y < _escapePodView.Rows; y++)
                 {
                     var v = _map[x, y];
 
@@ -556,8 +556,8 @@ namespace Assets.Scripts.Controllers
 
         private static void Flood(int x, int y, int fillWith, int searchFor)
         {
-            if (x < 0 || x >= EscapePodView.Columns) return;
-            if (y < 0 || y >= EscapePodView.Rows) return;
+            if (x < 0 || x >= _escapePodView.Columns) return;
+            if (y < 0 || y >= _escapePodView.Rows) return;
 
             if (_map[x, y] == searchFor)
             {

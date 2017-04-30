@@ -2,14 +2,14 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Controllers
 {
-    public class Tooltip: MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class TooltipController: MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         private static GameObject _tooltipGo;
         private static GameObject _title;
         private static GameObject _description;
-        private static readonly Vector3 Offset = new Vector3(0f, 50f, 0);
+        private static readonly Vector3 Offset = new Vector3(50f, 0f, 0);
 
         public virtual string GetTooltipTitle() { return "Example title"; }
         public virtual string GetTooltipDescription() { return "Example content"; }

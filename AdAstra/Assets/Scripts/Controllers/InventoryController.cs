@@ -11,12 +11,6 @@ namespace Assets.Scripts.Controllers
     public class InventoryController : MonoBehaviour
     {
         public GameObject[] Inventories;
-        public bool DebugMode = false;  
-
-        public void Start()
-        {
-            
-        }
 
         #region ADD ITEM
         //Returns number of NOT added items due to lack of space - 0 means that all requested items has been added
