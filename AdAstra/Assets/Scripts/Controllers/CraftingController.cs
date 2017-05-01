@@ -32,45 +32,39 @@ namespace Assets.Scripts.Controllers
         private float _enqueueDelay = 1f;
         private InventoryController _outputInventory;
         
-        private int _maxQueuedBlueprints = 2;
+        private int _maxQueuedBlueprints = 3;
         private string _progressTextStr;
         private InteractUIType _interactUIType;
-
-        #region START
-        void Start ()
-        {
-            _inventoryController = GameObject.FindGameObjectWithTag("GameControllerTag").transform.GetComponent<InventoryController>();
-            _tileText = transform.FindChild("TitleText").gameObject;
-            _blueprintsGroupsPanel = transform.FindChild("BlueprintGroups").gameObject;
-            _itemBlueprintsPanel = transform.FindChild("ItemBlueprints").gameObject;
-            _selectedBlueprintPanel = transform.FindChild("SelectedBlueprint").gameObject;
-            _craftingCurrentPanel = transform.FindChild("CurrentPanel").gameObject;
-            _craftingQueuePanel = transform.FindChild("Queue").gameObject;
-
-            _progressText = transform.FindChild("SelectedBlueprint").transform.FindChild("CraftingTime").gameObject;
-
-            //TODO Here are some erros sort it as above!
-            _doWorkButton = transform.FindChild("CraftButton").gameObject;
-
-            _blueprints = new Dictionary<string, List<Blueprint>>();
-            _selectedGroupBlueprints = new List<GameObject>();
-            _selectedBlueprintRequirements = new List<GameObject>();
-            _craftingTimerController = _craftingCurrentPanel.transform.FindChild("CraftingTimer")
-                .GetComponent<CraftingTimerController>();
-            _outputInventory = _craftingCurrentPanel.GetComponent<InventoryController>();
-
-            //TODO Debug init with example blueprints
-            //foreach (var blueprint in machinesBlueprints) AddItemBlueprint(blueprint);
-            //AddBlueprintGroup();
-
-            UpdateBlueprintGroupsViews();
-            ClearSelectedBlueprintPanel();
-        }
-        #endregion
 
         #region INIT
         public void Init(string title, string progressText, InteractUIType uiType)
         {
+            _inventoryController = GameObject.FindGameObjectWithTag("GameControllerTag").transform.GetComponent<InventoryController>();
+            _tileText = transform.FindChild("TitleText").gameObject;
+            _blueprintsGroupsPanel = transform.FindChild("BlueprintGroups").transform.FindChild("BlueprintGroupsPanel").gameObject;
+            _itemBlueprintsPanel = transform.FindChild("ItemBlueprints").transform.FindChild("ItemBlueprintsPanel").gameObject;
+            _selectedBlueprintPanel = transform.FindChild("SelectedBlueprint").gameObject;
+            _craftingCurrentPanel = transform.FindChild("CurrentPanel").gameObject;
+            _craftingQueuePanel = transform.FindChild("Queue").transform.FindChild("QueuePanel").gameObject;
+            _progressText = transform.FindChild("SelectedBlueprint").transform.FindChild("CraftingTime").gameObject;
+            _doWorkButton = transform.FindChild("SelectedBlueprint").transform.FindChild("CraftButton").gameObject;
+            _blueprints = new Dictionary<string, List<Blueprint>>();
+            _selectedGroupBlueprints = new List<GameObject>();
+            _selectedBlueprintRequirements = new List<GameObject>();
+            _craftingTimerController = transform.FindChild("CraftingTimer").GetComponent<CraftingTimerController>();
+            _outputInventory = _craftingCurrentPanel.GetComponent<InventoryController>();
+
+            //TODO Debug init with example blueprints
+            AddItemBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.BasicFoundation));
+            AddItemBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.BasicFloor));
+            AddItemBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.BasicWall));
+
+            AddItemBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.Assembler));
+            AddItemBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.Constructor));
+
+            UpdateBlueprintGroupsViews();
+            ClearSelectedBlueprintPanel();
+
             _tileText.GetComponent<Text>().text = title;
             _progressTextStr = progressText;
             _doWorkButton.GetComponentInChildren<Text>().text = progressText;
@@ -128,9 +122,10 @@ namespace Assets.Scripts.Controllers
         #endregion
 
         #region BLUEPRINT
-
-        public void AddItemBlueprint(string blueprintGroup, Blueprint blueprint)
+        public void AddItemBlueprint(Blueprint blueprint)
         {
+            var blueprintGroup = ItemsDatabase.Get(blueprint.ResultItemId).ItemFunction.ToString().ToLower();
+
             //Add blueprint group if doesn't exist already
             if (!_blueprints.ContainsKey(blueprintGroup)) _blueprints.Add(blueprintGroup, new List<Blueprint>());
 
@@ -143,7 +138,6 @@ namespace Assets.Scripts.Controllers
             UpdateSelectedBlueprintPanel(blueprint);
             UpdateSelectedBlueprintRequirements();
         }
-
         #endregion
 
         #region SELECTED BLUEPRINT
@@ -269,7 +263,6 @@ namespace Assets.Scripts.Controllers
         #endregion
 
         #region CRAFT BUTTON
-
         public void Craft()
         {
             //If crafting is already in process and we DON'T HAVE space in queue we cancel
@@ -280,6 +273,7 @@ namespace Assets.Scripts.Controllers
             if (_craftingInProcess && _craftingQueuePanel.transform.childCount < _maxQueuedBlueprints)
             {
                 var go = GameObjectFactory.ItemBlueprint(_selectedBlueprint, _craftingQueuePanel.transform, ItemBlueprintController.BlueprintOnClick.RemoveFromQueue);
+                //go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
                 go.transform.SetAsFirstSibling();
                 RemoveRequiredItems();
                 UpdateSelectedBlueprintRequirements();
@@ -307,7 +301,6 @@ namespace Assets.Scripts.Controllers
                 UpdateSelectedBlueprintRequirements();
             }
         }
-
         #endregion
 
         #region REMOVE REQUIRED ITEMS 
@@ -343,9 +336,7 @@ namespace Assets.Scripts.Controllers
             }
 
             //Set Crafting timer
-            var craftingTimer = _craftingCurrentPanel.transform.FindChild("CraftingTimer");
-            var craftingTimerController = craftingTimer.GetComponent<CraftingTimerController>();
-            craftingTimerController.SetTimer(isCraftingStart ? blueprint.CraftingTime : 0.0f);
+            _craftingTimerController.SetTimer(isCraftingStart ? blueprint.CraftingTime : 0.0f);
 
             //Control process
             _craftingInProcess = isCraftingStart;
@@ -391,17 +382,18 @@ namespace Assets.Scripts.Controllers
 
         private void EnqueueNextBlueprint()
         {
-            //Check if our output is clear
-            if (_outputInventory.FreeSlots() == 0) return;
-
             //Nothing to enqueue
             if (_craftingQueuePanel.transform.childCount == 0) return;
 
+            //Check if our output is clear
+            if (_outputInventory.FreeSlots() == 0) return;
+
             //Get 1st child and set it as current crafting item
-            var go = _craftingQueuePanel.transform.GetChild(0).gameObject;
-            var blueprint = go.GetComponent<ItemBlueprintController>().GetBlueprint();
+            var firstItemToCraft = _craftingQueuePanel.transform.GetChild(0).gameObject;
+            var itemBlueprintController = firstItemToCraft.GetComponent<ItemBlueprintController>();
+            var blueprint = itemBlueprintController.GetBlueprint();
             UpdateCurrentCraftingItem(true, blueprint);
-            Destroy(go);
+            Destroy(firstItemToCraft);
         }
 
         #endregion

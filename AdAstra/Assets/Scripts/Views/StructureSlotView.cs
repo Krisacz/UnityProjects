@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Assets.Scripts.Controllers;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -19,7 +17,7 @@ namespace Assets.Scripts.Views
         private readonly Dictionary<StructureElevation, float> _construction = new Dictionary<StructureElevation, float>();
 
         private GameObject _interactUI;
-        
+        private InteractUIType _interactUIType;
         private int _x = -1;
         private int _y = -1;
 
@@ -72,8 +70,7 @@ namespace Assets.Scripts.Views
                 _construction.Add(elevation, instaBuild ? 0.0f : cTime);
             }
 
-            //========== Interact UI
-            _interactUI = GameObjectFactory.InteractUI(interactUIType, _x, _y);
+            _interactUIType = interactUIType;
 
             return true;
         }
@@ -158,51 +155,57 @@ namespace Assets.Scripts.Views
         #region ON POINTER CLICK - BUILDING NEW STRUCTURE
         public void OnPointerClick(PointerEventData eventData)
         {
-            //Check if we are in building mode
-            if (!BuildController.IsOn())
+            //Check mouse button type - RIGHT
+            if (eventData.button == PointerEventData.InputButton.Right)
             {
+                //Check if we are in building mode
+                if (BuildController.IsOn()) return;
+
                 //Check first - all objects are constructed here
-                //...and has interact UI
-                if (GetNotConstructedObjectElevation() == StructureElevation.None && _interactUI != null)
+                //...and has interact UI open it
+                if (GetNotConstructedObjectElevation() != StructureElevation.None || _interactUI == null) return;
+
+                _interactUI.SetActive(!_interactUI.activeSelf);
+            }
+            //Check mouse button type - LEFT
+            else if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                //Check if we are in building mode
+                if (!BuildController.IsOn()) return;
+
+                //Check if we already have "not constructed" object here
+                //And if we are clicking on it again - we are cancelling build 
+                //and returning item to our inventory if we have a space
+                if (IsNotConstructed())
                 {
-                    _interactUI.SetActive(!_interactUI.activeSelf);
+                    var elevation = GetNotConstructedObjectElevation();
+                    var item = _items[elevation];
+                    BuildController.Remove(_x, _y, elevation, item);
+                    return;
                 }
-                
-                return;
-            }
 
-            //Check if we already have "not constructed" object here
-            //And if we are clicking on it again - we are cancelling build 
-            //and rteturning item to our inventory if we have a space
-            if (IsNotConstructed())
-            {
-                var elevation = GetNotConstructedObjectElevation();
-                var item = _items[elevation];
-                BuildController.Remove(_x, _y, elevation, item);
-                return;
-            }
-            
-            //Check if we can build here
-            var canBuild = BuildController.CanBuildInStructureSlot(_x, _y);
+                //Check if we can build here
+                var canBuild = BuildController.CanBuildInStructureSlot(_x, _y);
 
-            switch (canBuild)
-            {
-                //To far to build
-                case -1:
-                    Log.Info("StructureSlotView", "OnPointerDown",
-                        string.Format("Can NOT build here: [X:{0},Y:{1}]!", _x, _y));
-                    break;
+                switch (canBuild)
+                {
+                    //To far to build
+                    case -1:
+                        Log.Info("StructureSlotView", "OnPointerDown",
+                            string.Format("Can NOT build here: [X:{0},Y:{1}]!", _x, _y));
+                        break;
 
-                //Can build here!
-                case 1:
-                    BuildController.Build(_x, _y);
-                    break;
+                    //Can build here!
+                    case 1:
+                        BuildController.Build(_x, _y);
+                        break;
 
-                //Can NOT build here
-                case 0:
-                    Log.Info("StructureSlotView", "OnPointerDown",
-                        string.Format("Can NOT build here: [X:{0},Y:{1}]!", _x, _y));
-                    break;
+                    //Can NOT build here
+                    case 0:
+                        Log.Info("StructureSlotView", "OnPointerDown",
+                            string.Format("Can NOT build here: [X:{0},Y:{1}]!", _x, _y));
+                        break;
+                }
             }
         }
         #endregion
@@ -212,8 +215,11 @@ namespace Assets.Scripts.Views
             //Only in NON Build mode
             if(BuildController.IsOn()) return;
 
+            //Proceed only if mouse button = LEFT
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
             //If structure slot is empty there is nothing we can do here
-            if(IsEmpty()) return;
+            if (IsEmpty()) return;
 
             //Holding Tool check
             if (!CheckEquippedItem()) return;
@@ -495,12 +501,17 @@ namespace Assets.Scripts.Views
                     go.GetComponent<SpriteRenderer>().color = Color.white;
                     var isBlocking = item.FunctionProperties.AsBool(FunctionProperty.IsBlocking);
                     go.GetComponent<BoxCollider2D>().enabled = isBlocking;
+
+                    //Interact UI
+                    _interactUI = GameObjectFactory.InteractUI(_interactUIType, _x, _y);
                 }
                 //Deconstructing / Disassembling
                 else
                 {
                     //Remove obj
                     BuildController.Remove(_x, _y, elevation, item);
+                    if(_interactUI != null) Destroy(_interactUI);
+                    _interactUIType = InteractUIType.None;
                 }
 
                 //Refresh visuals

@@ -25,6 +25,16 @@ namespace Assets.Scripts
         #endregion
 
         #region UI ELEMENTS
+        public static GameObject WorkProgressUI(bool visible)
+        {
+            var uiContainer = GameObject.Find("UIContainer");
+            var go = FromPrefab("WorkProgressUI");
+            go.name = "WorkProgressUI";
+            go.transform.SetParent(uiContainer.transform);
+            go.SetActive(visible);
+            return go;
+        }
+
         public static GameObject TooltipUI(bool visible)
         {
             var uiContainer = GameObject.Find("UIContainer");
@@ -59,18 +69,22 @@ namespace Assets.Scripts
             var uiContainer = GameObject.Find("UIContainer");
 
             var go = FromPrefab("InventoryBarUI");
-            var slotsPanel = go.transform.FindChild("InventoryBar");
+            var ib = go.transform.FindChild("InventoryBar");
             for (var i = 1; i <= initialSlots; i++)
             {
                 var inventorySlotPanel = FromPrefab("InventorySlotPanel");
                 inventorySlotPanel.name = string.Format("InventorySlotPanel_{0}", i);
-                inventorySlotPanel.transform.SetParent(slotsPanel);
+                inventorySlotPanel.transform.SetParent(ib.transform);
             }
 
             go.name = "InventoryBarUI";
             go.transform.SetParent(uiContainer.transform);
-            go.SetActive(visible);
 
+            go.transform.position = Vector3.zero;
+            go.transform.localPosition = Vector3.zero;
+            
+
+            go.SetActive(visible);
             return go;
         }
 
@@ -86,11 +100,9 @@ namespace Assets.Scripts
                 inventorySlotPanel.name = string.Format("InventorySlotPanel_{0}", i);
                 inventorySlotPanel.transform.SetParent(slotsPanel);
             }
-
             go.name = "InventoryUI";
             go.transform.SetParent(uiContainer.transform);
             go.SetActive(visible);
-
             return go;
         }
         #endregion
@@ -99,14 +111,14 @@ namespace Assets.Scripts
         public static GameObject InteractUI(InteractUIType uiType, int x, int y)
         {
             if (uiType == InteractUIType.None) return null;
-
-            var uiContainer = GameObject.Find("UIContainer");
+            var uiContainerInteract = GameObject.Find("UIContainer").transform.FindChild("Interact");
             var go = FromPrefab("InteractUI");
             var cc = go.GetComponent<CraftingController>();
             cc.Init("TEST TO-DO", "TEST2 TO-DO", uiType);
-            go.transform.position = Vector3.zero;
+            go.transform.position = new Vector3(0.5f, 0.5f, 0f);
             go.name = string.Format("InteractUI X[{0}]-Y[{1}]", x, y);
-            go.transform.SetParent(uiContainer.transform);
+            go.transform.SetParent(uiContainerInteract.transform);
+            go.transform.localPosition = Vector3.zero;
             go.SetActive(false);
             return go;
         }
@@ -119,7 +131,7 @@ namespace Assets.Scripts
 
             var spriteName = string.Format("{0}_blueprint_group", groupName.ToLower());
             go.GetComponent<Image>().sprite = SpritesDatabase.Get(spriteName);
-            go.transform.FindChild("GroupNameText").GetComponent<Text>().text = groupName;
+            go.transform.FindChild("GroupNameText").GetComponent<Text>().text = groupName.UppercaseFirst();
             go.GetComponent<BlueprintGroupController>().SetBlueprintGroup(groupName);
             go.transform.SetParent(parent);
 

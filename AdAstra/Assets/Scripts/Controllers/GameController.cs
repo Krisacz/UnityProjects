@@ -12,23 +12,25 @@ namespace Assets.Scripts.Controllers
             ItemsDatabase.Init();
             BlueprintsDatabase.Init();
             NodeGenerator.Init();
-
-            //Create Escape Pod
-            var ep = GameObjectFactory.EscapePod();
-
-            //Link Escape Pod to Build Controller
-            BuildController.EscapePod = ep;
-
+            
             //Create UI Elements
             var inventory = GameObjectFactory.InventoryUI(4, false);
             var inventoryBar = GameObjectFactory.InventoryBarUI(4, true);
             var playerStats = GameObjectFactory.StatsUI(false);
             var notificationFeedUI = GameObjectFactory.NotificationFeedUI();
             var toolTip = GameObjectFactory.TooltipUI(true);
+            var workProgress = GameObjectFactory.WorkProgressUI(true);
 
             //Link player inventories to InventoryController
             var inventoryController = this.transform.GetComponent<InventoryController>();
-            inventoryController.Inventories = new[] { inventory, inventoryBar };
+            inventoryController.Inventories = new[] { inventoryBar, inventory };
+
+            //Create Escape Pod
+            var ep = GameObjectFactory.EscapePod();
+
+            //Link Escape Pod & Inventory Controller to Build Controller
+            BuildController.EscapePod = ep;
+            BuildController.InventoryController = inventoryController;
 
             //Create Player
             var player = GameObjectFactory.Player(0, 0);
@@ -50,8 +52,10 @@ namespace Assets.Scripts.Controllers
             //TODO ===================================
             //TODO ========= DEBUG ADD ITEMS ========= 
             //TODO ===================================
-            inventoryController.AddItem(ItemId.Printer3D, 1, 1);
-            inventoryController.AddItem(ItemId.Assembler, 1, 1);
+            inventoryController.AddItem(ItemId.Printer3D, 1, 0);
+            inventoryController.AddItem(ItemId.Assembler, 1, 0);
+            inventoryController.AddItem(ItemId.IronIngot, 10, 0);
+            inventoryController.AddItem(ItemId.AluminiumIngot, 10, 0);
         }
 
         void Awake() { }

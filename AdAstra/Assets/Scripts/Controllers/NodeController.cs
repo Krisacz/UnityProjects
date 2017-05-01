@@ -1,6 +1,4 @@
-﻿using System;
-using Assets.Scripts.Models;
-using UnityEditor;
+﻿using Assets.Scripts.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;

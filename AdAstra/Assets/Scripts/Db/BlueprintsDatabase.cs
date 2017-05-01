@@ -10,7 +10,6 @@ namespace Assets.Scripts.Db
 {
     public static class BlueprintsDatabase
     {
-        //TODO Consider using list instead of dic to support multiple recipies for one item
         private static readonly List<Blueprint> BlueprintsDb = new List<Blueprint>();
 
         public static void Init()
