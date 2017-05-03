@@ -6,6 +6,44 @@ namespace Assets.Scripts.Controllers
 {
     public class GameController : MonoBehaviour
     {
+        #region FIELDS & PROPERITES
+        private static GameController _gameController;
+        private static GameController Gc
+        {
+            get
+            {
+                return _gameController ?? (_gameController = GameObject.FindGameObjectWithTag("GameControllerTag").GetComponent<GameController>());
+            }
+        }
+
+        private static InventoryController _inventoryController;
+        public static InventoryController InventoryController
+        {
+            get
+            {
+                return _inventoryController ?? (_inventoryController = Gc.GetComponent<InventoryController>());
+            }
+        }
+
+        private static BuildController _buildController;
+        public static BuildController BuildController
+        {
+            get
+            {
+                return _buildController ?? (_buildController = Gc.GetComponent<BuildController>());
+            }
+        }
+
+        private static SequenceController _sequenceController;
+        public static SequenceController SequenceController
+        {
+            get
+            {
+                return _sequenceController ?? (_sequenceController = Gc.GetComponent<SequenceController>());
+            }
+        }
+        #endregion
+
         void OnEnable()
         {
             //Initialize data
@@ -15,7 +53,7 @@ namespace Assets.Scripts.Controllers
             
             //Create UI Elements
             var inventory = GameObjectFactory.InventoryUI(4, false);
-            var inventoryBar = GameObjectFactory.InventoryBarUI(4, true);
+            var inventoryBar = GameObjectFactory.InventoryBarUI(10, true);
             var playerStats = GameObjectFactory.StatsUI(false);
             var notificationFeedUI = GameObjectFactory.NotificationFeedUI();
             var toolTip = GameObjectFactory.TooltipUI(true);
@@ -52,14 +90,22 @@ namespace Assets.Scripts.Controllers
             //TODO ===================================
             //TODO ========= DEBUG ADD ITEMS ========= 
             //TODO ===================================
-            inventoryController.AddItem(ItemId.Printer3D, 1, 0);
+            inventoryController.AddItem(ItemId.EnergizedSmelter, 1, 0);
             inventoryController.AddItem(ItemId.Assembler, 1, 0);
-            inventoryController.AddItem(ItemId.IronIngot, 10, 0);
-            inventoryController.AddItem(ItemId.AluminiumIngot, 10, 0);
+
+            inventoryController.AddItem(ItemId.DirtyIce, 20, 0);
+            inventoryController.AddItem(ItemId.SiliconOre, 20, 0);
+            inventoryController.AddItem(ItemId.IronOre, 20, 0);
+            inventoryController.AddItem(ItemId.CopperOre, 20, 0);
         }
 
         void Awake() { }
         void Start() { }
         void Update () { }
+
+
+
+
+
     }
 }

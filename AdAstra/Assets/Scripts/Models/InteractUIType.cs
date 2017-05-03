@@ -9,6 +9,6 @@ namespace Assets.Scripts.Models
     {
         None,
         Printer3D,
-        Simple
+        Processor
     }
 }

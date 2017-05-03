@@ -358,13 +358,13 @@
 		"MaxStackSize":	"1",
 		"SpriteName":	"energized_smelter",
 		"ItemFunction":	"Machine",
-		"FunctionProperties":	{
-			"IsBlocking":	"True",
-			"Elevation":	"OnGround",
-			"WorkSpeed":	"1.5",
-			"AssemblyTime":	"3.5",
-			"InteractUIType":	"Simple"
-		}
+        "FunctionProperties": {
+            "IsBlocking": "True",
+            "Elevation": "OnGround",
+            "WorkSpeed": "1.5",
+            "AssemblyTime": "3.5",
+            "InteractUIType": "Processor"
+        }
 	},
 	{
 		"ItemId":	"Pressuriser",
@@ -373,13 +373,13 @@
 		"MaxStackSize":	"1",
 		"SpriteName":	"pressuriser",
 		"ItemFunction":	"Machine",
-		"FunctionProperties":	{
-			"IsBlocking":	"True",
-			"Elevation":	"OnGround",
-			"WorkSpeed":	"1.5",
-			"AssemblyTime":	"3.5",
-			"InteractUIType":	"Simple"
-		}
+        "FunctionProperties": {
+            "IsBlocking": "True",
+            "Elevation": "OnGround",
+            "WorkSpeed": "1.5",
+            "AssemblyTime": "3.5",
+            "InteractUIType": "Processor"
+        }
 	},
 	{
 		"ItemId":	"Hydroponics",
@@ -388,12 +388,12 @@
 		"MaxStackSize":	"1",
 		"SpriteName":	"hydroponics",
 		"ItemFunction":	"Machine",
-		"FunctionProperties":	{
-			"IsBlocking":	"True",
-			"Elevation":	"OnGround",
-			"WorkSpeed":	"1.5",
-			"AssemblyTime":	"3.5",
-			"InteractUIType":	"Simple"
-		}
+        "FunctionProperties": {
+            "IsBlocking": "True",
+            "Elevation": "OnGround",
+            "WorkSpeed": "1.5",
+            "AssemblyTime": "3.5",
+            "InteractUIType": "Processor"
+        }
 	}
 ]

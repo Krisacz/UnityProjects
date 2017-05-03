@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Controllers;
+﻿using System;
+using Assets.Scripts.Controllers;
 using Assets.Scripts.Db;
 using Assets.Scripts.Models;
 using Assets.Scripts.Views;
@@ -108,23 +109,61 @@ namespace Assets.Scripts
         #endregion
 
         #region CRAFTING
-        public static GameObject InteractUI(InteractUIType uiType, int x, int y)
+        public static GameObject InteractUI(string title, InteractUIType uiType, int x, int y)
         {
-            if (uiType == InteractUIType.None) return null;
+            GameObject go = null;
+            switch (uiType)
+            {
+                case InteractUIType.None:
+                    return null;
+                    
+                case InteractUIType.Printer3D:
+                    go = FromPrefab("Printer3dUI");
+                    break;
+
+                case InteractUIType.Processor:
+                    go = FromPrefab("ProcessorUI");
+                    break;
+
+                default:
+                    Log.Error("GameObjectFactory", "InteractUI", "Unknown InteractUIType: " + uiType);
+                    return null;
+            }
+
             var uiContainerInteract = GameObject.Find("UIContainer").transform.FindChild("Interact");
-            var go = FromPrefab("InteractUI");
-            var cc = go.GetComponent<CraftingController>();
-            cc.Init("TEST TO-DO", "TEST2 TO-DO", uiType);
+            var interactController = go.GetComponent<InteractController>();
+            interactController.Init(title); 
+
+            //TODO Debug init with example blueprints - read it from json??
+            if (uiType == InteractUIType.Printer3D)
+            {
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.BasicFoundation));
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.BasicFloor));
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.BasicWall));
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.Assembler));
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.Constructor));
+            }
+            else if(uiType == InteractUIType.Processor)
+            {
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.Ice));
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.SiliconIngot));
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.IronIngot));
+                interactController.AddBlueprint(BlueprintsDatabase.GetBlueprint(ItemId.CopperIngot));
+            }
+            //TODO ----------------------------------
+
             go.transform.position = new Vector3(0.5f, 0.5f, 0f);
             go.name = string.Format("InteractUI X[{0}]-Y[{1}]", x, y);
             go.transform.SetParent(uiContainerInteract.transform);
-            go.transform.localPosition = Vector3.zero;
             go.SetActive(false);
+            go.transform.localPosition = Vector3.zero;
             return go;
         }
+
         #endregion
 
         #region BLUEPRINTS STUFF
+
         public static void BlueprintGroup(string groupName, Transform parent)
         {
             var go = FromPrefab("BlueprintGroup");
@@ -140,8 +179,7 @@ namespace Assets.Scripts
             go.name = gameObjectName;
         }
 
-        public static GameObject ItemBlueprint(Blueprint blueprint, Transform parent,
-            ItemBlueprintController.BlueprintOnClick actionOnClick)
+        public static GameObject ItemBlueprint(Blueprint blueprint, Transform parent, ItemBlueprintController.BlueprintOnClick actionOnClick)
         {
             var go = FromPrefab("ItemBlueprint");
 
@@ -173,9 +211,11 @@ namespace Assets.Scripts
 
             return go;
         }
+
         #endregion
 
         #region ITEM STUFF
+
         public static GameObject Item(Item item)
         {
             var go = FromPrefab("Item");
@@ -187,9 +227,11 @@ namespace Assets.Scripts
             //Return game object
             return go;
         }
+
         #endregion
 
         #region ESCAPE POD
+
         public static GameObject EscapePod()
         {
             var go = FromPrefab("EscapePod");
@@ -200,9 +242,11 @@ namespace Assets.Scripts
 
             return go;
         }
+
         #endregion
 
         #region PLAYER 
+
         public static GameObject Player(int x, int y)
         {
             var go = FromPrefab("Player");
@@ -214,9 +258,11 @@ namespace Assets.Scripts
 
             return go;
         }
+
         #endregion
 
         #region STRUCTURE
+
         public static GameObject StructureSlot(int x, int y, Transform parent)
         {
             var go = FromPrefab("StructureSlot");
@@ -227,8 +273,7 @@ namespace Assets.Scripts
             return go;
         }
 
-        public static GameObject StructureItem(Item item, bool blocking, 
-            StructureElevation elevation, Transform transform)
+        public static GameObject StructureItem(Item item, bool blocking, StructureElevation elevation, Transform transform)
         {
             var go = FromPrefab(blocking ? "StructureBlocking" : "StructureNonBlocking");
 
@@ -236,16 +281,18 @@ namespace Assets.Scripts
             var gameObjectName = string.Format("Structure ID[{0}]", item.ItemId);
             go.name = gameObjectName;
 
-            go.transform.position =  new Vector3(transform.position.x, transform.position.y, 0f);
+            go.transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
             go.transform.parent = transform;
             var spriteRenderer = go.GetComponent<SpriteRenderer>();
             spriteRenderer.sprite = SpritesDatabase.Get(item.SpriteName);
-            spriteRenderer.sortingOrder = (int)elevation;
+            spriteRenderer.sortingOrder = (int) elevation;
             return go;
         }
+
         #endregion
 
         #region ASTEROID
+
         public static GameObject Asteroid(int spriteId, float scale, Transform parent)
         {
             var go = FromPrefab("Asteroid");
@@ -257,18 +304,22 @@ namespace Assets.Scripts
             go.name = "Asteroid";
             return go;
         }
+
         #endregion
 
         #region ORE SCAN EFFECT
+
         public static GameObject OreScanEffect()
         {
             var go = FromPrefab("OreScanEffect");
             go.SetActive(false);
             return go;
         }
+
         #endregion
 
         #region ORE NODE
+
         public static GameObject OreNode(Transform asteroidParent)
         {
             var go = FromPrefab("OreNode");
@@ -277,9 +328,11 @@ namespace Assets.Scripts
             go.name = "OreNode";
             return go;
         }
+
         #endregion
 
         #region NOTIFICATION
+
         //TODO move to directly to notification controller?
         public static GameObject Noticifaction(string spriteName, string message, Transform parent)
         {
@@ -297,16 +350,18 @@ namespace Assets.Scripts
 
             go.transform.SetParent(parent);
             go.GetComponent<RectTransform>().localPosition = new Vector3(0f, -30f, 0f);
-            
+
             //Set name for debuging
             var gameObjectName = "Notification Message";
             go.name = gameObjectName;
 
             return go;
         }
+
         #endregion
 
         #region HELP METHODS
+
         private static GameObject FromPrefab(string prefabName)
         {
             //Get prefab
@@ -329,6 +384,7 @@ namespace Assets.Scripts
             //Return game object
             return go;
         }
+
         #endregion
     }
 }

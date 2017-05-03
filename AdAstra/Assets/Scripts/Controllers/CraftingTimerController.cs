@@ -26,7 +26,7 @@ namespace Assets.Scripts.Controllers
         private void UpdateLabel()
         {
             var label = this.transform.FindChild("CraftingTimeText").gameObject;
-            label.GetComponent<Text>().text = string.Format("Crafting Time: {0}s", _current.ToString("F1"));
+            label.GetComponent<Text>().text = string.Format("Time Left: {0}s", _current.ToString("F1"));
 
             var slider = this.transform.GetComponent<Slider>();
             slider.maxValue = _target;

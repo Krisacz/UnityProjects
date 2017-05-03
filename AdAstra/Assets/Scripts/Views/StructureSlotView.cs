@@ -503,7 +503,7 @@ namespace Assets.Scripts.Views
                     go.GetComponent<BoxCollider2D>().enabled = isBlocking;
 
                     //Interact UI
-                    _interactUI = GameObjectFactory.InteractUI(_interactUIType, _x, _y);
+                    _interactUI = GameObjectFactory.InteractUI(item.Title, _interactUIType, _x, _y);
                 }
                 //Deconstructing / Disassembling
                 else

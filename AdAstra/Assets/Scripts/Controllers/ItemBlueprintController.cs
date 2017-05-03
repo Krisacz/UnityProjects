@@ -33,12 +33,12 @@ namespace Assets.Scripts.Controllers
                     return;
 
                 case BlueprintOnClick.RemoveFromQueue:
-                    var canRemove = cc.GetPlayerInventoryController().CheckAddItem(_blueprint.Requirements);
+                    var canRemove = GameController.InventoryController.CheckAddItem(_blueprint.Requirements);
                     if (canRemove.Count == 0)
                     {
                         foreach (var requirement in _blueprint.Requirements)
                         {
-                            cc.GetPlayerInventoryController().AddItem(requirement.Key, requirement.Value);
+                            GameController.InventoryController.AddItem(requirement.Key, requirement.Value);
                         }
                         cc.UpdateSelectedBlueprintRequirements();
                         Destroy(this.transform.gameObject);

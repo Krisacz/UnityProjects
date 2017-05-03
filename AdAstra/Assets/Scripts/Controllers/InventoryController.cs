@@ -142,6 +142,7 @@ namespace Assets.Scripts.Controllers
         #endregion
 
         #region CHECK INVENTORIES
+        //Outputs a list of items which are missing - if RESULT.Count == 0 then we have all required items
         public Dictionary<ItemId, int> Check(Dictionary<ItemId, int> items, int inventoryIndex = -1)
         {
             if (inventoryIndex <= -1)
@@ -156,8 +157,8 @@ namespace Assets.Scripts.Controllers
 
         private Dictionary<ItemId, int> CheckAllInventories(Dictionary<ItemId, int> items)
         {
-            var left = items;
-
+            var left = new Dictionary<ItemId, int>(items);
+            
             for (var index = 0; index < Inventories.Length; index++)
             {
                 left = CheckSpecificInventory(left, index);
@@ -173,7 +174,7 @@ namespace Assets.Scripts.Controllers
 
         private Dictionary<ItemId, int> CheckSpecificInventory(Dictionary<ItemId, int> items, int inventoryIndex)
         {
-            var left = items;
+            var left = new Dictionary<ItemId, int>(items);
             var inventory = Inventories[inventoryIndex];
             var allSlots = inventory.GetComponentsInChildren<ItemStackView>();
             foreach (var isv in allSlots)
@@ -317,6 +318,40 @@ namespace Assets.Scripts.Controllers
             var inventory = Inventories[inventoryIndex];
             var allSlots = inventory.GetComponentsInChildren<ItemStackView>();
             foreach (var isv in allSlots) if (!isv.HasItem) total++;
+            return total;
+        }
+        #endregion
+
+        #region ANY ITEMS 
+        //returns count of occupied slots (slot with item in it)
+        public int AnyItems(int inventoryIndex = -1)
+        {
+            if (inventoryIndex <= -1)
+            {
+                return AnyItemInAllInventories();
+            }
+            else
+            {
+                return AnyItemInSpecificInventory(0, inventoryIndex);
+            }
+        }
+
+        private int AnyItemInAllInventories()
+        {
+            var total = 0;
+            for (var index = 0; index < Inventories.Length; index++)
+            {
+                total = AnyItemInSpecificInventory(total, index);
+            }
+            return total;
+        }
+
+        private int AnyItemInSpecificInventory(int current, int inventoryIndex)
+        {
+            var total = current;
+            var inventory = Inventories[inventoryIndex];
+            var allSlots = inventory.GetComponentsInChildren<ItemStackView>();
+            foreach (var isv in allSlots) if (isv.HasItem) total++;
             return total;
         }
         #endregion
